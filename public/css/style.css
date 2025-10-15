@@ -1,0 +1,41 @@
+/* style.css */
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #ADD8E6; /* biru muda */
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #003366; /* biru tua untuk kontras */
+}
+
+header {
+  background-color: #87CEFA; /* sky blue */
+  padding: 20px;
+  text-align: center;
+  font-size: 2rem;
+  font-weight: bold;
+  color: white;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+main {
+  padding: 40px;
+  max-width: 800px;
+  margin: auto;
+  background-color: rgba(255, 255, 255, 0.8);
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+h1, h2 {
+  color: #004080;
+}
+
+a {
+  color: #0055cc;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
