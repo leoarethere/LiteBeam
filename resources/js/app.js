@@ -1,7 +1,3 @@
-// ============================================
-// FILE: resources/js/app.js (REVISED)
-// ============================================
-
 import * as Turbo from '@hotwired/turbo';
 import Alpine from 'alpinejs';
 import './bootstrap';
@@ -10,12 +6,10 @@ import 'flowbite';
 // Jadikan Alpine global
 window.Alpine = Alpine;
 
-// 1. Langsung start Alpine.js di awal.
-// Ini hanya perlu dijalankan sekali saat aplikasi dimuat pertama kali.
+// Start Alpine
 Alpine.start();
 
-// 2. Gunakan 'turbo:load' HANYA untuk me-reinisialisasi library pihak ketiga
-// yang bergantung pada elemen DOM baru setelah navigasi Turbo.
+// Turbo event listeners
 document.addEventListener('turbo:load', () => {
     if (typeof initFlowbite === 'function') {
         initFlowbite();

@@ -1,6 +1,6 @@
 <nav class="bg-gray-800/55 backdrop-blur-sm fixed w-full top-0 z-50 border-b border-gray-700/50" x-data="{ isMobileMenuOpen: false }">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex h-20 items-center justify-between">
+        <div class="relative flex h-20 items-center justify-between">
             
             {{-- Bagian Kiri: Logo --}}
             <div class="flex-shrink-0">
