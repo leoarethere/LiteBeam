@@ -84,3 +84,7 @@ Route::middleware('auth')->prefix('dashboard')->group(function () {
 
 // == FITUR UTILITAS ==
 Route::get('/theme/toggle', [ThemeController::class, 'toggle'])->name('theme.toggle');
+
+Route::get('/cek-php', function () {
+    phpinfo();
+});

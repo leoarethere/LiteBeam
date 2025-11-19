@@ -13,6 +13,8 @@ use Illuminate\Support\Facades\Auth;
 use Intervention\Image\ImageManager;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Storage;
+
+// ✅ GUNAKAN GD DRIVER - Lebih universal dan tersedia di hampir semua server
 use Intervention\Image\Drivers\Gd\Driver;
 
 class DashboardPostController extends Controller
@@ -67,28 +69,34 @@ class DashboardPostController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
-        $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'slug' => 'required|string|max:255|unique:posts,slug',
-            'category_id' => 'required|exists:categories,id',
-            'body' => 'required|string',
-            'link_postingan' => 'nullable|url|max:255',
-            'featured_image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:10240', // Max 10MB
-            'excerpt' => 'nullable|string|max:300',
-            'published_at' => 'nullable|date',
-            'action' => 'required|in:draft,publish',
-        ]);
+        // ✅ VALIDASI dengan error handling yang lebih baik
+        try {
+            $validated = $request->validate([
+                'title' => 'required|string|max:255',
+                'slug' => 'required|string|max:255|unique:posts,slug',
+                'category_id' => 'required|exists:categories,id',
+                'body' => 'required|string',
+                'link_postingan' => 'nullable|url|max:255',
+                'featured_image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:10240', // Max 10MB
+                'excerpt' => 'nullable|string|max:300',
+                'published_at' => 'nullable|date',
+                'action' => 'required|in:draft,publish',
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            // Redirect kembali dengan error validation
+            return back()->withErrors($e->validator)->withInput();
+        }
 
         $validated['user_id'] = Auth::id();
 
-        // Process & Compress Image
+        // ✅ Process & Compress Image dengan error handling
         if ($request->hasFile('featured_image')) {
             try {
                 $file = $request->file('featured_image');
                 $filename = Str::random(40) . '.jpg';
                 $path = 'post-images/' . $filename;
 
-                // Create ImageManager instance
+                // Create ImageManager instance dengan GD Driver
                 $manager = new ImageManager(new Driver());
                 
                 // Read and process image
@@ -104,8 +112,14 @@ class DashboardPostController extends Controller
                 Storage::disk('public')->put($path, (string) $encodedImage);
 
                 $validated['featured_image'] = $path;
+                
             } catch (\Exception $e) {
-                return back()->withErrors(['featured_image' => 'Gagal memproses gambar: ' . $e->getMessage()])->withInput();
+                // Log error untuk debugging
+                \Log::error('Image processing error: ' . $e->getMessage());
+                
+                return back()
+                    ->withErrors(['featured_image' => 'Gagal memproses gambar: ' . $e->getMessage()])
+                    ->withInput();
             }
         }
 
@@ -125,7 +139,16 @@ class DashboardPostController extends Controller
             $validated['published_at'] = null;
         }
 
-        Post::create($validated);
+        // ✅ Simpan dengan error handling
+        try {
+            Post::create($validated);
+        } catch (\Exception $e) {
+            \Log::error('Post creation error: ' . $e->getMessage());
+            
+            return back()
+                ->withErrors(['error' => 'Gagal menyimpan postingan: ' . $e->getMessage()])
+                ->withInput();
+        }
 
         $message = $validated['status'] === 'published' 
             ? 'Postingan berhasil dipublikasikan!' 
@@ -156,24 +179,29 @@ class DashboardPostController extends Controller
      */
     public function update(Request $request, Post $post): RedirectResponse
     {
-        $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'slug' => [
-                'required', 
-                'string', 
-                'max:255', 
-                Rule::unique('posts')->ignore($post->id)
-            ],
-            'category_id' => 'required|exists:categories,id',
-            'body' => 'required|string',
-            'link_postingan' => 'nullable|url|max:255',
-            'featured_image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:10240',
-            'excerpt' => 'nullable|string|max:300',
-            'published_at' => 'nullable|date',
-            'action' => 'required|in:draft,publish',
-        ]);
+        // ✅ VALIDASI dengan error handling
+        try {
+            $validated = $request->validate([
+                'title' => 'required|string|max:255',
+                'slug' => [
+                    'required', 
+                    'string', 
+                    'max:255', 
+                    Rule::unique('posts')->ignore($post->id)
+                ],
+                'category_id' => 'required|exists:categories,id',
+                'body' => 'required|string',
+                'link_postingan' => 'nullable|url|max:255',
+                'featured_image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:10240',
+                'excerpt' => 'nullable|string|max:300',
+                'published_at' => 'nullable|date',
+                'action' => 'required|in:draft,publish',
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return back()->withErrors($e->validator)->withInput();
+        }
 
-        // Process & Compress New Image
+        // ✅ Process & Compress New Image
         if ($request->hasFile('featured_image')) {
             try {
                 // Delete old image
@@ -185,7 +213,7 @@ class DashboardPostController extends Controller
                 $filename = Str::random(40) . '.jpg';
                 $path = 'post-images/' . $filename;
 
-                // Create ImageManager instance
+                // Create ImageManager instance dengan GD Driver
                 $manager = new ImageManager(new Driver());
                 
                 // Read and process image
@@ -201,8 +229,13 @@ class DashboardPostController extends Controller
                 Storage::disk('public')->put($path, (string) $encodedImage);
 
                 $validated['featured_image'] = $path;
+                
             } catch (\Exception $e) {
-                return back()->withErrors(['featured_image' => 'Gagal memproses gambar: ' . $e->getMessage()])->withInput();
+                \Log::error('Image processing error: ' . $e->getMessage());
+                
+                return back()
+                    ->withErrors(['featured_image' => 'Gagal memproses gambar: ' . $e->getMessage()])
+                    ->withInput();
             }
         }
 
@@ -222,11 +255,20 @@ class DashboardPostController extends Controller
             $validated['published_at'] = null;
         }
 
-        $post->update($validated);
+        // ✅ Update dengan error handling
+        try {
+            $post->update($validated);
+        } catch (\Exception $e) {
+            \Log::error('Post update error: ' . $e->getMessage());
+            
+            return back()
+                ->withErrors(['error' => 'Gagal memperbarui postingan: ' . $e->getMessage()])
+                ->withInput();
+        }
 
         $message = $validated['status'] === 'published' 
-            ? 'Postingan berhasil dipublikasikan!' 
-            : 'Postingan berhasil disimpan sebagai draft!';
+            ? 'Postingan berhasil diperbarui!' 
+            : 'Perubahan berhasil disimpan sebagai draft!';
 
         return redirect()->route('dashboard.posts.index')
             ->with('post_success', $message);
@@ -249,7 +291,10 @@ class DashboardPostController extends Controller
 
             return redirect()->route('dashboard.posts.index')
                 ->with('post_success', 'Postingan "' . $postTitle . '" berhasil dihapus! 🗑️');
+                
         } catch (\Exception $e) {
+            \Log::error('Post deletion error: ' . $e->getMessage());
+            
             return redirect()->route('dashboard.posts.index')
                 ->with('post_error', 'Gagal menghapus postingan. Terjadi error: ' . $e->getMessage());
         }

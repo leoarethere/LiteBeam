@@ -1,18 +1,24 @@
 // ============================================
-// FILE: resources/js/app.js (FIXED VERSION)
+// FILE: resources/js/app.js (OPTIMIZED VERSION)
 // ============================================
 
 import * as Turbo from '@hotwired/turbo';
 import Alpine from 'alpinejs';
 import './bootstrap';
 import 'flowbite';
-import Cropper from 'cropperjs';
 
-// Global variables
+// --- JQUERY & OWL CAROUSEL ---
+import jQuery from 'jquery';
+import 'owl.carousel/dist/assets/owl.carousel.css';
+import 'owl.carousel/dist/assets/owl.theme.default.css'; // <--- Tambahkan ini agar tampilan slider rapi
+import 'owl.carousel';
+
+// Expose ke Window
+window.$ = window.jQuery = jQuery;
+
 window.Alpine = Alpine;
-window.Cropper = Cropper;
+// HAPUS window.Cropper = Cropper; (Karena dipindah ke dashboard.js)
 
-// Track initialization state
 window.appInitialized = false;
 window.alpineStarted = false;
 
@@ -43,9 +49,6 @@ document.addEventListener('turbo:load', function() {
     
     // Re-initialize Flowbite for new DOM elements
     initializeFlowbite();
-    
-    // Re-initialize Cropper if needed
-    initializeCropper();
 });
 
 // Cleanup before Turbo caches pages
@@ -100,14 +103,6 @@ function initializeFlowbite() {
         }
     } else {
         console.log('⚠️ Flowbite not available');
-    }
-}
-
-function initializeCropper() {
-    // Initialize Cropper.js instances if any exist
-    const cropperElements = document.querySelectorAll('[data-cropper]');
-    if (cropperElements.length > 0) {
-        console.log('✅ Cropper.js elements found:', cropperElements.length);
     }
 }
 
@@ -175,4 +170,4 @@ document.addEventListener('turbo:click', function(event) {
 // EXPORT FOR VITE (if needed)
 // ============================================
 
-export { Turbo, Alpine, Cropper };
+export { Turbo, Alpine };

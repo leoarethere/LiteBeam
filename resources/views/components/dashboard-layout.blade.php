@@ -142,16 +142,23 @@
             return {
                 isSidebarOpen: window.innerWidth >= 768,
 
-                // ▼▼▼ State untuk notifikasi ▼▼▼
+                // State Notifikasi
                 notificationOpen: false,
                 notificationMessage: '',
-                notificationType: 'success', // 'success' atau 'error'
+                notificationType: 'success', 
                 
                 init() {
-                    console.log('🏠 Dashboard state initialized');
+                    console.log('🏠 Dashboard initialized with Turbo');
                     this.setupResizeHandler();
                     
-                    // ▼▼▼ Cek session flash saat halaman dimuat ▼▼▼
+                    this.checkForFlashMessages(); 
+
+                    window.addEventListener('turbo:load', () => {
+                        this.checkForFlashMessages();
+                    });
+                },
+                
+                checkForFlashMessages() {
                     let flashMessage = null;
                     let flashType = 'success';
 
@@ -180,13 +187,11 @@
                     }
                 },
                 
-                // ▼▼▼ Fungsi baru untuk menampilkan notifikasi ▼▼▼
                 showNotification(message, type) {
                     this.notificationMessage = message;
                     this.notificationType = type;
                     this.notificationOpen = true;
                     
-                    // Sembunyikan otomatis setelah 4 detik
                     setTimeout(() => {
                         this.notificationOpen = false;
                     }, 4000);

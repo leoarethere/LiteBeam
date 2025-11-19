@@ -9,7 +9,6 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Storage;
-use Spatie\ImageOptimizer\OptimizerChainFactory;
 
 class BannerController extends Controller
 {
@@ -53,10 +52,6 @@ class BannerController extends Controller
             
             // Simpan gambar
             Storage::disk('public')->put($imageName, file_get_contents($image));
-            
-            // Optimasi gambar
-            $fullPath = storage_path('app/public/' . $imageName);
-            (new OptimizerChainFactory)->create()->optimize($fullPath);
             
             $validated['image_path'] = $imageName;
         }
@@ -105,10 +100,6 @@ class BannerController extends Controller
             $imageName = 'banners/' . Str::random(20) . '.' . $image->getClientOriginalExtension();
             
             Storage::disk('public')->put($imageName, file_get_contents($image));
-            
-            // Optimasi gambar
-            $fullPath = storage_path('app/public/' . $imageName);
-            (new OptimizerChainFactory)->create()->optimize($fullPath);
             
             $validated['image_path'] = $imageName;
         }

@@ -11,20 +11,16 @@ use App\Models\BroadcastCategory;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
 use Intervention\Image\ImageManager;
-
-// ▼▼▼ [PERBAIKAN] Tambahkan 'use' statement ini ▼▼▼
 use Illuminate\Http\RedirectResponse; 
+
+// ▼▼▼ [UBAH DI SINI] Ganti Gd dengan Imagick ▼▼▼
 use Illuminate\Support\Facades\Storage;
-use Intervention\Image\Drivers\Gd\Driver;
+use Intervention\Image\Drivers\Imagick\Driver;
 
 class DashboardBroadcastController extends Controller
 {
-    /**
-     * Menampilkan daftar (index) semua data penyiaran.
-     */
     public function index(Request $request): View
     {
-        // ... (Logika index tetap sama) ...
         $query = Broadcast::with(['user', 'broadcastCategory']);
         $query->when($request->filled('search'), function ($q) use ($request) {
             $search = $request->search;
@@ -53,18 +49,12 @@ class DashboardBroadcastController extends Controller
         ]);
     }
 
-    /**
-     * Menampilkan form untuk membuat data baru.
-     */
     public function create(): View
     {
         $categories = BroadcastCategory::orderBy('name')->get();
         return view('backend.penyiaran.create', compact('categories'));
     }
 
-    /**
-     * Menyimpan data baru ke database.
-     */
     public function store(Request $request): RedirectResponse
     {
         $validated = $request->validate([
@@ -73,48 +63,35 @@ class DashboardBroadcastController extends Controller
             'broadcast_category_id' => 'required|exists:broadcast_categories,id',
             'synopsis' => 'nullable|string',
             'youtube_link' => 'nullable|url|max:255',
-            'poster' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:10240', // Maks 10MB
+            'poster' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:10240', 
             'published_at' => 'nullable|date',
             'action' => 'required|in:draft,publish',
         ]);
 
         $validated['user_id'] = Auth::id();
 
-        // ▼▼▼ [PERBAIKAN] LOGIKA KOMPRESI GAMBAR v3 MANUAL ▼▼▼
         if ($request->hasFile('poster')) {
             try {
                 $file = $request->file('poster');
                 $filename = Str::random(40) . '.jpg';
-                // Simpan di folder 'broadcast-posters'
                 $path = 'broadcast-posters/' . $filename; 
 
-                // 1. Buat ImageManager dengan Driver (GD)
+                // Menggunakan Driver Imagick
                 $manager = new ImageManager(new Driver());
-
-                // 2. Baca gambar
                 $image = $manager->read($file); 
-
-                // 3. (Opsional) Resize gambar (poster mungkin perlu rasio aspek berbeda)
-                // $image->scale(width: 800); 
-
-                // 4. Encode ke JPG kualitas 70%
+                // $image->scale(width: 800); // Opsional
                 $encodedImage = $image->toJpeg(quality: 70); 
-
-                // 5. Simpan ke disk public
                 Storage::disk('public')->put($path, (string) $encodedImage);
                 
-                $validated['poster'] = $path; // Simpan path baru
+                $validated['poster'] = $path;
 
             } catch (\Exception $e) {
-                // Jika gagal proses gambar, kembalikan ke form dengan error
                 return back()->withErrors([
-                    'poster' => 'Gagal memproses poster: ' . $e->getMessage()
+                    'poster' => 'Gagal memproses poster (Imagick): ' . $e->getMessage()
                 ])->withInput();
             }
         }
-        // ▲▲▲ AKHIR LOGIKA KOMPRESI ▲▲▲
 
-        // Logika status (Draft / Publish)
         if ($request->input('action') === 'publish') {
             $validated['status'] = 'published';
             $validated['published_at'] = $request->filled('published_at') ? $request->published_at : now();
@@ -130,31 +107,21 @@ class DashboardBroadcastController extends Controller
         return redirect()->route('dashboard.broadcasts.index')->with('broadcast_success', $message);
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(Broadcast $broadcast): RedirectResponse
     {
         return redirect()->route('dashboard.broadcasts.edit', $broadcast);
     }
 
-    /**
-     * Menampilkan form untuk mengedit data.
-     */
     public function edit(Broadcast $broadcast): View
     {
         $categories = BroadcastCategory::orderBy('name')->get();
         return view('backend.penyiaran.edit', compact('broadcast', 'categories'));
     }
 
-    /**
-     * Memperbarui data di database.
-     */
     public function update(Request $request, Broadcast $broadcast): RedirectResponse
     {
         $validated = $request->validate([
             'title' => 'required|string|max:255',
-            // [PERBAIKAN] Tambahkan Rule::unique
             'slug' => ['required', 'string', 'max:255', Rule::unique('broadcasts')->ignore($broadcast->id)], 
             'broadcast_category_id' => 'required|exists:broadcast_categories,id',
             'synopsis' => 'nullable|string',
@@ -164,10 +131,8 @@ class DashboardBroadcastController extends Controller
             'action' => 'required|in:draft,publish',
         ]);
 
-        // ▼▼▼ [PERBAIKAN] LOGIKA KOMPRESI GAMBAR v3 MANUAL (UPDATE) ▼▼▼
         if ($request->hasFile('poster')) {
             try {
-                // 1. Hapus poster lama (dengan pengecekan 'exists')
                 if ($broadcast->poster && Storage::disk('public')->exists($broadcast->poster)) {
                     Storage::disk('public')->delete($broadcast->poster);
                 }
@@ -176,24 +141,21 @@ class DashboardBroadcastController extends Controller
                 $filename = Str::random(40) . '.jpg';
                 $path = 'broadcast-posters/' . $filename;
 
-                // 2. Buat manager, baca, encode, dan simpan
+                // Menggunakan Driver Imagick
                 $manager = new ImageManager(new Driver());
                 $image = $manager->read($file);
-                // $image->scale(width: 800); // (Opsional)
                 $encodedImage = $image->toJpeg(quality: 70);
                 Storage::disk('public')->put($path, (string) $encodedImage);
 
-                $validated['poster'] = $path; // Simpan path baru
+                $validated['poster'] = $path; 
 
             } catch (\Exception $e) {
                 return back()->withErrors([
-                    'poster' => 'Gagal memproses poster: ' . $e->getMessage()
+                    'poster' => 'Gagal memproses poster (Imagick): ' . $e->getMessage()
                 ])->withInput();
             }
         }
-        // ▲▲▲ AKHIR LOGIKA KOMPRESI ▲▲▲
 
-        // Logika status
         if ($request->input('action') === 'publish') {
             $validated['status'] = 'published';
             $validated['published_at'] = $request->filled('published_at') ? $request->published_at : ($broadcast->published_at ?? now());
@@ -210,15 +172,11 @@ class DashboardBroadcastController extends Controller
                         ->with('broadcast_success', $message);
     }
 
-    /**
-     * Menghapus data dari database.
-     */
     public function destroy(Broadcast $broadcast): RedirectResponse
     {
         try {
             $broadcastTitle = $broadcast->title;
             
-            // ▼▼▼ [PERBAIKAN] Cek jika file ada sebelum menghapus ▼▼▼
             if ($broadcast->poster && Storage::disk('public')->exists($broadcast->poster)) {
                 Storage::disk('public')->delete($broadcast->poster);
             }
