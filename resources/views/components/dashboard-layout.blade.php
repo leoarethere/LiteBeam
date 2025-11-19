@@ -6,7 +6,6 @@
     <meta name="turbo-visit-control" content="reload">
     <title>{{ $title ?? 'Dashboard Admin' }}</title>
     
-    {{-- 👇 PERBAIKAN: Panggil dashboard.js disini --}}
     @vite([
         'resources/css/app.css', 
         'resources/js/app.js', 
@@ -14,9 +13,6 @@
     ])
     
     <link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
-    
-    {{-- ❌ HAPUS baris CDN di bawah ini --}}
-    {{-- <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script> --}}
 
     <style>
         [x-cloak] { display: none !important; }
@@ -29,6 +25,10 @@
     <div x-data="dashboardState()" 
          x-init="init()"
          class="antialiased">
+
+        {{-- 👇 1. PANGGIL KOMPONEN TRIGGER DI SINI --}}
+        {{-- Komponen ini akan merender div tersembunyi jika ada session flash --}}
+        <x-notification-trigger />
 
         <x-dashboard-navbar />
         <x-sidebar />
@@ -46,7 +46,7 @@
             style="display: none;">
         </div>
         
-        {{-- ▼▼▼ [PERBAIKAN] BLOK NOTIFIKASI YANG SUDAH DIPERBAIKI ▼▼▼ --}}
+        {{-- UI Notifikasi (Toast) --}}
         <div 
             x-show="notificationOpen"
             x-transition:enter="notification-banner transform ease-out duration-300 transition"
@@ -64,26 +64,17 @@
             role="alert">
             
             <div class="flex items-start">
-                {{-- Icon Success/Error --}}
                 <div class="flex-shrink-0">
-                    {{-- Icon Success (Checkmark) --}}
-                    <svg x-show="notificationType === 'success'" 
-                        class="w-5 h-5 text-green-500" 
-                        fill="currentColor" 
-                        viewBox="0 0 20 20">
+                    {{-- Icon Success --}}
+                    <svg x-show="notificationType === 'success'" class="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
                         <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
                     </svg>
-                    
-                    {{-- Icon Error (X Mark) --}}
-                    <svg x-show="notificationType === 'error'" 
-                        class="w-5 h-5 text-red-500" 
-                        fill="currentColor" 
-                        viewBox="0 0 20 20">
+                    {{-- Icon Error --}}
+                    <svg x-show="notificationType === 'error'" class="w-5 h-5 text-red-500" fill="currentColor" viewBox="0 0 20 20">
                         <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
                     </svg>
                 </div>
                 
-                {{-- Message Text --}}
                 <div class="ml-3 text-sm font-medium flex-1" 
                     :class="{
                         'text-green-800 dark:text-green-300': notificationType === 'success',
@@ -92,7 +83,6 @@
                     x-text="notificationMessage">
                 </div>
                 
-                {{-- Close Button --}}
                 <button type="button" 
                     @click="notificationOpen = false" 
                     class="ml-auto -mx-1.5 -my-1.5 rounded-lg p-1.5 inline-flex items-center justify-center h-8 w-8 transition-colors"
@@ -107,10 +97,7 @@
                 </button>
             </div>
         </div>
-        {{-- ▲▲▲ AKHIR BLOK NOTIFIKASI ▲▲▲ --}}
 
-
-        {{-- Main Content --}}
         <main class="p-4 md:p-6 min-h-screen transition-all duration-300 ease-out" 
             :class="{
                 'md:ml-64': isSidebarOpen && !isMobile(), 
@@ -120,7 +107,6 @@
             {{ $slot }}
         </main>
 
-        {{-- Footer (content tetap sama) --}}
         <footer class="bg-gray-900 dark:bg-gray-950 border-t border-white/10 transition-all duration-300 ease-out"
                 :class="{ 
                     'md:ml-64': isSidebarOpen && !isMobile(), 
@@ -131,54 +117,42 @@
 
     </div>
 
-    {{-- [PERBAIKAN] LOGIKA SCRIPT DIPERBARUI --}}
     <script>
         function dashboardState() {
             return {
                 isSidebarOpen: window.innerWidth >= 768,
-
-                // State Notifikasi
                 notificationOpen: false,
                 notificationMessage: '',
                 notificationType: 'success', 
                 
                 init() {
-                    console.log('🏠 Dashboard initialized with Turbo');
+                    console.log('🏠 Dashboard initialized (Component Approach)');
                     this.setupResizeHandler();
                     
                     this.checkForFlashMessages(); 
 
-                    window.addEventListener('turbo:load', () => {
+                    // Event listeners Turbo untuk memastikan notifikasi tertangkap saat navigasi
+                    document.addEventListener('turbo:load', () => {
+                        this.checkForFlashMessages();
+                    });
+                    document.addEventListener('turbo:render', () => {
                         this.checkForFlashMessages();
                     });
                 },
                 
                 checkForFlashMessages() {
-                    let flashMessage = null;
-                    let flashType = 'success';
-
-                    @if (session()->has('post_success'))
-                        flashMessage = '{{ session('post_success') }}';
-                        flashType = 'success';
-                    @elseif (session()->has('post_error'))
-                        flashMessage = '{{ session('post_error') }}';
-                        flashType = 'error';
-                    @elseif (session()->has('broadcast_success'))
-                        flashMessage = '{{ session('broadcast_success') }}';
-                        flashType = 'success';
-                    @elseif (session()->has('broadcast_error'))
-                        flashMessage = '{{ session('broadcast_error') }}';
-                        flashType = 'error';
-                    @elseif (session()->has('category_success'))
-                        flashMessage = '{{ session('category_success') }}';
-                        flashType = 'success';
-                    @elseif (session()->has('category_error'))
-                        flashMessage = '{{ session('category_error') }}';
-                        flashType = 'error';
-                    @endif
-
-                    if (flashMessage) {
-                        this.showNotification(flashMessage, flashType);
+                    // 👇 2. UPDATE LOGIKA JAVASCRIPT DI SINI
+                    // Mencari elemen ID #notification-trigger yang dirender oleh komponen Blade
+                    const trigger = document.getElementById('notification-trigger');
+                    
+                    if (trigger) {
+                        const message = trigger.getAttribute('data-message');
+                        const type = trigger.getAttribute('data-type');
+                        
+                        if (message) {
+                            this.showNotification(message, type);
+                            trigger.remove(); // Hapus elemen agar tidak muncul duplikat
+                        }
                     }
                 },
                 
@@ -192,16 +166,8 @@
                     }, 4000);
                 },
 
-                isMobile() {
-                    return window.innerWidth < 768;
-                },
-                
-                closeSidebar() {
-                    if (this.isMobile()) {
-                        this.isSidebarOpen = false;
-                    }
-                },
-                
+                isMobile() { return window.innerWidth < 768; },
+                closeSidebar() { if (this.isMobile()) { this.isSidebarOpen = false; } },
                 setupResizeHandler() {
                     let resizeTimeout;
                     window.addEventListener('resize', () => {

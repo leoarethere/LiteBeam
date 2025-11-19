@@ -11,17 +11,18 @@ use App\Models\BroadcastCategory;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
 use Intervention\Image\ImageManager;
-use Illuminate\Http\RedirectResponse; 
-
-// ▼▼▼ [UBAH DI SINI] Ganti Gd dengan Imagick ▼▼▼
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Storage;
-use Intervention\Image\Drivers\Imagick\Driver;
+// 👇 UBAH KE GD AGAR KONSISTEN DENGAN POST CONTROLLER
+use Intervention\Image\Drivers\Gd\Driver; 
 
 class DashboardBroadcastController extends Controller
 {
     public function index(Request $request): View
     {
         $query = Broadcast::with(['user', 'broadcastCategory']);
+        
+        // Filter Pencarian
         $query->when($request->filled('search'), function ($q) use ($request) {
             $search = $request->search;
             $q->where(function($subQuery) use ($search) {
@@ -29,16 +30,21 @@ class DashboardBroadcastController extends Controller
                          ->orWhere('synopsis', 'like', '%' . $search . '%');
             });
         });
+        
+        // Filter Kategori
         $query->when($request->filled('category'), function ($q) use ($request) {
             $q->whereHas('broadcastCategory', function ($subQuery) use ($request) {
                 $subQuery->where('slug', $request->category);
             });
         });
+        
+        // Sorting
         if ($request->input('sort') === 'oldest') {
             $query->orderBy('created_at', 'asc');
         } else {
             $query->latest();
         }
+        
         $broadcasts = $query->paginate(10)->withQueryString();
         $categories = BroadcastCategory::orderBy('name')->get();
 
@@ -49,32 +55,57 @@ class DashboardBroadcastController extends Controller
         ]);
     }
 
-    // Tambahkan/Perbaiki method ini di DashboardBroadcastController.php
-
-    public function create()
+    public function create(): View
     {
-        // Pastikan Anda mengirim data kategori ke view create
-        $categories = BroadcastCategory::all(); 
+        $categories = BroadcastCategory::orderBy('name')->get(); 
         return view('backend.penyiaran.create', compact('categories'));
     }
 
-    public function store(Request $request)
+    public function store(Request $request): RedirectResponse
     {
         // 1. Validasi Input
-        $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'slug' => 'required|string|max:255|unique:broadcasts,slug',
-            'broadcast_category_id' => 'required|exists:broadcast_categories,id',
-            'poster' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'youtube_link' => 'nullable|url', // ✅ DIPERBAIKI: dari 'link' jadi 'youtube_link'
-            'synopsis' => 'nullable|string',
-            'action' => 'required|in:draft,publish'
-        ]);
+        try {
+            $validated = $request->validate([
+                'title' => 'required|string|max:255',
+                'slug' => 'required|string|max:255|unique:broadcasts,slug',
+                'broadcast_category_id' => 'required|exists:broadcast_categories,id',
+                'poster' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120', // Max 5MB
+                'youtube_link' => 'nullable|url|max:255',
+                'synopsis' => 'nullable|string',
+                'action' => 'required|in:draft,publish'
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return back()->withErrors($e->validator)->withInput();
+        }
 
-        // 2. Handle Upload Gambar (Poster)
+        $validated['user_id'] = Auth::id();
+
+        // 2. Handle Upload Gambar (Poster) dengan Kompresi
         if ($request->hasFile('poster')) {
-            $path = $request->file('poster')->store('posters', 'public');
-            $validated['poster'] = $path;
+            try {
+                $file = $request->file('poster');
+                $filename = Str::random(40) . '.jpg';
+                $path = 'broadcast-posters/' . $filename;
+
+                // Gunakan GD Driver (Konsisten)
+                $manager = new ImageManager(new Driver());
+                $image = $manager->read($file);
+                
+                // Resize agar tidak terlalu besar (lebar max 800px cukup untuk poster)
+                $image->scale(width: 800);
+                
+                // Encode ke JPG kualitas 75%
+                $encodedImage = $image->toJpeg(quality: 75);
+                
+                Storage::disk('public')->put($path, (string) $encodedImage);
+                $validated['poster'] = $path;
+
+            } catch (\Exception $e) {
+                \Log::error('Broadcast poster upload error: ' . $e->getMessage());
+                return back()
+                    ->withErrors(['poster' => 'Gagal memproses poster: ' . $e->getMessage()])
+                    ->withInput();
+            }
         }
 
         // 3. Tentukan Status & Tanggal Publish
@@ -86,15 +117,19 @@ class DashboardBroadcastController extends Controller
             $validated['published_at'] = null;
         }
 
-        // 4. Tambahkan User ID
-        $validated['user_id'] = Auth::id();
+        // 4. Simpan ke Database
+        try {
+            Broadcast::create($validated);
+        } catch (\Exception $e) {
+            return back()->withErrors(['error' => 'Database error: ' . $e->getMessage()])->withInput();
+        }
 
-        // 5. Simpan ke Database
-        Broadcast::create($validated);
+        $message = $validated['status'] === 'published' 
+            ? 'Penyiaran berhasil dipublikasikan!' 
+            : 'Penyiaran disimpan sebagai draft!';
 
-        // 6. Redirect Sukses
         return redirect()->route('dashboard.broadcasts.index')
-                        ->with('broadcast_success', 'Penyiaran berhasil ditambahkan!');
+                        ->with('broadcast_success', $message);
     }
 
     public function show(Broadcast $broadcast): RedirectResponse
@@ -110,19 +145,25 @@ class DashboardBroadcastController extends Controller
 
     public function update(Request $request, Broadcast $broadcast): RedirectResponse
     {
-        $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'slug' => ['required', 'string', 'max:255', Rule::unique('broadcasts')->ignore($broadcast->id)], 
-            'broadcast_category_id' => 'required|exists:broadcast_categories,id',
-            'synopsis' => 'nullable|string',
-            'youtube_link' => 'nullable|url|max:255',
-            'poster' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:10240',
-            'published_at' => 'nullable|date',
-            'action' => 'required|in:draft,publish',
-        ]);
+        try {
+            $validated = $request->validate([
+                'title' => 'required|string|max:255',
+                'slug' => ['required', 'string', 'max:255', Rule::unique('broadcasts')->ignore($broadcast->id)], 
+                'broadcast_category_id' => 'required|exists:broadcast_categories,id',
+                'synopsis' => 'nullable|string',
+                'youtube_link' => 'nullable|url|max:255',
+                'poster' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
+                'published_at' => 'nullable|date',
+                'action' => 'required|in:draft,publish',
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return back()->withErrors($e->validator)->withInput();
+        }
 
+        // Update Poster
         if ($request->hasFile('poster')) {
             try {
+                // Hapus poster lama jika ada
                 if ($broadcast->poster && Storage::disk('public')->exists($broadcast->poster)) {
                     Storage::disk('public')->delete($broadcast->poster);
                 }
@@ -131,24 +172,27 @@ class DashboardBroadcastController extends Controller
                 $filename = Str::random(40) . '.jpg';
                 $path = 'broadcast-posters/' . $filename;
 
-                // Menggunakan Driver Imagick
+                // Gunakan GD Driver
                 $manager = new ImageManager(new Driver());
                 $image = $manager->read($file);
-                $encodedImage = $image->toJpeg(quality: 70);
+                $image->scale(width: 800);
+                $encodedImage = $image->toJpeg(quality: 75);
+                
                 Storage::disk('public')->put($path, (string) $encodedImage);
-
                 $validated['poster'] = $path; 
 
             } catch (\Exception $e) {
                 return back()->withErrors([
-                    'poster' => 'Gagal memproses poster (Imagick): ' . $e->getMessage()
+                    'poster' => 'Gagal memproses poster: ' . $e->getMessage()
                 ])->withInput();
             }
         }
 
         if ($request->input('action') === 'publish') {
             $validated['status'] = 'published';
-            $validated['published_at'] = $request->filled('published_at') ? $request->published_at : ($broadcast->published_at ?? now());
+            $validated['published_at'] = $request->filled('published_at') 
+                ? $request->published_at 
+                : ($broadcast->published_at ?? now());
         } else {
             $validated['status'] = 'draft';
             $validated['published_at'] = null;
@@ -156,7 +200,9 @@ class DashboardBroadcastController extends Controller
 
         $broadcast->update($validated);
 
-        $message = $validated['status'] === 'published' ? 'Penyiaran berhasil diperbarui!' : 'Perubahan berhasil disimpan sebagai draft!';
+        $message = $validated['status'] === 'published' 
+            ? 'Penyiaran berhasil diperbarui!' 
+            : 'Perubahan berhasil disimpan sebagai draft!';
 
         return redirect()->route('dashboard.broadcasts.index')
                         ->with('broadcast_success', $message);
@@ -178,7 +224,7 @@ class DashboardBroadcastController extends Controller
 
         } catch (\Exception $e) {
             return redirect()->route('dashboard.broadcasts.index')
-                             ->with('broadcast_error', 'Gagal menghapus penyiaran. Terjadi error: ' . $e->getMessage());
+                             ->with('broadcast_error', 'Gagal menghapus penyiaran: ' . $e->getMessage());
         }
     }
 }
