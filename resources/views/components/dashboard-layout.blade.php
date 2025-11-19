@@ -6,27 +6,22 @@
     <meta name="turbo-visit-control" content="reload">
     <title>{{ $title ?? 'Dashboard Admin' }}</title>
     
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    {{-- 👇 PERBAIKAN: Panggil dashboard.js disini --}}
+    @vite([
+        'resources/css/app.css', 
+        'resources/js/app.js', 
+        'resources/js/dashboard.js' 
+    ])
+    
     <link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
     
-    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    {{-- ❌ HAPUS baris CDN di bawah ini --}}
+    {{-- <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script> --}}
 
     <style>
-        [x-cloak] { 
-            display: none !important; 
-        }
-        .turbo-loading {
-            opacity: 0.7;
-            pointer-events: none;
-        }
-        main, footer {
-            transition: margin-left 0.3s ease-out !important;
-        }
-
-        /* [PERBAIKAN] Style untuk notifikasi */
-        .notification-banner {
-            transition: all 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55);
-        }
+        [x-cloak] { display: none !important; }
+        .turbo-loading { opacity: 0.7; pointer-events: none; }
+        .notification-banner { transition: all 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55); }
     </style>
 </head>
 <body class="bg-gray-50 dark:bg-gray-900">

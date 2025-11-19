@@ -1,24 +1,28 @@
-// ============================================
-// FILE: resources/js/app.js (OPTIMIZED VERSION)
-// ============================================
+// FILE: resources/js/app.js (FIXED)
 
 import * as Turbo from '@hotwired/turbo';
 import Alpine from 'alpinejs';
 import './bootstrap';
 import 'flowbite';
 
-// --- JQUERY & OWL CAROUSEL ---
+// --- BAGIAN INI DIPERBAIKI ---
 import jQuery from 'jquery';
 import 'owl.carousel/dist/assets/owl.carousel.css';
-import 'owl.carousel/dist/assets/owl.theme.default.css'; // <--- Tambahkan ini agar tampilan slider rapi
-import 'owl.carousel';
+import 'owl.carousel/dist/assets/owl.theme.default.css';
 
-// Expose ke Window
+// 1. Pasang jQuery ke Window DULUAN
 window.$ = window.jQuery = jQuery;
 
-window.Alpine = Alpine;
-// HAPUS window.Cropper = Cropper; (Karena dipindah ke dashboard.js)
+// 2. Baru panggil Owl Carousel (menggunakan dynamic import agar urutannya benar)
+import('owl.carousel').then(() => {
+    console.log('🦉 Owl Carousel Loaded Successfully');
+    // Trigger event kustom jika perlu, atau biarkan script inline jalan
+    document.dispatchEvent(new Event('owl-loaded'));
+}).catch((err) => console.error('Owl loading failed', err));
 
+// -----------------------------
+
+window.Alpine = Alpine;
 window.appInitialized = false;
 window.alpineStarted = false;
 

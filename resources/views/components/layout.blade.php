@@ -14,7 +14,11 @@
             overscroll-behavior-y: contain;
         }
     </style>
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @vite([
+        'resources/css/app.css', 
+        'resources/js/app.js', 
+        'resources/js/dashboard.js'
+    ])
     <link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
 </head>
 
