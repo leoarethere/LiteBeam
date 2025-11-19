@@ -1,0 +1,30 @@
+/* * Style kustom untuk halaman Manajemen Postingan.
+ * Diekstrak dari index.blade.php.
+ */
+
+/* Menyembunyikan elemen Alpine.js saat inisialisasi */
+[x-cloak] { 
+    display: none !important; 
+}
+
+/* Transisi untuk modal (digunakan oleh Alpine) */
+.modal-hidden {
+    opacity: 0;
+    visibility: hidden;
+    transform: scale(0.9);
+}
+.modal-visible {
+    opacity: 1;
+    visibility: visible;
+    transform: scale(1);
+}
+
+/* Membuat tabel responsif horizontal */
+.table-container {
+    overflow-x: auto;
+}
+
+/* Transisi untuk alert (notifikasi) */
+.alert-transition {
+    transition: all 0.3s ease-in-out;
+}

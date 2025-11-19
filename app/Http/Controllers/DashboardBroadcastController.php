@@ -1,0 +1,236 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Broadcast;
+use Illuminate\View\View;
+use Illuminate\Support\Str;
+use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
+use App\Models\BroadcastCategory;
+use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\Auth;
+use Intervention\Image\ImageManager;
+
+// ▼▼▼ [PERBAIKAN] Tambahkan 'use' statement ini ▼▼▼
+use Illuminate\Http\RedirectResponse; 
+use Illuminate\Support\Facades\Storage;
+use Intervention\Image\Drivers\Gd\Driver;
+
+class DashboardBroadcastController extends Controller
+{
+    /**
+     * Menampilkan daftar (index) semua data penyiaran.
+     */
+    public function index(Request $request): View
+    {
+        // ... (Logika index tetap sama) ...
+        $query = Broadcast::with(['user', 'broadcastCategory']);
+        $query->when($request->filled('search'), function ($q) use ($request) {
+            $search = $request->search;
+            $q->where(function($subQuery) use ($search) {
+                $subQuery->where('title', 'like', '%' . $search . '%')
+                         ->orWhere('synopsis', 'like', '%' . $search . '%');
+            });
+        });
+        $query->when($request->filled('category'), function ($q) use ($request) {
+            $q->whereHas('broadcastCategory', function ($subQuery) use ($request) {
+                $subQuery->where('slug', $request->category);
+            });
+        });
+        if ($request->input('sort') === 'oldest') {
+            $query->orderBy('created_at', 'asc');
+        } else {
+            $query->latest();
+        }
+        $broadcasts = $query->paginate(10)->withQueryString();
+        $categories = BroadcastCategory::orderBy('name')->get();
+
+        return view('backend.penyiaran.index', [
+            'broadcasts' => $broadcasts,
+            'categories' => $categories, 
+            'broadcastCategories' => $categories, 
+        ]);
+    }
+
+    /**
+     * Menampilkan form untuk membuat data baru.
+     */
+    public function create(): View
+    {
+        $categories = BroadcastCategory::orderBy('name')->get();
+        return view('backend.penyiaran.create', compact('categories'));
+    }
+
+    /**
+     * Menyimpan data baru ke database.
+     */
+    public function store(Request $request): RedirectResponse
+    {
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'slug' => 'required|string|max:255|unique:broadcasts,slug',
+            'broadcast_category_id' => 'required|exists:broadcast_categories,id',
+            'synopsis' => 'nullable|string',
+            'youtube_link' => 'nullable|url|max:255',
+            'poster' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:10240', // Maks 10MB
+            'published_at' => 'nullable|date',
+            'action' => 'required|in:draft,publish',
+        ]);
+
+        $validated['user_id'] = Auth::id();
+
+        // ▼▼▼ [PERBAIKAN] LOGIKA KOMPRESI GAMBAR v3 MANUAL ▼▼▼
+        if ($request->hasFile('poster')) {
+            try {
+                $file = $request->file('poster');
+                $filename = Str::random(40) . '.jpg';
+                // Simpan di folder 'broadcast-posters'
+                $path = 'broadcast-posters/' . $filename; 
+
+                // 1. Buat ImageManager dengan Driver (GD)
+                $manager = new ImageManager(new Driver());
+
+                // 2. Baca gambar
+                $image = $manager->read($file); 
+
+                // 3. (Opsional) Resize gambar (poster mungkin perlu rasio aspek berbeda)
+                // $image->scale(width: 800); 
+
+                // 4. Encode ke JPG kualitas 70%
+                $encodedImage = $image->toJpeg(quality: 70); 
+
+                // 5. Simpan ke disk public
+                Storage::disk('public')->put($path, (string) $encodedImage);
+                
+                $validated['poster'] = $path; // Simpan path baru
+
+            } catch (\Exception $e) {
+                // Jika gagal proses gambar, kembalikan ke form dengan error
+                return back()->withErrors([
+                    'poster' => 'Gagal memproses poster: ' . $e->getMessage()
+                ])->withInput();
+            }
+        }
+        // ▲▲▲ AKHIR LOGIKA KOMPRESI ▲▲▲
+
+        // Logika status (Draft / Publish)
+        if ($request->input('action') === 'publish') {
+            $validated['status'] = 'published';
+            $validated['published_at'] = $request->filled('published_at') ? $request->published_at : now();
+        } else {
+            $validated['status'] = 'draft';
+            $validated['published_at'] = null;
+        }
+
+        Broadcast::create($validated);
+
+        $message = $validated['status'] === 'published' ? 'Penyiaran berhasil dipublikasikan!' : 'Penyiaran berhasil disimpan sebagai draft!';
+        
+        return redirect()->route('dashboard.broadcasts.index')->with('broadcast_success', $message);
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    public function show(Broadcast $broadcast): RedirectResponse
+    {
+        return redirect()->route('dashboard.broadcasts.edit', $broadcast);
+    }
+
+    /**
+     * Menampilkan form untuk mengedit data.
+     */
+    public function edit(Broadcast $broadcast): View
+    {
+        $categories = BroadcastCategory::orderBy('name')->get();
+        return view('backend.penyiaran.edit', compact('broadcast', 'categories'));
+    }
+
+    /**
+     * Memperbarui data di database.
+     */
+    public function update(Request $request, Broadcast $broadcast): RedirectResponse
+    {
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            // [PERBAIKAN] Tambahkan Rule::unique
+            'slug' => ['required', 'string', 'max:255', Rule::unique('broadcasts')->ignore($broadcast->id)], 
+            'broadcast_category_id' => 'required|exists:broadcast_categories,id',
+            'synopsis' => 'nullable|string',
+            'youtube_link' => 'nullable|url|max:255',
+            'poster' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:10240',
+            'published_at' => 'nullable|date',
+            'action' => 'required|in:draft,publish',
+        ]);
+
+        // ▼▼▼ [PERBAIKAN] LOGIKA KOMPRESI GAMBAR v3 MANUAL (UPDATE) ▼▼▼
+        if ($request->hasFile('poster')) {
+            try {
+                // 1. Hapus poster lama (dengan pengecekan 'exists')
+                if ($broadcast->poster && Storage::disk('public')->exists($broadcast->poster)) {
+                    Storage::disk('public')->delete($broadcast->poster);
+                }
+
+                $file = $request->file('poster');
+                $filename = Str::random(40) . '.jpg';
+                $path = 'broadcast-posters/' . $filename;
+
+                // 2. Buat manager, baca, encode, dan simpan
+                $manager = new ImageManager(new Driver());
+                $image = $manager->read($file);
+                // $image->scale(width: 800); // (Opsional)
+                $encodedImage = $image->toJpeg(quality: 70);
+                Storage::disk('public')->put($path, (string) $encodedImage);
+
+                $validated['poster'] = $path; // Simpan path baru
+
+            } catch (\Exception $e) {
+                return back()->withErrors([
+                    'poster' => 'Gagal memproses poster: ' . $e->getMessage()
+                ])->withInput();
+            }
+        }
+        // ▲▲▲ AKHIR LOGIKA KOMPRESI ▲▲▲
+
+        // Logika status
+        if ($request->input('action') === 'publish') {
+            $validated['status'] = 'published';
+            $validated['published_at'] = $request->filled('published_at') ? $request->published_at : ($broadcast->published_at ?? now());
+        } else {
+            $validated['status'] = 'draft';
+            $validated['published_at'] = null;
+        }
+
+        $broadcast->update($validated);
+
+        $message = $validated['status'] === 'published' ? 'Penyiaran berhasil diperbarui!' : 'Perubahan berhasil disimpan sebagai draft!';
+
+        return redirect()->route('dashboard.broadcasts.index')
+                        ->with('broadcast_success', $message);
+    }
+
+    /**
+     * Menghapus data dari database.
+     */
+    public function destroy(Broadcast $broadcast): RedirectResponse
+    {
+        try {
+            $broadcastTitle = $broadcast->title;
+            
+            // ▼▼▼ [PERBAIKAN] Cek jika file ada sebelum menghapus ▼▼▼
+            if ($broadcast->poster && Storage::disk('public')->exists($broadcast->poster)) {
+                Storage::disk('public')->delete($broadcast->poster);
+            }
+            
+            $broadcast->delete();
+
+            return redirect()->route('dashboard.broadcasts.index')
+                             ->with('broadcast_success', 'Penyiaran "' . $broadcastTitle . '" berhasil dihapus! 🗑️');
+
+        } catch (\Exception $e) {
+            return redirect()->route('dashboard.broadcasts.index')
+                             ->with('broadcast_error', 'Gagal menghapus penyiaran. Terjadi error: ' . $e->getMessage());
+        }
+    }
+}

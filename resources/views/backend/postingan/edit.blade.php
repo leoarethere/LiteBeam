@@ -1,0 +1,199 @@
+<x-dashboard-layout>
+    <x-slot:title>Edit Postingan</x-slot:title>
+
+    <div class="pb-6"
+        x-data="{
+            title: '{{ old('title', $post->title) }}',
+            slug: '{{ old('slug', $post->slug) }}',
+            
+            generateSlug() {
+                this.slug = this.title
+                    .toLowerCase()
+                    .replace(/[^a-z0-9\s-]/g, '')
+                    .replace(/\s+/g, '-')
+                    .replace(/-+/g, '-')
+                    .trim();
+            }
+        }"
+    >
+        {{-- HEADER --}}
+        <div class="flex flex-col md:flex-row md:justify-between md:items-start gap-4 mb-8 pt-2">
+            <div>
+                <h1 class="text-2xl lg:text-3xl font-bold text-gray-900 dark:text-white">
+                    Edit Postingan
+                </h1>
+                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                    Perbarui konten artikel Anda di sini.
+                </p>
+            </div>
+        </div>
+
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md border border-gray-200 dark:border-gray-700">
+            <form action="{{ route('dashboard.posts.update', $post) }}" method="POST" enctype="multipart/form-data">
+                @csrf
+                @method('PUT')
+                
+                <div class="p-6 space-y-6">
+
+                    {{-- Error Summary --}}
+                    @if ($errors->any())
+                        <div class="p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400 border border-red-300 dark:border-red-900" role="alert">
+                            <div class="font-medium mb-2">Oops! Ada beberapa kesalahan:</div>
+                            <ul class="list-disc list-inside">
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
+                    
+                    {{-- Judul --}}
+                    <div>
+                        <label for="title" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                            Judul Postingan <span class="text-red-500">*</span>
+                        </label>
+                        <input type="text" 
+                            name="title" 
+                            id="title" 
+                            x-model="title"
+                            @input.debounce.500ms="generateSlug()"
+                            class="bg-gray-50 border text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white {{ $errors->has('title') ? 'border-red-500' : 'border-gray-300' }}" 
+                            placeholder="Masukkan judul postingan..." 
+                            value="{{ old('title', $post->title) }}" 
+                            required
+                            autofocus>
+                        @error('title')
+                            <p class="mt-2 text-sm text-red-600 dark:text-red-500">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    {{-- Slug --}}
+                    <div>
+                        <label for="slug" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                            Slug URL <span class="text-red-500">*</span>
+                        </label>
+                        <input type="text" 
+                                name="slug" 
+                                id="slug" 
+                                x-model="slug"
+                                class="bg-gray-50 border text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white {{ $errors->has('slug') ? 'border-red-500' : 'border-gray-300' }}" 
+                                placeholder="slug-url-postingan" 
+                                value="{{ old('slug', $post->slug) }}" 
+                                required>
+                        @error('slug')
+                            <p class="mt-2 text-sm text-red-600 dark:text-red-500">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    {{-- Kategori --}}
+                    <div>
+                        <label for="category_id" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                            Kategori <span class="text-red-500">*</span>
+                        </label>
+                        <select name="category_id" id="category_id" class="bg-gray-50 border text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white {{ $errors->has('category_id') ? 'border-red-500' : 'border-gray-300' }}" required>
+                            @foreach($categories as $category)
+                                <option value="{{ $category->id }}" @selected(old('category_id', $post->category_id) == $category->id)>
+                                    {{ $category->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                        @error('category_id')
+                            <p class="mt-2 text-sm text-red-600 dark:text-red-500">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    {{-- Link Sumber / Eksternal --}}
+                    <div>
+                        <label for="link_postingan" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                            Link Sumber / Eksternal (Opsional)
+                        </label>
+                        <input type="url" name="link_postingan" id="link_postingan"
+                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+                            placeholder="https://sumber-referensi.com/artikel" value="{{ old('link_postingan', $post->link_postingan) }}">
+                        @error('link_postingan')
+                            <p class="mt-2 text-sm text-red-600 dark:text-red-500">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    {{-- Konten --}}
+                    <div>
+                        <label for="body" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                            Konten Postingan <span class="text-red-500">*</span>
+                        </label>
+                        <textarea name="body" id="body" rows="15" class="bg-gray-50 border text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" required>{{ old('body', $post->body) }}</textarea>
+                        @error('body')
+                            <p class="mt-2 text-sm text-red-600 dark:text-red-500">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    {{-- Featured Image --}}
+                    <div x-data="{ preview: '{{ $post->featured_image ? Storage::url($post->featured_image) : null }}' }">
+                        <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                            Gambar Unggulan (Opsional)
+                        </label>
+                        <div class="mb-3" x-show="preview">
+                            <div class="relative w-full max-w-md">
+                                <img :src="preview" class="w-full h-48 object-cover rounded-lg border-2 border-gray-300 dark:border-gray-600">
+                                <button type="button" @click="preview = null; $refs.fileInput.value = ''" class="absolute top-2 right-2 p-1.5 bg-red-500 text-white rounded-full hover:bg-red-600">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                                </button>
+                            </div>
+                        </div>
+                        <input type="file" name="featured_image" id="featured_image" x-ref="fileInput" @change="preview = URL.createObjectURL($event.target.files[0])" accept="image/png, image/jpeg, image/jpg, image/webp" class="block w-full text-sm text-gray-900 border rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400">
+                        @error('featured_image')
+                            <p class="mt-2 text-sm text-red-600 dark:text-red-500">{{ $message }}</p>
+                        @enderror
+                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                            Pilih gambar baru untuk mengganti yang lama.
+                        </p>
+                    </div>
+
+                    {{-- Excerpt --}}
+                    <div>
+                        <label for="excerpt" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                            Ringkasan (Opsional)
+                        </label>
+                        <textarea name="excerpt" id="excerpt" rows="3" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white">{{ old('excerpt', $post->excerpt) }}</textarea>
+                    </div>
+
+                    {{-- [PERBAIKAN] Menghapus 'Status' dan 'Meta Tags' --}}
+                    {{-- 'Status' sekarang dikontrol oleh tombol 'action' di bawah --}}
+
+                    {{-- Published Date --}}
+                    <div>
+                        <label for="published_at" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                            Tanggal Publikasi (Opsional)
+                        </label>
+                        <input type="datetime-local" name="published_at" id="published_at" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white" value="{{ old('published_at', optional($post->published_at)->format('Y-m-d\TH:i')) }}">
+                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                            Akan diisi otomatis saat dipublikasikan jika dibiarkan kosong.
+                        </p>
+                    </div>
+
+                </div>
+                
+                {{-- [PERBAIKAN] Action Buttons diganti jadi dua tombol --}}
+                <div class="flex items-center justify-between p-6 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700/50 rounded-b-lg">
+                    <a href="{{ route('dashboard.posts.index') }}" 
+                       class="px-5 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-600 transition-colors">
+                        Batal
+                    </a>
+                    <div class="flex gap-3">
+                        <button type="submit" 
+                                name="action" 
+                                value="draft"
+                                class="px-5 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-600 transition-colors">
+                            Simpan Perubahan (Draft)
+                        </button>
+                        <button type="submit" 
+                                name="action" 
+                                value="publish"
+                                class="px-5 py-2.5 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 transition-colors">
+                            Perbarui & Publikasikan
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</x-dashboard-layout>
