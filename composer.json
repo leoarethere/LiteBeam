@@ -8,8 +8,7 @@
         "php": "^8.2",
         "intervention/image": "^3.11",
         "laravel/framework": "^11.0",
-        "laravel/tinker": "^2.9",
-        "shetabit/visitor": "^4.4"
+        "laravel/tinker": "^2.9"
     },
     "require-dev": {
         "barryvdh/laravel-debugbar": "^3.16",

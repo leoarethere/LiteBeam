@@ -30,6 +30,17 @@
         </div>
 
         <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md border border-gray-200 dark:border-gray-700">
+        {{-- Tambahkan ini di create.blade.php untuk melihat error --}}
+        @if ($errors->any())
+            <div class="p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400" role="alert">
+                <span class="font-medium">Terjadi kesalahan!</span>
+                <ul class="mt-1.5 list-disc list-inside">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
             <form action="{{ route('dashboard.broadcasts.store') }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 
