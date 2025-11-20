@@ -1,18 +1,40 @@
-{{-- 1. LOGIKA TOAST (Notifikasi Kecil) --}}
-@if(session()->hasAny(['post_success', 'post_error', 'broadcast_success', 'broadcast_error', 'category_success', 'category_error']))
-    <div id="notification-trigger"
-         data-message="{{ session('post_success') ?? session('post_error') ?? session('broadcast_success') ?? session('broadcast_error') ?? session('category_success') ?? session('category_error') }}"
-         data-type="{{ session()->has('post_success') || session()->has('broadcast_success') || session()->has('category_success') ? 'success' : 'error' }}"
-         style="display: none;">
-    </div>
-@endif
+@php
+    $message = null;
+    $type = 'success';
 
-{{-- [BARU] 2. LOGIKA MODAL POPUP (Notifikasi Besar) --}}
-@if(session()->hasAny(['modal_success', 'modal_error']))
-    <div id="modal-trigger"
-         data-title="{{ session()->has('modal_success') ? 'Berhasil!' : 'Terjadi Kesalahan' }}"
-         data-message="{{ session('modal_success') ?? session('modal_error') }}"
-         data-type="{{ session()->has('modal_success') ? 'success' : 'error' }}"
+    // Daftar semua kunci session yang mungkin dikirim oleh Controller Anda
+    $keys = [
+        'post_success' => 'success', 
+        'post_error' => 'error',
+        'broadcast_success' => 'success', 
+        'broadcast_error' => 'error',
+        'category_success' => 'success', 
+        'category_error' => 'error',
+        'success' => 'success', // Default
+        'error' => 'error'      // Default
+    ];
+
+    // Cari pesan yang aktif
+    foreach ($keys as $key => $t) {
+        if (session()->has($key)) {
+            $message = session($key);
+            $type = $t;
+            break;
+        }
+    }
+
+    // Cek juga error validasi standar Laravel ($errors)
+    if (!$message && $errors->any()) {
+        $message = 'Terdapat kesalahan validasi. Mohon periksa kembali form.';
+        $type = 'error';
+    }
+@endphp
+
+{{-- Jika ada pesan, render elemen rahasia ini --}}
+@if($message)
+    <div id="flash-message-trigger" 
+         data-message="{{ $message }}" 
+         data-type="{{ $type }}"
          style="display: none;">
     </div>
 @endif

@@ -47,68 +47,19 @@ class DashboardCategoryController extends Controller
             ->with('category_success', 'Kategori "' . $validated['name'] . '" berhasil diperbarui! ✨');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Request $request, Category $category) // 👈 Hapus type hint ": RedirectResponse"
+    public function destroy(Category $category)
     {
-        // 1. Cek apakah kategori masih dipakai
         $postCount = $category->posts()->count();
         
         if ($postCount > 0) {
-            $errorMsg = '❌ Kategori "' . $category->name . '" tidak dapat dihapus karena masih memiliki ' . $postCount . ' postingan terkait.';
-
-            // Jika Turbo, tampilkan Error dalam Modal Popup
-            if ($request->wantsTurboStream()) {
-                return response()
-                    ->view('components.stream-modal', [
-                        'type' => 'error',
-                        'title' => 'Gagal Menghapus',
-                        'message' => $errorMsg
-                    ])
-                    ->header('Content-Type', 'text/vnd.turbo-stream.html');
-            }
-
-            // Fallback
             return redirect()->route('dashboard.posts.index')
-                ->with('modal_error', $errorMsg);
+                ->with('category_error', '❌ Kategori "' . $category->name . '" tidak dapat dihapus karena masih memiliki ' . $postCount . ' postingan terkait.');
         }
 
-        try {
-            $categoryName = $category->name;
-            $category->delete();
+        $categoryName = $category->name;
+        $category->delete();
 
-            $message = 'Kategori "' . $categoryName . '" berhasil dihapus! 🗑️';
-
-            // Jika Turbo, tampilkan Sukses dalam Modal Popup
-            if ($request->wantsTurboStream()) {
-                return response()
-                    ->view('components.stream-modal', [
-                        'type' => 'success',
-                        'title' => 'Berhasil Dihapus',
-                        'message' => $message
-                    ])
-                    ->header('Content-Type', 'text/vnd.turbo-stream.html');
-            }
-
-            return redirect()->route('dashboard.posts.index')
-                ->with('modal_success', $message);
-
-        } catch (\Exception $e) {
-            $errorMsg = 'Terjadi kesalahan: ' . $e->getMessage();
-
-            if ($request->wantsTurboStream()) {
-                return response()
-                    ->view('components.stream-modal', [
-                        'type' => 'error',
-                        'title' => 'Error Sistem',
-                        'message' => $errorMsg
-                    ])
-                    ->header('Content-Type', 'text/vnd.turbo-stream.html');
-            }
-
-            return redirect()->route('dashboard.posts.index')
-                ->with('modal_error', $errorMsg);
-        }
+        return redirect()->route('dashboard.posts.index')
+            ->with('category_success', 'Kategori "' . $categoryName . '" berhasil dihapus! 🗑️');
     }
 }
