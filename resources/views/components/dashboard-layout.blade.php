@@ -25,10 +25,14 @@
     <div x-data="dashboardState()" 
          x-init="init()"
          class="antialiased">
+        
+        {{-- [BARU] WADAH KHUSUS UNTUK TURBO STREAM --}}
+        {{-- Sesuai video: Kita butuh ID target untuk di-update --}}
+        <div id="flash-container"></div>
 
-        {{-- 👇 1. PANGGIL KOMPONEN TRIGGER DI SINI --}}
-        {{-- Komponen ini akan merender div tersembunyi jika ada session flash --}}
+        {{-- Komponen notifikasi lama (Trigger) tetap biarkan untuk fallback --}}
         <x-notification-trigger />
+        <x-status-modal />
 
         <x-dashboard-navbar />
         <x-sidebar />
@@ -120,50 +124,71 @@
     <script>
         function dashboardState() {
             return {
+                // --- State Sidebar (Existing) ---
                 isSidebarOpen: window.innerWidth >= 768,
+                
+                // --- State Toast Notification (Existing) ---
                 notificationOpen: false,
                 notificationMessage: '',
-                notificationType: 'success', 
-                
-                init() {
-                    console.log('🏠 Dashboard initialized (Component Approach)');
-                    this.setupResizeHandler();
-                    
-                    this.checkForFlashMessages(); 
+                notificationType: 'success',
 
-                    // Event listeners Turbo untuk memastikan notifikasi tertangkap saat navigasi
-                    document.addEventListener('turbo:load', () => {
-                        this.checkForFlashMessages();
-                    });
-                    document.addEventListener('turbo:render', () => {
-                        this.checkForFlashMessages();
-                    });
+                // --- 👇 STATE BARU UNTUK MODAL POPUP ---
+                modalOpen: false,
+                modalType: 'success', // 'success' or 'error'
+                modalTitle: '',
+                modalMessage: '',
+
+                init() {
+                    console.log('🏠 Dashboard initialized');
+                    this.setupResizeHandler();
+                    this.checkForFlashMessages();
+
+                    document.addEventListener('turbo:load', () => this.checkForFlashMessages());
+                    document.addEventListener('turbo:render', () => this.checkForFlashMessages());
                 },
-                
+
                 checkForFlashMessages() {
-                    // 👇 2. UPDATE LOGIKA JAVASCRIPT DI SINI
-                    // Mencari elemen ID #notification-trigger yang dirender oleh komponen Blade
+                    // 1. Cek Toast Notification (Logika Lama)
                     const trigger = document.getElementById('notification-trigger');
-                    
                     if (trigger) {
                         const message = trigger.getAttribute('data-message');
                         const type = trigger.getAttribute('data-type');
-                        
                         if (message) {
                             this.showNotification(message, type);
-                            trigger.remove(); // Hapus elemen agar tidak muncul duplikat
+                            trigger.remove();
+                        }
+                    }
+
+                    // 👇 2. Cek Modal Popup (Logika Baru)
+                    // Kita akan mencari elemen meta/hidden khusus untuk modal jika ada
+                    const modalTrigger = document.getElementById('modal-trigger');
+                    if (modalTrigger) {
+                        const title = modalTrigger.getAttribute('data-title');
+                        const message = modalTrigger.getAttribute('data-message');
+                        const type = modalTrigger.getAttribute('data-type');
+                        
+                        if (message) {
+                            this.showModal(title, message, type);
+                            modalTrigger.remove();
                         }
                     }
                 },
-                
+
+                // Fungsi Menampilkan Toast (Existing)
                 showNotification(message, type) {
                     this.notificationMessage = message;
                     this.notificationType = type;
                     this.notificationOpen = true;
-                    
-                    setTimeout(() => {
-                        this.notificationOpen = false;
-                    }, 4000);
+                    setTimeout(() => { this.notificationOpen = false; }, 4000);
+                },
+
+                // 👇 Fungsi Menampilkan Modal (Baru)
+                showModal(title, message, type = 'success') {
+                    this.modalTitle = title;
+                    this.modalMessage = message;
+                    this.modalType = type;
+                    this.modalOpen = true;
+                    // Tidak ada setTimeout, user harus klik OK
                 },
 
                 isMobile() { return window.innerWidth < 768; },

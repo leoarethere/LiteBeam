@@ -391,6 +391,7 @@
                 <div class="flex items-center justify-end gap-3 p-6 border-t dark:border-gray-700">
                     <button @click="closeDeleteModal()" type="button" class="px-5 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-600 transition-colors">Batal</button>
                     
+                    {{-- 👇 Tambahkan atribut data-turbo-frame="_top" di sini --}}
                     <form :action="`{{ route('dashboard.posts.destroy', '') }}/${deletePostId}`" method="POST" class="inline">
                         @csrf
                         @method('DELETE')
@@ -620,8 +621,8 @@
                         Batal
                     </button>
                     
-                    {{-- Form Hapus Kategori (Sudah Benar) --}}
-                    <form :action="`{{ route('dashboard.categories.destroy', '') }}/${deleteCategoryId}`" method="POST" class="inline">
+                    <!-- 👇 Tambahkan atribut data-turbo-frame="_top" di sini -->
+                    <form :action="`{{ route('dashboard.categories.destroy', '') }}/${deleteCategoryId}`" method="POST" class="inline" data-turbo-frame="_top">
                         @csrf
                         @method('DELETE')
                         <button type="submit" class="px-5 py-2.5 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 focus:ring-4 focus:ring-red-300 dark:bg-red-600 dark:hover:bg-red-700 transition-colors">

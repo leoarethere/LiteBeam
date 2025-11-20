@@ -69,7 +69,7 @@ class DashboardPostController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
-        // ✅ VALIDASI dengan error handling yang lebih baik
+        // Validasi (Biarkan seperti semula)
         try {
             $validated = $request->validate([
                 'title' => 'required|string|max:255',
@@ -77,84 +77,65 @@ class DashboardPostController extends Controller
                 'category_id' => 'required|exists:categories,id',
                 'body' => 'required|string',
                 'link_postingan' => 'nullable|url|max:255',
-                'featured_image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:10240', // Max 10MB
+                'featured_image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:10240',
                 'excerpt' => 'nullable|string|max:300',
                 'published_at' => 'nullable|date',
                 'action' => 'required|in:draft,publish',
             ]);
         } catch (\Illuminate\Validation\ValidationException $e) {
-            // Redirect kembali dengan error validation
             return back()->withErrors($e->validator)->withInput();
         }
 
         $validated['user_id'] = Auth::id();
 
-        // ✅ Process & Compress Image dengan error handling
+        // Process Image (Biarkan seperti semula)
         if ($request->hasFile('featured_image')) {
             try {
                 $file = $request->file('featured_image');
                 $filename = Str::random(40) . '.jpg';
                 $path = 'post-images/' . $filename;
-
-                // Create ImageManager instance dengan GD Driver
                 $manager = new ImageManager(new Driver());
-                
-                // Read and process image
                 $image = $manager->read($file);
-                
-                // Optional: Resize if too large (max width 1200px)
                 $image->scale(width: 1200);
-                
-                // Encode to JPEG with 70% quality
                 $encodedImage = $image->toJpeg(quality: 70);
-
-                // Save to storage
                 Storage::disk('public')->put($path, (string) $encodedImage);
-
                 $validated['featured_image'] = $path;
-                
             } catch (\Exception $e) {
-                // Log error untuk debugging
                 \Log::error('Image processing error: ' . $e->getMessage());
-                
-                return back()
-                    ->withErrors(['featured_image' => 'Gagal memproses gambar: ' . $e->getMessage()])
-                    ->withInput();
+                // Gunakan modal_error untuk error fatal
+                return back()->with('modal_error', 'Gagal memproses gambar: ' . $e->getMessage())->withInput();
             }
         }
 
-        // Auto-generate excerpt if empty
+        // Auto-excerpt & Status logic (Biarkan seperti semula)
         if (empty($validated['excerpt'])) {
             $validated['excerpt'] = Str::limit(strip_tags($validated['body']), 150);
         }
 
-        // Set status based on action
         if ($request->input('action') === 'publish') {
             $validated['status'] = 'published';
-            $validated['published_at'] = $request->filled('published_at') 
-                ? $request->published_at 
-                : now();
+            $validated['published_at'] = $request->filled('published_at') ? $request->published_at : now();
         } else {
             $validated['status'] = 'draft';
             $validated['published_at'] = null;
         }
 
-        // ✅ Simpan dengan error handling
+        // Simpan
         try {
             Post::create($validated);
         } catch (\Exception $e) {
             \Log::error('Post creation error: ' . $e->getMessage());
-            
-            return back()
-                ->withErrors(['error' => 'Gagal menyimpan postingan: ' . $e->getMessage()])
-                ->withInput();
+            // Gunakan modal_error
+            return back()->with('modal_error', 'Gagal menyimpan postingan: ' . $e->getMessage())->withInput();
         }
 
         $message = $validated['status'] === 'published' 
             ? 'Postingan berhasil dipublikasikan!' 
             : 'Postingan berhasil disimpan sebagai draft!';
 
-        return redirect()->route('dashboard.posts.index')->with('post_success', $message);
+        // 👇 [PERUBAHAN UTAMA] Gunakan 'modal_success' agar muncul Popup
+        return redirect()->route('dashboard.posts.index')
+            ->with('modal_success', $message);
     }
 
     /**
@@ -179,16 +160,11 @@ class DashboardPostController extends Controller
      */
     public function update(Request $request, Post $post): RedirectResponse
     {
-        // ✅ VALIDASI dengan error handling
+        // Validasi
         try {
             $validated = $request->validate([
                 'title' => 'required|string|max:255',
-                'slug' => [
-                    'required', 
-                    'string', 
-                    'max:255', 
-                    Rule::unique('posts')->ignore($post->id)
-                ],
+                'slug' => ['required', 'string', 'max:255', Rule::unique('posts')->ignore($post->id)],
                 'category_id' => 'required|exists:categories,id',
                 'body' => 'required|string',
                 'link_postingan' => 'nullable|url|max:255',
@@ -201,50 +177,32 @@ class DashboardPostController extends Controller
             return back()->withErrors($e->validator)->withInput();
         }
 
-        // ✅ Process & Compress New Image
+        // Image Processing
         if ($request->hasFile('featured_image')) {
             try {
-                // Delete old image
                 if ($post->featured_image && Storage::disk('public')->exists($post->featured_image)) {
                     Storage::disk('public')->delete($post->featured_image);
                 }
-
                 $file = $request->file('featured_image');
                 $filename = Str::random(40) . '.jpg';
                 $path = 'post-images/' . $filename;
-
-                // Create ImageManager instance dengan GD Driver
                 $manager = new ImageManager(new Driver());
-                
-                // Read and process image
                 $image = $manager->read($file);
-                
-                // Optional: Resize if too large (max width 1200px)
                 $image->scale(width: 1200);
-                
-                // Encode to JPEG with 70% quality
                 $encodedImage = $image->toJpeg(quality: 70);
-
-                // Save to storage
                 Storage::disk('public')->put($path, (string) $encodedImage);
-
                 $validated['featured_image'] = $path;
-                
             } catch (\Exception $e) {
                 \Log::error('Image processing error: ' . $e->getMessage());
-                
-                return back()
-                    ->withErrors(['featured_image' => 'Gagal memproses gambar: ' . $e->getMessage()])
-                    ->withInput();
+                return back()->with('modal_error', 'Gagal memproses gambar: ' . $e->getMessage())->withInput();
             }
         }
 
-        // Auto-generate excerpt if empty
+        // Logic Excerpt & Status
         if (empty($validated['excerpt'])) {
             $validated['excerpt'] = Str::limit(strip_tags($validated['body']), 150);
         }
 
-        // Set status based on action
         if ($request->input('action') === 'publish') {
             $validated['status'] = 'published';
             $validated['published_at'] = $request->filled('published_at') 
@@ -255,48 +213,73 @@ class DashboardPostController extends Controller
             $validated['published_at'] = null;
         }
 
-        // ✅ Update dengan error handling
+        // Update
         try {
             $post->update($validated);
         } catch (\Exception $e) {
             \Log::error('Post update error: ' . $e->getMessage());
-            
-            return back()
-                ->withErrors(['error' => 'Gagal memperbarui postingan: ' . $e->getMessage()])
-                ->withInput();
+            return back()->with('modal_error', 'Gagal memperbarui postingan: ' . $e->getMessage())->withInput();
         }
 
         $message = $validated['status'] === 'published' 
             ? 'Postingan berhasil diperbarui!' 
             : 'Perubahan berhasil disimpan sebagai draft!';
 
+        // 👇 [PERUBAHAN UTAMA] Gunakan 'modal_success'
         return redirect()->route('dashboard.posts.index')
-            ->with('post_success', $message);
+            ->with('modal_success', $message);
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Post $post): RedirectResponse
+    public function destroy(Request $request, Post $post) // 👈 Hapus return type hint ": RedirectResponse" agar fleksibel
     {
         try {
             $postTitle = $post->title;
 
-            // Delete featured image if exists
+            // 1. Hapus Gambar (Jika ada)
             if ($post->featured_image && Storage::disk('public')->exists($post->featured_image)) {
                 Storage::disk('public')->delete($post->featured_image);
             }
 
+            // 2. Hapus Postingan
             $post->delete();
 
+            $message = 'Postingan "' . $postTitle . '" berhasil dihapus! 🗑️';
+
+            // 👇 [LOGIKA BARU] Cek apakah request ini dari Turbo Stream?
+            if ($request->wantsTurboStream()) {
+                // Kirim potongan HTML khusus untuk di-inject ke <div id="flash-container">
+                return response()
+                    ->view('components.stream-modal', [
+                        'type' => 'success',
+                        'title' => 'Berhasil Dihapus',
+                        'message' => $message
+                    ])
+                    ->header('Content-Type', 'text/vnd.turbo-stream.html');
+            }
+
+            // Fallback: Redirect biasa untuk browser non-Turbo
             return redirect()->route('dashboard.posts.index')
-                ->with('post_success', 'Postingan "' . $postTitle . '" berhasil dihapus! 🗑️');
-                
+                ->with('modal_success', $message);
+
         } catch (\Exception $e) {
-            \Log::error('Post deletion error: ' . $e->getMessage());
+            $errorMsg = 'Gagal menghapus postingan: ' . $e->getMessage();
+            \Log::error($errorMsg);
+
+            if ($request->wantsTurboStream()) {
+                return response()
+                    ->view('components.stream-modal', [
+                        'type' => 'error',
+                        'title' => 'Terjadi Kesalahan',
+                        'message' => $errorMsg
+                    ])
+                    ->header('Content-Type', 'text/vnd.turbo-stream.html');
+            }
             
             return redirect()->route('dashboard.posts.index')
-                ->with('post_error', 'Gagal menghapus postingan. Terjadi error: ' . $e->getMessage());
+                ->with('modal_error', $errorMsg);
         }
     }
 }

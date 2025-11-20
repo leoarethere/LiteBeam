@@ -208,23 +208,54 @@ class DashboardBroadcastController extends Controller
                         ->with('broadcast_success', $message);
     }
 
-    public function destroy(Broadcast $broadcast): RedirectResponse
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(Request $request, Broadcast $broadcast) // 👈 Hapus type hint ": RedirectResponse"
     {
         try {
-            $broadcastTitle = $broadcast->title;
+            $title = $broadcast->title;
             
+            // 1. Hapus Poster jika ada
             if ($broadcast->poster && Storage::disk('public')->exists($broadcast->poster)) {
                 Storage::disk('public')->delete($broadcast->poster);
             }
             
+            // 2. Hapus Data
             $broadcast->delete();
 
+            $message = 'Penyiaran "' . $title . '" berhasil dihapus! 🗑️';
+
+            // 👇 [LOGIKA TURBO STREAM]
+            if ($request->wantsTurboStream()) {
+                return response()
+                    ->view('components.stream-modal', [
+                        'type' => 'success',
+                        'title' => 'Berhasil Dihapus',
+                        'message' => $message
+                    ])
+                    ->header('Content-Type', 'text/vnd.turbo-stream.html');
+            }
+
+            // Fallback: Redirect biasa
             return redirect()->route('dashboard.broadcasts.index')
-                             ->with('broadcast_success', 'Penyiaran "' . $broadcastTitle . '" berhasil dihapus! 🗑️');
+                             ->with('modal_success', $message);
 
         } catch (\Exception $e) {
+            $errorMsg = 'Gagal menghapus: ' . $e->getMessage();
+
+            if ($request->wantsTurboStream()) {
+                return response()
+                    ->view('components.stream-modal', [
+                        'type' => 'error',
+                        'title' => 'Terjadi Kesalahan',
+                        'message' => $errorMsg
+                    ])
+                    ->header('Content-Type', 'text/vnd.turbo-stream.html');
+            }
+
             return redirect()->route('dashboard.broadcasts.index')
-                             ->with('broadcast_error', 'Gagal menghapus penyiaran: ' . $e->getMessage());
+                             ->with('modal_error', $errorMsg);
         }
     }
 }
