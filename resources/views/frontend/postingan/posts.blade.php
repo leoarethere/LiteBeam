@@ -4,31 +4,24 @@
     {{-- KONTENER UTAMA --}}
     <div class="px-4 sm:px-6 lg:px-8">
 
-        {{-- BAGIAN HERO & PENCARIAN BARU --}}
+        {{-- BAGIAN HERO & PENCARIAN --}}
         <x-hero-posts />
         
-        {{-- ✅ PERBAIKAN: BAGIAN FILTER DAN SORTING YANG LEBIH BAIK --}}
-        <div class="my-6 pt-2 border-t border-gray-200 dark:border-gray-700">
+        {{-- BAGIAN FILTER DAN SORTING --}}
+        <div class="my-6 pt-2">
             <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mt-4 mb-4">
                 <h2 class="text-2xl font-bold text-gray-900 dark:text-white">
-                    Semua Postingan
+                    {{ $title }}
                 </h2>
                 
-                {{-- FORM FILTER DAN SORTING YANG DIPERBAIKI --}}
+                {{-- FORM FILTER DAN SORTING --}}
                 <form method="GET" action="{{ route('posts.index') }}" 
                       class="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
-                    {{-- Input tersembunyi untuk menjaga parameter yang sudah ada --}}
                     @if (request('search'))
                         <input type="hidden" name="search" value="{{ request('search') }}">
                     @endif
-                    @if (request('category'))
-                        <input type="hidden" name="category" value="{{ request('category') }}">
-                    @endif
-                    @if (request('author'))
-                        <input type="hidden" name="author" value="{{ request('author') }}">
-                    @endif
 
-                    {{-- ✅ PERBAIKAN: FILTER KATEGORI dengan lebar yang cukup --}}
+                    {{-- Filter Kategori --}}
                     <div class="flex-1 sm:flex-none">
                         <select name="category" onchange="this.form.submit()" 
                                 class="w-full sm:w-48 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white">
@@ -42,7 +35,21 @@
                         </select>
                     </div>
 
-                    {{-- ✅ PERBAIKAN: SORTING dengan lebar yang cukup --}}
+                    {{-- Filter Author --}}
+                    <div class="flex-1 sm:flex-none">
+                        <select name="author" onchange="this.form.submit()" 
+                                class="w-full sm:w-48 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white">
+                            <option value="">Semua Penulis</option>
+                            @foreach($authors as $author)
+                                <option value="{{ $author->username }}" 
+                                        @selected(request('author') == $author->username)>
+                                    {{ $author->name }} ({{ $author->posts_count }})
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    {{-- Sorting --}}
                     <div class="flex-1 sm:flex-none">
                         <select name="sort" onchange="this.form.submit()" 
                                 class="w-full sm:w-48 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white">
@@ -54,7 +61,7 @@
                         </select>
                     </div>
 
-                    {{-- ✅ PERBAIKAN: TOMBOL RESET dengan penyesuaian layout --}}
+                    {{-- Tombol Reset --}}
                     @if(request()->hasAny(['search', 'category', 'sort', 'author']))
                         <div class="flex-1 sm:flex-none">
                             <a href="{{ route('posts.index') }}" 
@@ -66,7 +73,7 @@
                 </form>
             </div>
 
-            {{-- PESAN HASIL FILTER --}}
+            {{-- INFO HASIL PENCARIAN --}}
             @if(request()->hasAny(['search', 'category', 'sort', 'author']))
                 <div class="p-4 mb-6 text-sm text-blue-800 rounded-lg bg-blue-50 dark:bg-gray-800 dark:text-blue-400" role="alert">
                     <div class="flex items-center">
@@ -75,44 +82,120 @@
                         </svg>
                         <span>
                             <strong>{{ $posts->total() }}</strong> post ditemukan
-                            @if(request('search'))
-                                untuk pencarian '<strong>{{ request('search') }}</strong>'
-                            @endif
-                            @if(request('category'))
-                                @php
-                                    $categoryName = \App\Models\Category::where('slug', request('category'))->first()->name ?? request('category');
-                                @endphp
-                                dalam kategori '<strong>{{ $categoryName }}</strong>'
-                            @endif
-                            @if(request('author'))
-                                @php
-                                    $authorName = \App\Models\User::where('username', request('author'))->first()->name ?? request('author');
-                                @endphp
-                                oleh penulis '<strong>{{ $authorName }}</strong>'
-                            @endif
-                            @if(request('sort') && request('sort') != 'latest')
-                                @php
-                                    $sortLabels = [
-                                        'oldest' => 'terlama',
-                                        'popular' => 'populer', 
-                                        'title_asc' => 'judul A-Z',
-                                        'title_desc' => 'judul Z-A'
-                                    ];
-                                @endphp
-                                , diurutkan berdasarkan <strong>{{ $sortLabels[request('sort')] ?? request('sort') }}</strong>
-                            @endif
                         </span>
                     </div>
+                    
+                    @if(request()->hasAny(['search', 'category', 'author']))
+                        <div class="mt-3 flex flex-wrap gap-2">
+                            @if(request('search'))
+                                <a href="{{ request()->fullUrlWithQuery(['search' => null]) }}" 
+                                   class="inline-flex items-center px-2.5 py-1 text-xs bg-blue-100 text-blue-800 rounded-full hover:bg-blue-200 dark:bg-blue-900 dark:text-blue-300 dark:hover:bg-blue-800 transition-colors">
+                                    Hapus pencarian: {{ request('search') }}
+                                    <svg class="w-3 h-3 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                                </a>
+                            @endif
+                            @if(request('category'))
+                                <a href="{{ request()->fullUrlWithQuery(['category' => null]) }}" 
+                                   class="inline-flex items-center px-2.5 py-1 text-xs bg-blue-100 text-blue-800 rounded-full hover:bg-blue-200 dark:bg-blue-900 dark:text-blue-300 dark:hover:bg-blue-800 transition-colors">
+                                    Hapus kategori
+                                    <svg class="w-3 h-3 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                                </a>
+                            @endif
+                            @if(request('author'))
+                                <a href="{{ request()->fullUrlWithQuery(['author' => null]) }}" 
+                                   class="inline-flex items-center px-2.5 py-1 text-xs bg-blue-100 text-blue-800 rounded-full hover:bg-blue-200 dark:bg-blue-900 dark:text-blue-300 dark:hover:bg-blue-800 transition-colors">
+                                    Hapus penulis
+                                    <svg class="w-3 h-3 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                                </a>
+                            @endif
+                        </div>
+                    @endif
                 </div>
             @endif
         </div>
         
-        {{-- BAGIAN DAFTAR POSTINGAN --}}
+        {{-- BAGIAN DAFTAR POSTINGAN (GRID) --}}
         <div class="pb-8 lg:pb-4">
-            {{-- GRID POSTINGAN --}}
-            <div class="grid gap-8 lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-1">
+            {{-- 
+                 GRID SYSTEM:
+                 Menggunakan grid 3 kolom (lg:grid-cols-3) agar lebih pas untuk blog post.
+            --}}
+            <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
                 @forelse ($posts as $post)
-                    <x-post-card :post="$post" />
+                
+                    {{-- ▼▼▼ KARTU POSTINGAN BARU (GAYA SIARAN) ▼▼▼ --}}
+                    {{-- Kita tidak menggunakan <x-post-card> lagi, tapi menulis HTML langsung --}}
+                    <a href="{{ route('posts.show', $post->slug) }}" 
+                    class="group bg-white dark:bg-gray-800 rounded-2xl overflow-hidden transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl dark:hover:shadow-none h-full flex flex-col">
+                        
+                        {{-- CONTAINER GAMBAR (Relative) --}}
+                        {{-- Menggunakan aspect-video (16:9) yang lebih cocok untuk blog daripada 3:4 siaran --}}
+                        <div class="relative overflow-hidden bg-gray-100 dark:bg-gray-900 w-full aspect-video">
+                            
+                            {{-- GAMBAR UTAMA --}}
+                            @if ($post->featured_image && Storage::exists($post->featured_image))
+                                <img src="{{ Storage::url($post->featured_image) }}" 
+                                     alt="{{ $post->title }}" 
+                                     class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                                     loading="lazy">
+                            @else
+                                {{-- Fallback Image --}}
+                                <div class="w-full h-full flex flex-col items-center justify-center bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-600">
+                                    <svg class="w-12 h-12 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                    </svg>
+                                </div>
+                            @endif
+
+                            {{-- OVERLAY GRADASI (Hover Effect) - Ini kunci efek 'Siaran' --}}
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end">
+                                {{-- Teks 'Baca Selengkapnya' yang naik dari bawah --}}
+                                <div class="p-4 w-full transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
+                                    <span class="inline-flex items-center gap-2 text-white text-sm font-bold">
+                                        Baca Selengkapnya
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
+                                    </span>
+                                </div>
+                            </div>
+
+                            {{-- KATEGORI BADGE (Pojok Kiri Atas) --}}
+                            @if($post->category)
+                                <div class="absolute top-3 left-3">
+                                    <span class="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-bold shadow-sm {{ $post->category->color_classes ?? 'bg-blue-600 text-white' }}">
+                                        {{ $post->category->name }}
+                                    </span>
+                                </div>
+                            @endif
+                        </div>
+
+                    {{-- KONTEN TEKS --}}
+                    <div class="p-5 flex flex-col flex-grow">
+                        {{-- Meta Data --}}
+                        <div class="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400 mb-3">
+                            <span class="flex items-center gap-1">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                                {{ $post->created_at->format('d M Y') }}
+                            </span>
+                            @if($post->user)
+                                <span class="flex items-center gap-1">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                                    {{ $post->user->name }}
+                                </span>
+                            @endif
+                        </div>
+
+                        {{-- Judul: Dibatasi max 2 baris --}}
+                        <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-2" title="{{ $post->title }}">
+                            {{ $post->title }}
+                        </h3>
+
+                        {{-- Excerpt / Ringkasan --}}
+                        <p class="text-sm text-gray-600 dark:text-gray-400 mb-4 flex-grow line-clamp-3">
+                            {{-- SOLUSI: Kita limit HASIL dari (excerpt ATAU body) --}}
+                            {{ Str::limit($post->excerpt ? $post->excerpt : strip_tags($post->body), 150, '...') }}
+                        </p>
+                    </div>
+
                 @empty
                     <div class="lg:col-span-3 text-center py-16">
                         <svg class="w-24 h-24 mx-auto text-gray-300 dark:text-gray-600 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -126,11 +209,7 @@
                             @endif
                         </h3>
                         <p class="text-gray-500 dark:text-gray-400 mb-6 max-w-md mx-auto">
-                            @if(request()->hasAny(['search', 'category', 'author']))
-                                Coba gunakan kata kunci lain atau hapus filter untuk melihat semua postingan.
-                            @else
-                                Silakan kembali lagi nanti untuk melihat postingan terbaru.
-                            @endif
+                            Silakan kembali lagi nanti atau coba kata kunci pencarian lain.
                         </p>
                         @if(request()->hasAny(['search', 'category', 'author']))
                             <a href="{{ route('posts.index') }}" 
@@ -145,7 +224,7 @@
 
         {{-- PAGINASI --}}
         @if ($posts->hasPages())
-            <div class="mb-8">
+            <div class="mb-8 mt-4">
                 {{ $posts->links() }}
             </div>
         @endif

@@ -1,7 +1,7 @@
 <x-layout>
     <x-slot:title>{{ $title }}</x-slot:title>
 
-    <div class="px-4 sm:px-6 lg:px-8">
+    <div class="px-4 sm:px-6 lg:px-8 pt-8">
 
         {{-- Judul Halaman Dinamis --}}
         <h1 class="text-3xl font-bold tracking-tight text-gray-100 sm:text-4xl mb-8 border-b border-gray-700 pb-4">

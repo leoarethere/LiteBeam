@@ -33,33 +33,51 @@
         </div>
     </template>
 
-    <div class="absolute inset-0 bg-black/60"></div>
+    <div class="absolute inset-0 bg-black/50"></div>
 
     <div class="relative z-10 flex flex-col items-center justify-center h-full text-center px-4">
         <div class="max-w-screen-md">
-            {{-- PERUBAHAN DI SINI --}}
-            <h2 class="mb-4 text-3xl font-bold tracking-tight text-white sm:text-4xl">Temukan Wawasan Baru</h2>
-            <p class="mx-auto mb-8 max-w-2xl font-light text-gray-200 md:mb-4 sm:text-xl">
-                Apa yang ingin Anda pelajari hari ini? Ribuan artikel dan ide menanti untuk dijelajahi.
+            <h2 class="mb-4 text-3xl font-bold tracking-tight text-white sm:text-4xl">Cari Postingan</h2>
+            <p class="mx-auto mb-8 max-w-2xl font-light text-gray-100 md:mb-4 sm:text-xl">
+                Jelajahi postingan terbaru, penulis favorit, dan kategori yang sesuai dengan minat Anda.
             </p>
             
-            <form action="/posts" method="GET">
+            {{-- ✅ PERBAIKAN: FORM PENCARIAN YANG LEBIH BAIK --}}
+            <form action="{{ route('posts.index') }}" method="GET">
+                {{-- ✅ SIMPAN PARAMETER FILTER YANG SUDAH ADA --}}
                 @if (request('category'))
                     <input type="hidden" name="category" value="{{ request('category') }}">
                 @endif
                 @if (request('author'))
                     <input type="hidden" name="author" value="{{ request('author') }}">
                 @endif
+                @if (request('sort'))
+                    <input type="hidden" name="sort" value="{{ request('sort') }}">
+                @endif
+                
                 <div class="items-center mx-auto mb-3 space-y-4 max-w-screen-sm sm:flex sm:space-y-0">
                     <div class="relative w-full">
-                        <label for="search" class="hidden">Kata Kunci</label>
+                        <label for="search" class="hidden mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">Cari</label>
                         <div class="flex absolute inset-y-0 left-0 items-center pl-3 pointer-events-none">
-                            <svg class="w-5 h-5 text-gray-500" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"></path></svg>
+                            <svg class="w-5 h-5 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                            </svg>
                         </div>
-                        <input class="block p-3 pl-10 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 sm:rounded-none sm:rounded-l-lg focus:ring-primary-500 focus:border-primary-500" placeholder="Jelajahi topik, penulis, atau kata kunci..." type="search" id="search" name="search" value="{{ request('search') }}" autocomplete="off">
+                        <input 
+                            class="block p-4 pl-10 w-full text-sm text-gray-900 bg-white rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" 
+                            placeholder="Cari judul, penulis, kategori, atau kata kunci..." 
+                            type="search" 
+                            id="search" 
+                            name="search" 
+                            value="{{ request('search') }}" 
+                            autocomplete="off"
+                            required
+                        >
                     </div>
                     <div>
-                        <button type="submit" class="py-3 px-5 w-full text-sm font-medium text-center text-white rounded-lg border cursor-pointer bg-primary-700 border-primary-600 sm:rounded-none sm:rounded-r-lg hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">Cari</button>
+                        <button type="submit" class="py-4 px-6 w-full text-sm font-medium text-white bg-blue-700 rounded-lg border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 transition-colors">
+                            Cari
+                        </button>
                     </div>
                 </div>
             </form>

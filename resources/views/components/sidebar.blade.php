@@ -37,7 +37,6 @@
             <ul class="space-y-2">
 
                 {{-- Dashboard --}}
-                {{-- Asumsi x-sidebar-item memiliki class 'group' di dalamnya atau pada tag <a> utamanya --}}
                 <x-sidebar-item href="{{ url('/dashboard') }}" :active="request()->is('dashboard')">
                     <x-slot:icon>
                         <svg class="w-6 h-6 flex-shrink-0 transition-transform duration-200 group-hover:scale-110" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -53,13 +52,12 @@
                     $isPublikasiActive = request()->is('dashboard/broadcasts*', 'dashboard/pola-acara*', 'dashboard/jadwal-acara*'); 
                 @endphp
                 
-                <li class="relative"> {{-- HAPUS class 'group' dari sini --}}
+                <li class="relative">
                     <button 
                         @click.prevent="if (isSidebarOpen) dropdowns.publikasi = !dropdowns.publikasi"
                         @mouseenter="if (!isSidebarOpen) dropdowns.publikasi = true"
                         @mouseleave="if (!isSidebarOpen) dropdowns.publikasi = false"
-                        class="flex items-center w-full p-2 text-base font-medium rounded-lg transition-colors duration-200 group" 
-                        {{-- TAMBAH class 'group' di sini agar hover icon presisi --}}
+                        class="flex items-center w-full p-2 text-base font-medium rounded-lg transition-colors duration-200 group"
                         :class="{ 
                             'justify-center': !isSidebarOpen,
                             'bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white': {{ $isPublikasiActive ? 'true' : 'false' }},
@@ -108,13 +106,11 @@
                         
                         <li>
                             <a href="{{ route('dashboard.broadcasts.index') }}" 
-                            class="flex items-center gap-3 py-2 px-3 text-sm rounded-md transition-colors duration-200 group" 
-                            {{-- TAMBAH class 'group' di sini untuk trigger animasi icon submenu --}}
+                            class="flex items-center gap-3 py-2 px-3 text-sm rounded-md transition-colors duration-200 group"
                             :class="{
                                 'bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white font-medium': {{ request()->is('dashboard/broadcasts*') ? 'true' : 'false' }},
                                 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white': {{ !request()->is('dashboard/broadcasts*') ? 'true' : 'false' }}
                             }">
-                                {{-- Tambah transition dan group-hover pada icon submenu --}}
                                 <svg class="h-5 w-5 flex-shrink-0 transition-transform duration-200 group-hover:scale-110" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                     <path d="M4 11a9 9 0 0 1 9 9"></path><path d="M4 4a16 16 0 0 1 16 16"></path><circle cx="5" cy="19" r="1"></circle>
                                 </svg>
@@ -375,11 +371,12 @@
                              fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line>
                         </svg>
-                        <span class="ml-3 flex-1 text-left whitespace-nowrap overflow-hidden transition-opacity duration-200" 
+                        {{-- PERBAIKAN UTAMA ADA DI BAWAH INI --}}
+                        <span class="ml-3 flex-1 text-left whitespace-nowrap overflow-hidden" 
                               x-show="isSidebarOpen"
                               x-transition:enter="transition ease-out duration-200"
-                              x-transition:enter-start="opacity-0"
-                              x-transition:enter-end="opacity-100"
+                              x-transition:enter-start="opacity-0 -translate-x-2"
+                              x-transition:enter-end="opacity-100 translate-x-0"
                               x-transition:leave="transition ease-in duration-150"
                               x-transition:leave-start="opacity-100"
                               x-transition:leave-end="opacity-0">
@@ -511,7 +508,6 @@
             <button 
                 @click="isSidebarOpen = !isSidebarOpen"
                 class="hidden md:flex w-full items-center p-3 text-sm font-medium text-gray-500 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors duration-200 group"
-                {{-- Perbaikan duration di bawah ini menjadi duration-200 --}}
                 :class="{ 'justify-center': !isSidebarOpen }">
                 
                 <svg class="w-5 h-5 flex-shrink-0 transition-transform duration-200 group-hover:scale-110" 

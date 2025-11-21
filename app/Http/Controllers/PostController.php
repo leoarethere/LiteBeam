@@ -12,10 +12,12 @@ class PostController extends Controller
 {
     public function index(Request $request)
     {
-        $title = 'Semua Postingan Blog';
-        $categories = Category::all(); // Untuk dropdown kategori
+        $title = 'Semua Postingan';
+        
+        $category = null;
+        $author = null;
 
-        // Penyesuaian judul berdasarkan filter
+        // Logika Judul Dinamis
         if ($request->filled('category')) {
             $category = Category::firstWhere('slug', $request->category);
             if ($category) {
@@ -30,71 +32,73 @@ class PostController extends Controller
             }
         }
 
-        // Query dasar
+        if ($request->filled('search')) {
+            $title = 'Hasil Pencarian: "' . $request->search . '"';
+            if ($category) $title .= ' dalam Kategori: ' . $category->name;
+            if ($author) $title .= ' oleh: ' . $author->name;
+        }
+
         $query = Post::with(['user', 'category'])
                     ->where('status', 'published');
 
-        // Filter pencarian
+        // ✅ PERBAIKAN: Filter Pencarian (Tags DIHAPUS Total)
         if ($request->filled('search')) {
             $search = $request->search;
             $query->where(function($q) use ($search) {
                 $q->where('title', 'like', '%' . $search . '%')
                   ->orWhere('excerpt', 'like', '%' . $search . '%')
-                  ->orWhere('body', 'like', '%' . $search . '%');
+                  ->orWhere('body', 'like', '%' . $search . '%')
+                  // Tags dihapus dari sini agar tidak eror SQL
+                  ->orWhereHas('category', function($q) use ($search) {
+                      $q->where('name', 'like', '%' . $search . '%')
+                        ->orWhere('description', 'like', '%' . $search . '%');
+                  })
+                  ->orWhereHas('user', function($q) use ($search) {
+                      $q->where('name', 'like', '%' . $search . '%')
+                        ->orWhere('username', 'like', '%' . $search . '%')
+                        ->orWhere('bio', 'like', '%' . $search . '%');
+                  });
             });
         }
 
-        // Filter kategori
+        // Filter Kategori & Author
         if ($request->filled('category')) {
-            $query->whereHas('category', function($q) use ($request) {
-                $q->where('slug', $request->category);
-            });
+            $query->whereHas('category', fn($q) => $q->where('slug', $request->category));
         }
-
-        // Filter penulis
         if ($request->filled('author')) {
-            $query->whereHas('user', function($q) use ($request) {
-                $q->where('username', $request->author);
-            });
+            $query->whereHas('user', fn($q) => $q->where('username', $request->author));
         }
 
         // Sorting
         switch ($request->get('sort', 'latest')) {
-            case 'oldest':
-                $query->orderBy('published_at', 'asc');
-                break;
-            case 'popular':
-                $query->orderBy('views', 'desc'); // Asumsi ada kolom 'views'
-                break;
-            case 'title_asc':
-                $query->orderBy('title', 'asc');
-                break;
-            case 'title_desc':
-                $query->orderBy('title', 'desc');
-                break;
-            case 'latest':
-            default:
-                $query->latest('published_at');
-                break;
+            case 'oldest': $query->orderBy('published_at', 'asc'); break;
+            case 'popular': $query->orderBy('views', 'desc'); break;
+            case 'title_asc': $query->orderBy('title', 'asc'); break;
+            case 'title_desc': $query->orderBy('title', 'desc'); break;
+            case 'latest': 
+            default: $query->latest('published_at'); break;
         }
 
         $posts = $query->paginate(9)->withQueryString();
+        $categories = Category::all();
+        $authors = User::has('posts')->withCount('posts')->orderBy('name')->get();
 
-        return view('frontend.postingan.posts', compact('title', 'posts', 'categories'));
+        return view('frontend.postingan.posts', compact('title', 'posts', 'categories', 'authors'));
     }
 
-    /**
-     * Menampilkan satu postingan.
-     */
     public function show(Post $post)
     {
+        // Perbaikan increment agar editor tidak merah
+        $post->update([
+            'views' => $post->views + 1
+        ]);
+
         return view('frontend.postingan.detail', [
             'title' => $post->title,
             'post' => $post
         ]);
     }
     
-    // Menampilkan postingan berdasarkan kategori
     public function category(Category $category)
     {
         return view('frontend.postingan.kategori', [
@@ -103,7 +107,6 @@ class PostController extends Controller
         ]);
     }
 
-    // Menampilkan postingan berdasarkan penulis
     public function author(User $user)
     {
         return view('frontend.postingan.author', [

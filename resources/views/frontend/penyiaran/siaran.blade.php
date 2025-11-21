@@ -1,4 +1,5 @@
 <x-layout>
+    {{-- Judul halaman dinamis --}}
     <x-slot:title>
         {{ $title ?? 'Program Penyiaran' }}
         @if(request('category') && isset($activeCategory))
@@ -6,46 +7,48 @@
         @endif
     </x-slot:title>
 
-    {{-- HERO SECTION (Full Width Background) --}}
-    {{-- Kita tambahkan pt-24 pb-12 untuk memberi jarak dari navbar fixed --}}
-    <div class="relative bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 dark:from-blue-900 dark:via-blue-950 dark:to-indigo-950 overflow-hidden pt-24 pb-12 lg:pt-32 lg:pb-16">
-        <div class="absolute inset-0 bg-grid-white/[0.03] bg-[size:24px_24px] [mask-image:radial-gradient(ellipse_at_center,black_40%,transparent_100%)]"></div>
-        
-        {{-- Konten Teks Hero (Dibatasi di tengah) --}}
-        <div class="relative px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-            <div class="max-w-4xl">
-                <h1 class="text-4xl lg:text-5xl font-bold text-white mb-4 drop-shadow-lg">
-                    @if(isset($activeCategory))
-                        {{ $activeCategory->name }}
-                    @else
-                        Program Penyiaran
-                    @endif
-                </h1>
-                <p class="text-lg text-blue-100 max-w-2xl">
-                    @if(isset($activeCategory))
-                        Jelajahi program unggulan TVRI Yogyakarta dalam kategori {{ $activeCategory->name }}.
-                    @else
-                        Jelajahi berbagai program unggulan TVRI Yogyakarta yang menghadirkan informasi, hiburan, dan edukasi berkualitas untuk Anda.
-                    @endif
-                </p>
+    {{-- KONTAINER UTAMA --}}
+    <div class="px-4 sm:px-6 lg:px-8">
+
+        {{-- HERO SECTION --}}
+        <div class="relative rounded-3xl overflow-hidden mb-10 bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 dark:from-blue-900 dark:via-blue-950 dark:to-indigo-950 shadow-xl">
+            {{-- Pola grid --}}
+            <div class="absolute inset-0 bg-grid-white/[0.03] bg-[size:24px_24px] [mask-image:radial-gradient(ellipse_at_center,black_40%,transparent_100%)]"></div>
+            
+            {{-- Konten Hero --}}
+            <div class="relative px-6 py-12 lg:px-12 lg:py-20 text-center">
+                <div class="max-w-3xl mx-auto">
+                    <h1 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4 drop-shadow-md">
+                        @if(isset($activeCategory))
+                            {{ $activeCategory->name }}
+                        @else
+                            Program Penyiaran
+                        @endif
+                    </h1>
+                    <p class="text-base sm:text-lg text-blue-100 max-w-2xl mx-auto leading-relaxed">
+                        @if(isset($activeCategory))
+                            Jelajahi program unggulan TVRI Yogyakarta dalam kategori {{ $activeCategory->name }}.
+                        @else
+                            Jelajahi berbagai program unggulan TVRI Yogyakarta yang menghadirkan informasi, hiburan, dan edukasi berkualitas untuk Anda.
+                        @endif
+                    </p>
+                </div>
             </div>
         </div>
-    </div>
-
-    {{-- KONTEN UTAMA (Dibatasi di tengah) --}}
-    <div class="px-4 sm:px-6 lg:px-8 py-8 lg:py-12 max-w-7xl mx-auto">
         
-        {{-- FILTER SECTION --}}
+        {{-- BAGIAN FILTER --}}
         <div class="mb-10">
             <div class="flex flex-col sm:flex-row items-start sm:items-center sm:justify-between mb-6 gap-4">
                 <div>
-                    <h2 class="text-xl lg:text-2xl font-bold text-gray-900 dark:text-white">
+                    <h2 class="text-2xl font-bold text-gray-900 dark:text-white">
                         Filter Kategori
                     </h2>
                     <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">
                         Pilih kategori untuk melihat program spesifik
                     </p>
                 </div>
+                
+                {{-- Counter Badge --}}
                 <div class="flex-shrink-0 flex items-center gap-2 px-4 py-2 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
                     <svg class="w-5 h-5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 4v16M17 4v16M3 8h4m10 0h4M3 12h18M3 16h4m10 0h4M4 20h16a1 1 0 001-1V5a1 1 0 00-1-1H4a1 1 0 00-1 1v14a1 1 0 001 1z"></path>
@@ -56,9 +59,10 @@
                 </div>
             </div>
             
+            {{-- Category Filter Pills --}}
             <div class="relative">
                 <div class="absolute -left-4 top-0 bottom-0 w-12 bg-gradient-to-r from-white dark:from-gray-900 to-transparent z-10 pointer-events-none md:hidden"></div>
-                <div class="overflow-x-auto scrollbar-hide -mx-4 px-4">
+                <div class="overflow-x-auto scrollbar-hide -mx-4 px-4 lg:mx-0 lg:px-0">
                     <nav class="flex gap-2 lg:gap-3 pb-2" style="min-width: min-content;">
                         <a href="{{ route('broadcasts.index') }}"
                            class="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-medium rounded-full transition-all duration-200 whitespace-nowrap
@@ -76,7 +80,9 @@
                            {{ request('category') == $category->slug 
                                ? 'bg-blue-600 text-white' 
                                : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700' }}">
-                            <span class="w-2.5 h-2.5 rounded-full {{ $category->color_classes ?? 'bg-gray-400' }} opacity-80"></span>
+                            {{-- Titik Warna pada Filter --}}
+                            {{-- Karena color_classes mereturn bg-color-100, kita gunakan style badge biasa untuk titik ini agar konsisten --}}
+                            <span class="w-3 h-3 rounded-full {{ $category->color_classes }}"></span>
                             {{ $category->name }}
                         </a>
                         @endforeach
@@ -101,7 +107,7 @@
                                          style="aspect-ratio: 3 / 4;">
                                     <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                                         <div class="absolute bottom-0 left-0 right-0 p-3 transform translate-y-3 group-hover:translate-y-0 transition-transform duration-300 flex items-center justify-between">
-                                            <span class="inline-flex items-center gap-1.5 text-white text-xs font-bold">
+                                            <span class="inline-flex items-center gap-1 text-white text-xs font-bold">
                                                 <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M10 12a2 2 0 100-4 2 2 0 000 4z" /><path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd" /></svg>
                                                 Lihat Detail
                                             </span>
@@ -113,9 +119,12 @@
                                         <span class="text-xs text-gray-500 dark:text-gray-400">No Poster</span>
                                     </div>
                                 @endif
+                                
+                                {{-- Badge Kategori (Pojok Kiri Atas Kartu) --}}
                                 @if($broadcast->broadcastCategory)
                                 <div class="absolute top-2.5 left-2.5">
-                                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold {{ $broadcast->broadcastCategory->color_classes }}">
+                                    {{-- Menggunakan color_classes yang baru --}}
+                                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold {{ $broadcast->broadcastCategory->color_classes }} shadow-sm">
                                         {{ $broadcast->broadcastCategory->name }}
                                     </span>
                                 </div>

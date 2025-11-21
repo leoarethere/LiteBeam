@@ -2,7 +2,7 @@
 
 <article class="bg-white rounded-lg border border-gray-200 shadow-md dark:bg-gray-800 dark:border-gray-700 overflow-hidden flex flex-col group h-full">
     
-    {{-- GAMBAR: Dikurangi tingginya dari h-48 menjadi h-40 --}}
+    {{-- GAMBAR --}}
     <a href="{{ route('posts.show', $post->slug) }}" class="block overflow-hidden relative h-40">
         @if ($post->featured_image && Storage::exists($post->featured_image))
             <img src="{{ Storage::url($post->featured_image) }}" 
@@ -26,51 +26,53 @@
         @endif
     </a>
 
-    {{-- KONTEN: Padding dikurangi dari p-5 menjadi p-4 --}}
+    {{-- KONTEN --}}
     <div class="p-4 flex flex-col flex-grow">
         <div class="flex-grow">
-            {{-- Meta Header: Margin bawah dikurangi jadi mb-3 --}}
-            <div class="flex justify-between items-center mb-3 text-gray-500">
+            {{-- Meta Header --}}
+            <div class="flex justify-between items-center mb-3 text-gray-500 dark:text-gray-400">
                 @if ($post->category)
-                    <span class="text-[10px] tracking-wider font-semibold inline-flex items-center px-2 py-0.5 rounded {{ $post->category->color_classes ?? 'bg-gray-100 text-gray-800' }}">
-                        <a href="{{ route('categories.show', $post->category) }}" class="hover:underline">
-                            {{ $post->category->name }}
-                        </a>
+                    {{-- PERUBAHAN: Link kategori dihapus, hanya menampilkan nama --}}
+                    <span class="text-xs font-medium inline-flex items-center px-2 py-0.5 rounded {{ $post->category->color_classes ?? 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300' }}">
+                        {{ $post->category->name }}
                     </span>
                 @endif
                 <span class="text-xs">{{ $post->created_at->diffForHumans() }}</span>
             </div>
 
-            {{-- Judul: Ukuran font disesuaikan agar tidak terlalu besar memakan tempat --}}
-            <h2 class="hover:underline mb-2 text-lg font-bold tracking-tight text-gray-900 dark:text-white leading-snug line-clamp-2">
+            {{-- Judul --}}
+            <h2 class="mb-2 text-xl font-bold text-gray-900 dark:text-white leading-tight line-clamp-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                 <a href="{{ route('posts.show', $post->slug) }}">{{ $post->title }}</a>
             </h2>
 
-            {{-- Excerpt: Margin bawah dikurangi, font size jadi text-sm --}}
-            <p class="mb-3 font-light text-sm text-gray-500 dark:text-gray-400 line-clamp-2">
-                {{ $post->excerpt ?? Str::limit(strip_tags($post->body), 100) }}
+            {{-- Excerpt --}}
+            <p class="mb-3 text-gray-600 dark:text-gray-300 text-sm leading-relaxed line-clamp-2">
+                {{ $post->excerpt ?? Str::limit(strip_tags($post->body), 120) }}
             </p>
         </div>
         
-        {{-- Footer: Padding atas dikurangi --}}
-        <div class="flex justify-between items-center mt-auto pt-2 border-t border-gray-100 dark:border-gray-700/50">
-            <div class="flex items-center space-x-2"> {{-- Space antar elemen diperkecil --}}
+        {{-- Footer --}}
+        <div class="flex justify-between items-center mt-auto pt-3 border-t border-gray-100 dark:border-gray-700">
+            <div class="flex items-center space-x-2">
                 @if ($post->user)
-                    {{-- Avatar diperkecil ke w-6 h-6 --}}
-                    <img class="w-6 h-6 rounded-full" src="https://ui-avatars.com/api/?name={{ urlencode($post->user->name) }}&background=random&color=fff" alt="{{ $post->user->name }}" />
-                    <span class="text-xs font-medium dark:text-white truncate max-w-[100px]">
-                        <a href="/posts?author={{ $post->user->username }}" class="hover:underline">
-                            {{ $post->user->name }}
-                        </a>
+                    <img class="w-6 h-6 rounded-full" 
+                         src="https://ui-avatars.com/api/?name={{ urlencode($post->user->name) }}&background=random&color=fff" 
+                         alt="{{ $post->user->name }}" 
+                         onerror="this.src='https://ui-avatars.com/api/?name=User&background=random&color=fff'"/>
+                    
+                    {{-- PERUBAHAN: Link author dihapus, style hover dihilangkan --}}
+                    <span class="text-sm text-gray-700 dark:text-gray-300 font-medium truncate max-w-[100px]">
+                        {{ $post->user->name }}
                     </span>
                 @else
-                    <span class="text-xs text-gray-500 dark:text-gray-400">Anonim</span>
+                    <span class="text-sm text-gray-500 dark:text-gray-400">Anonim</span>
                 @endif
             </div>
             
-            <a href="{{ route('posts.show', $post->slug) }}" class="inline-flex items-center text-sm font-medium text-primary-600 dark:text-primary-500 hover:underline">
-                Baca
-                <svg class="ml-1 w-3 h-3" fill="currentColor" viewBox="0 0 20 20"> {{-- Icon diperkecil --}}
+            <a href="{{ route('posts.show', $post->slug) }}" 
+               class="inline-flex items-center text-sm font-medium text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition-colors">
+                Baca Selengkapnya
+                <svg class="ml-1 w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                     <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"></path>
                 </svg>
             </a>

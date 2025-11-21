@@ -2,19 +2,16 @@
     $message = null;
     $type = 'success';
 
-    // Daftar semua kunci session yang mungkin dikirim oleh Controller Anda
+    // Daftar kunci session (Sesuai dengan Controller Anda)
     $keys = [
         'post_success' => 'success', 
         'post_error' => 'error',
         'broadcast_success' => 'success', 
         'broadcast_error' => 'error',
-        'category_success' => 'success', 
-        'category_error' => 'error',
-        'success' => 'success', // Default
-        'error' => 'error'      // Default
+        'success' => 'success',
+        'error' => 'error'
     ];
 
-    // Cari pesan yang aktif
     foreach ($keys as $key => $t) {
         if (session()->has($key)) {
             $message = session($key);
@@ -23,18 +20,21 @@
         }
     }
 
-    // Cek juga error validasi standar Laravel ($errors)
     if (!$message && $errors->any()) {
-        $message = 'Terdapat kesalahan validasi. Mohon periksa kembali form.';
+        $message = 'Terdapat kesalahan validasi. Mohon periksa inputan Anda.';
         $type = 'error';
     }
 @endphp
 
-{{-- Jika ada pesan, render elemen rahasia ini --}}
 @if($message)
-    <div id="flash-message-trigger" 
+    {{-- PERBAIKAN: ID diganti dari 'flash-message-trigger' menjadi 'notification-trigger' --}}
+    {{-- Agar cocok dengan Javascript di dashboard-layout.blade.php --}}
+    <div id="notification-trigger" 
          data-message="{{ $message }}" 
          data-type="{{ $type }}"
          style="display: none;">
     </div>
+    
+    {{-- DEBUG (Opsional): Hapus baris di bawah ini jika notifikasi sudah muncul --}}
+    <script>console.log('📢 Server mengirim pesan: "{{ $message }}"');</script>
 @endif

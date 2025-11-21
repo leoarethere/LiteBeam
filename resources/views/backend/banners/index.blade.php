@@ -43,7 +43,7 @@
     class="pb-6">
         
         {{-- HEADER HALAMAN --}}
-        <div class="flex flex-col md:flex-row md:justify-between md:items-start gap-4 mb-8 pt-2">
+        <div class="flex flex-col md:flex-row md:justify-between md:items-start gap-4 mb-6 pt-2">
             <div>
                 <h1 class="text-2xl lg:text-3xl font-bold text-gray-900 dark:text-white">
                     Pengaturan Hero Carousel
@@ -136,6 +136,10 @@
                             <p class="mb-3 font-light text-sm text-gray-500 dark:text-gray-400 line-clamp-2">
                                 {{ $banner->subtitle }}
                             </p>
+                        </div>
+                        
+                        {{-- Footer dengan Tombol Aksi --}}
+                        <div class="flex items-center justify-between mt-auto pt-3 border-t border-gray-100 dark:border-gray-700/50">
 
                             {{-- Link --}}
                             @if($banner->link)
@@ -146,13 +150,6 @@
                                     <span class="truncate">{{ Str::limit($banner->link, 30) }}</span>
                                 </div>
                             @endif
-                        </div>
-                        
-                        {{-- Footer dengan Tombol Aksi --}}
-                        <div class="flex items-center justify-between mt-auto pt-3 border-t border-gray-100 dark:border-gray-700/50">
-                            <span class="text-xs text-gray-500 dark:text-gray-400">
-                                Tombol Aksi ->
-                            </span>
                             
                             <div class="flex items-center gap-2">
                                 {{-- Tombol Edit --}}
