@@ -3,16 +3,25 @@
     "file": "assets/owl.video.play-BJo37keB.png",
     "src": "node_modules/owl.carousel/dist/assets/owl.video.play.png"
   },
+  "node_modules/owl.carousel/dist/owl.carousel.js": {
+    "file": "assets/owl.carousel-neFFRnqI.js",
+    "name": "owl.carousel",
+    "src": "node_modules/owl.carousel/dist/owl.carousel.js",
+    "isDynamicEntry": true
+  },
   "resources/css/app.css": {
-    "file": "assets/app-CE9hj2TG.css",
+    "file": "assets/app-CohKB0pZ.css",
     "src": "resources/css/app.css",
     "isEntry": true
   },
   "resources/js/app.js": {
-    "file": "assets/app-DWhCHWC4.js",
+    "file": "assets/app-rv9Zv1JC.js",
     "name": "app",
     "src": "resources/js/app.js",
     "isEntry": true,
+    "dynamicImports": [
+      "node_modules/owl.carousel/dist/owl.carousel.js"
+    ],
     "css": [
       "assets/app-BEK0jJ3e.css"
     ],

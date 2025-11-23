@@ -1,6 +1,82 @@
 <x-dashboard-layout>
     <x-slot:title>Edit Postingan</x-slot:title>
 
+    {{-- [FIX] CSS Trix dipanggil langsung di sini (Tanpa @push) --}}
+    <link rel="stylesheet" type="text/css" href="https://unpkg.com/trix@2.0.8/dist/trix.css">
+    <style>
+        trix-toolbar [data-trix-button-group="file-tools"] {
+            display: none;
+        }
+        /* Penyesuaian Dark Mode untuk Trix */
+        .dark trix-editor {
+            background-color: #374151; /* gray-700 */
+            color: white;
+            border-color: #4b5563; /* gray-600 */
+        }
+        .dark trix-toolbar {
+            background-color: #f3f4f6;
+            border-radius: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+        /* Custom styling untuk trix editor */
+        .trix-content h1 {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin: 1rem 0;
+        }
+        .trix-content ul, .trix-content ol {
+            padding-left: 1.5rem;
+            margin: 0.5rem 0;
+        }
+        .trix-content ul li {
+            list-style-type: disc;
+        }
+        .trix-content ol li {
+            list-style-type: decimal;
+        }
+        .trix-content blockquote {
+            border-left: 3px solid #3b82f6;
+            padding-left: 1rem;
+            margin: 1rem 0;
+            font-style: italic;
+        }
+        /* Minimal height agar area tulis terlihat luas */
+        trix-editor {
+            min-height: 300px;
+        }
+        /* [PERBAIKAN] Mengaktifkan kembali list-style di dalam editor */
+        trix-editor ul {
+            list-style-type: disc !important;
+            padding-left: 1.5rem !important;
+            margin-bottom: 1rem !important;
+        }
+        
+        trix-editor ol {
+            list-style-type: decimal !important;
+            padding-left: 1.5rem !important;
+            margin-bottom: 1rem !important;
+        }
+
+        trix-editor li {
+            margin-bottom: 0.5rem;
+        }
+
+        /* Memastikan blockquote juga terlihat jelas */
+        trix-editor blockquote {
+            border-left: 4px solid #e5e7eb; /* gray-200 */
+            padding-left: 1rem;
+            margin-left: 0;
+            font-style: italic;
+            color: #4b5563; /* gray-600 */
+        }
+        
+        /* Dark mode adjustments */
+        .dark trix-editor blockquote {
+            border-left-color: #4b5563; /* gray-600 */
+            color: #d1d5db; /* gray-300 */
+        }
+    </style>
+
     <div class="pb-6"
         x-data="{
             title: '{{ old('title', $post->title) }}',
@@ -115,12 +191,20 @@
                         @enderror
                     </div>
 
-                    {{-- Konten --}}
+                    {{-- Konten dengan Trix Editor --}}
                     <div>
                         <label for="body" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
                             Konten Postingan <span class="text-red-500">*</span>
                         </label>
-                        <textarea name="body" id="body" rows="15" class="bg-gray-50 border text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" required>{{ old('body', $post->body) }}</textarea>
+                        
+                        {{-- Input Hidden untuk menyimpan nilai asli --}}
+                        <input id="body" type="hidden" name="body" value="{{ old('body', $post->body) }}">
+
+                        {{-- Editor Trix --}}
+                        <trix-editor input="body" 
+                                     class="trix-content bg-gray-50 border-gray-300 text-gray-900 text-sm rounded-lg min-h-[300px] focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+                                     placeholder="Tulis konten postingan Anda di sini dengan format yang indah..."></trix-editor>
+                        
                         @error('body')
                             <p class="mt-2 text-sm text-red-600 dark:text-red-500">{{ $message }}</p>
                         @enderror
@@ -156,9 +240,6 @@
                         <textarea name="excerpt" id="excerpt" rows="3" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white">{{ old('excerpt', $post->excerpt) }}</textarea>
                     </div>
 
-                    {{-- [PERBAIKAN] Menghapus 'Status' dan 'Meta Tags' --}}
-                    {{-- 'Status' sekarang dikontrol oleh tombol 'action' di bawah --}}
-
                     {{-- Published Date --}}
                     <div>
                         <label for="published_at" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
@@ -172,7 +253,7 @@
 
                 </div>
                 
-                {{-- [PERBAIKAN] Action Buttons diganti jadi dua tombol --}}
+                {{-- Action Buttons --}}
                 <div class="flex items-center justify-between p-6 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700/50 rounded-b-lg">
                     <a href="{{ route('dashboard.posts.index') }}" 
                        class="px-5 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-600 transition-colors">
@@ -196,4 +277,20 @@
             </form>
         </div>
     </div>
+
+    {{-- [FIX] Script Trix dipanggil langsung di sini (Tanpa @push) --}}
+    <script type="text/javascript" src="https://unpkg.com/trix@2.0.8/dist/trix.umd.min.js"></script>
+    
+    {{-- Script untuk mematikan fitur upload file Trix --}}
+    <script>
+        document.addEventListener("trix-file-accept", function(event) {
+            event.preventDefault();
+        });
+
+        // Optional: Custom event handler untuk trix
+        document.addEventListener("trix-change", function(event) {
+            // Handle perubahan konten jika diperlukan
+            // console.log("Konten berubah");
+        });
+    </script>
 </x-dashboard-layout>

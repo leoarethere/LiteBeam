@@ -12,11 +12,14 @@ use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\BroadcastController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DashboardPostController; 
+use App\Http\Controllers\DashboardHistoryController;
+use App\Http\Controllers\DashboardVisiMisiController;
+
+// Controller Frontend Baru
 use App\Http\Controllers\DashboardBroadcastController;
 use App\Http\Controllers\DashboardPostCategoryController;
 
-// Controller Frontend Baru
-use App\Http\Controllers\DashboardBroadcastCategoryController; 
+use App\Http\Controllers\DashboardBroadcastCategoryController;
 
 /*
 |--------------------------------------------------------------------------
@@ -80,6 +83,8 @@ Route::middleware('auth')->prefix('dashboard')->group(function () {
     Route::post('/categories', [DashboardPostCategoryController::class, 'store'])->name('dashboard.categories.store');
     Route::put('/categories/{category}', [DashboardPostCategoryController::class, 'update'])->name('dashboard.categories.update');
     Route::delete('/categories/{category}', [DashboardPostCategoryController::class, 'destroy'])->name('dashboard.categories.destroy');
+
+    Route::resource('/visi-misi', DashboardVisiMisiController::class)->names('dashboard.visi-misi');
 });
 
 // == FITUR UTILITAS ==

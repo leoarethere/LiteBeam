@@ -13,4 +13,8 @@ export default defineConfig({
             refresh: true,
         }),
     ],
+    build: {
+        // ubah sesuai kebutuhan, misalnya 1000 KB
+        chunkSizeWarningLimit: 1000
+    }
 });
