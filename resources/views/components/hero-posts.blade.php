@@ -40,7 +40,7 @@
     <div class="relative z-10 flex flex-col items-center justify-center h-full text-center px-4 sm:px-6">
         <div class="max-w-screen-md w-full">
             {{-- ✅ Heading: Mobile (text-2xl) → Tablet (text-3xl) → Desktop (text-4xl) --}}
-            <h2 class="mb-3 sm:mb-4 text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight text-white">Apa yang kamu cari?</h2>
+            <h2 class="mb-3 text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight text-white">Apa yang kamu cari?</h2>
             
             {{-- ✅ Subtitle: Responsive font sizes --}}
             <p class="mx-auto mb-4 sm:mb-6 md:mb-6 max-w-2xl text-sm sm:text-base md:text-lg font-light text-gray-100">

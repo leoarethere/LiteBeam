@@ -4,7 +4,8 @@
             <div class="mb-6 md:mb-0 max-w-sm">
                 <a href="/" class="flex items-center mb-6">
                     <img src="https://tailwindcss.com/plus-assets/img/logos/mark.svg?color=indigo&shade=500" class="h-8 me-3" alt="FlowBite Logo" />
-                    <span class="self-center text-2xl font-semibold whitespace-nowrap text-gray-900 dark:text-white">Media Pemersatu Bangsa</span>
+                    <span class="self-center text-2xl font-semibold text-gray-900 dark:text-white whitespace-normal lg:whitespace-nowrap">
+                    Media Pemersatu Bangsa
                 </a>
                 <p class="text-sm leading-6 text-gray-600 dark:text-gray-400">
                     Lembaga Penyiaran Publik Televisi Republik Indonesia Stasiun D.I. Yogyakarta.
