@@ -1,0 +1,211 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\History;
+use Illuminate\View\View;
+use Illuminate\Support\Str;
+use Illuminate\Http\Request;
+use Illuminate\Routing\Controller;
+use Intervention\Image\ImageManager;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Storage;
+use Intervention\Image\Drivers\Gd\Driver;
+
+class DashboardHistoryController extends Controller
+{
+    /**
+     * Display a listing of the resource.
+     */
+    public function index(): View
+    {
+        $histories = History::latest()->paginate(10);
+        
+        return view('backend.sejarah.index', [
+            'histories' => $histories,
+        ]);
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     */
+    public function create(): View
+    {
+        return view('backend.sejarah.create');
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(Request $request): RedirectResponse
+    {
+        // Validasi Input
+        try {
+            $validated = $request->validate([
+                'title' => 'required|string|max:255',
+                'content' => 'required|string',
+                'image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
+                'action' => 'required|in:draft,publish',
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return back()->withErrors($e->validator)->withInput();
+        }
+
+        // Process & Compress Image
+        if ($request->hasFile('image')) {
+            try {
+                $file = $request->file('image');
+                $filename = Str::random(40) . '.jpg';
+                $path = 'history-images/' . $filename;
+
+                $manager = new ImageManager(new Driver());
+                $image = $manager->read($file);
+                $image->scale(width: 1200);
+                $encodedImage = $image->toJpeg(quality: 75);
+                Storage::disk('public')->put($path, (string) $encodedImage);
+
+                $validated['image'] = $path;
+                
+            } catch (\Exception $e) {
+                \Log::error('History image processing error: ' . $e->getMessage());
+                
+                return back()
+                    ->withErrors(['image' => 'Gagal memproses gambar: ' . $e->getMessage()])
+                    ->withInput();
+            }
+        }
+
+        // Set status based on action
+        if ($request->input('action') === 'publish') {
+            $validated['status'] = 'published';
+            $validated['published_at'] = now();
+        } else {
+            $validated['status'] = 'draft';
+            $validated['published_at'] = null;
+        }
+
+        // Save to database
+        try {
+            History::create($validated);
+        } catch (\Exception $e) {
+            \Log::error('History creation error: ' . $e->getMessage());
+            
+            return back()
+                ->withErrors(['error' => 'Gagal menyimpan data sejarah: ' . $e->getMessage()])
+                ->withInput();
+        }
+
+        $message = $validated['status'] === 'published' 
+            ? 'Data sejarah berhasil dipublikasikan!' 
+            : 'Data sejarah berhasil disimpan sebagai draft!';
+
+        return redirect()->route('dashboard.sejarah.index')
+            ->with('success', $message);
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit(History $history): View
+    {
+        return view('backend.sejarah.edit', compact('history'));
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(Request $request, History $history): RedirectResponse
+    {
+        // Validasi Input
+        try {
+            $validated = $request->validate([
+                'title' => 'required|string|max:255',
+                'content' => 'required|string',
+                'image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
+                'action' => 'required|in:draft,publish',
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return back()->withErrors($e->validator)->withInput();
+        }
+
+        // Process & Compress New Image
+        if ($request->hasFile('image')) {
+            try {
+                // Delete old image
+                if ($history->image && Storage::disk('public')->exists($history->image)) {
+                    Storage::disk('public')->delete($history->image);
+                }
+
+                $file = $request->file('image');
+                $filename = Str::random(40) . '.jpg';
+                $path = 'history-images/' . $filename;
+
+                $manager = new ImageManager(new Driver());
+                $image = $manager->read($file);
+                $image->scale(width: 1200);
+                $encodedImage = $image->toJpeg(quality: 75);
+                Storage::disk('public')->put($path, (string) $encodedImage);
+
+                $validated['image'] = $path;
+                
+            } catch (\Exception $e) {
+                \Log::error('History image processing error: ' . $e->getMessage());
+                
+                return back()
+                    ->withErrors(['image' => 'Gagal memproses gambar: ' . $e->getMessage()])
+                    ->withInput();
+            }
+        }
+
+        // Set status based on action
+        if ($request->input('action') === 'publish') {
+            $validated['status'] = 'published';
+            $validated['published_at'] = $history->published_at ?? now();
+        } else {
+            $validated['status'] = 'draft';
+            $validated['published_at'] = null;
+        }
+
+        // Update database
+        try {
+            $history->update($validated);
+        } catch (\Exception $e) {
+            \Log::error('History update error: ' . $e->getMessage());
+            
+            return back()
+                ->withErrors(['error' => 'Gagal memperbarui data sejarah: ' . $e->getMessage()])
+                ->withInput();
+        }
+
+        $message = $validated['status'] === 'published' 
+            ? 'Data sejarah berhasil diperbarui!' 
+            : 'Perubahan berhasil disimpan sebagai draft!';
+
+        return redirect()->route('dashboard.sejarah.index')
+            ->with('success', $message);
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(History $history): RedirectResponse
+    {
+        try {
+            // Delete image if exists
+            if ($history->image && Storage::disk('public')->exists($history->image)) {
+                Storage::disk('public')->delete($history->image);
+            }
+
+            $history->delete();
+
+            return redirect()->route('dashboard.sejarah.index')
+                ->with('success', 'Data sejarah berhasil dihapus!');
+                
+        } catch (\Exception $e) {
+            \Log::error('History deletion error: ' . $e->getMessage());
+            
+            return redirect()->route('dashboard.sejarah.index')
+                ->with('error', 'Gagal menghapus data sejarah: ' . $e->getMessage());
+        }
+    }
+}

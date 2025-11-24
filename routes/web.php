@@ -12,6 +12,7 @@ use App\Http\Controllers\VisiMisiController;
 use App\Http\Controllers\BroadcastController; 
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DashboardPostController;
+use App\Http\Controllers\DashboardHistoryController;
 use App\Http\Controllers\DashboardVisiMisiController;
 use App\Http\Controllers\DashboardBroadcastController;
 use App\Http\Controllers\DashboardPostCategoryController;
@@ -24,9 +25,6 @@ use App\Http\Controllers\DashboardBroadcastCategoryController;
 */
 
 // == HALAMAN FRONTEND (Publik) ==
-// Semua rute di bagian ini dapat diakses oleh siapa saja.
-
-// Rute Beranda
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
 // Rute Statis
@@ -37,7 +35,6 @@ Route::view('/contact', 'contact', ['title' => 'Contact'])->name('contact');
 Route::get('/posts', [PostController::class, 'index'])->name('posts.index');
 Route::get('/posts/{post:slug}', [PostController::class, 'show'])->name('posts.show');
 
-// ▼▼▼ [PERBAIKAN] RUTE PENYIARAN DIPINDAH KE SINI ▼▼▼
 // Rute Penyiaran (Publik)
 Route::get('/penyiaran', [BroadcastController::class, 'index'])->name('broadcasts.index');
 Route::get('/penyiaran/{broadcast:slug}', [BroadcastController::class, 'show'])->name('broadcasts.show');
@@ -49,7 +46,6 @@ Route::get('/authors/{user:username}', [PostController::class, 'author'])->name(
 Route::get('/visi-misi', [VisiMisiController::class, 'visiMisi'])->name('visi-misi');
 
 // == AUTENTIKASI ==
-// Rute ini dikelompokkan dan hanya bisa diakses oleh pengguna yang BELUM login (guest).
 Route::middleware('guest')->group(function () {
     Route::get('/login', [LoginController::class, 'index'])->name('login');
     Route::post('/login', [LoginController::class, 'store']);
@@ -57,19 +53,19 @@ Route::middleware('guest')->group(function () {
     Route::post('/register', [RegisterController::class, 'store']);
 });
 
-
 // == HALAMAN BACKEND / DASHBOARD ==
-// Seluruh rute di grup ini dilindungi oleh middleware 'auth'.
 Route::middleware('auth')->prefix('dashboard')->group(function () {
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
     Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
-    // ▼▼▼ RUTE PENYIARAN SUDAH DIHAPUS DARI SINI ▼▼▼
-    
     // Resource routes
     Route::resource('/broadcasts', DashboardBroadcastController::class)->names('dashboard.broadcasts');
     Route::resource('/banners', BannerController::class)->except(['show']);
     Route::resource('/posts', DashboardPostController::class)->names('dashboard.posts');
+    Route::resource('/visi-misi', DashboardVisiMisiController::class)->names('dashboard.visi-misi');
+    
+    // 👇 ROUTE SEJARAH (URL: /dashboard/sejarah)
+    Route::resource('/sejarah', DashboardHistoryController::class)->names('dashboard.histories');
 
     // Rute Kategori Penyiaran (Modal)
     Route::post('/broadcast-categories', [DashboardBroadcastCategoryController::class, 'store'])->name('dashboard.broadcast-categories.store');
@@ -80,8 +76,6 @@ Route::middleware('auth')->prefix('dashboard')->group(function () {
     Route::post('/categories', [DashboardPostCategoryController::class, 'store'])->name('dashboard.categories.store');
     Route::put('/categories/{category}', [DashboardPostCategoryController::class, 'update'])->name('dashboard.categories.update');
     Route::delete('/categories/{category}', [DashboardPostCategoryController::class, 'destroy'])->name('dashboard.categories.destroy');
-
-    Route::resource('/visi-misi', DashboardVisiMisiController::class)->names('dashboard.visi-misi');
 });
 
 // == FITUR UTILITAS ==
