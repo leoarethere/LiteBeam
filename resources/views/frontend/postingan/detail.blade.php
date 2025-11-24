@@ -24,19 +24,6 @@
                 </div>
             @else
 
-            {{-- Breadcrumb (Link Author/Kategori Dihapus sesuai request sebelumnya) --}}
-            <nav class="flex mb-6 text-gray-700 dark:text-gray-400" aria-label="Breadcrumb">
-                <ol class="inline-flex items-center space-x-1 md:space-x-2 rtl:space-x-reverse">
-                    <li><a href="/" class="hover:text-blue-600 text-sm font-medium">Beranda</a></li>
-                    <li><span class="mx-1 text-gray-400">/</span></li>
-                    <li><a href="{{ route('posts.index') }}" class="hover:text-blue-600 text-sm font-medium">Blog</a></li>
-                    @if($post->category)
-                        <li><span class="mx-1 text-gray-400">/</span></li>
-                        <li><span class="text-sm font-medium text-gray-500">{{ $post->category->name }}</span></li>
-                    @endif
-                </ol>
-            </nav>
-
             <article class="mx-auto w-full max-2xl format format-sm sm:format-base lg:format-lg format-blue dark:format-invert">
                 <header class="mb-4 lg:mb-6 not-format">
                     <div class="flex justify-between items-center mb-5 text-gray-500">

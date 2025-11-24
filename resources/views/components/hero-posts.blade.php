@@ -15,7 +15,8 @@
         }
     }"
     x-init="startAutoplay()"
-    class="relative h-[70vh] md:h-[60vh] overflow-hidden rounded-xl md:rounded-2xl mb-8 shadow-lg"
+    {{-- ✅ PERBAIKAN: Menggunakan aspect-ratio untuk konsistensi --}}
+    class="relative w-full aspect-[16/9] md:aspect-[21/9] overflow-hidden rounded-xl md:rounded-2xl mb-8 shadow-lg"
 >
     {{-- Latar Belakang Gambar Slider --}}
     <template x-for="(slide, index) in slides" :key="index">
@@ -35,14 +36,18 @@
 
     <div class="absolute inset-0 bg-black/50"></div>
 
-    <div class="relative z-10 flex flex-col items-center justify-center h-full text-center px-4">
-        <div class="max-w-screen-md">
-            <h2 class="mb-4 text-3xl font-bold tracking-tight text-white sm:text-4xl">Cari Postingan</h2>
-            <p class="mx-auto mb-8 max-w-2xl font-light text-gray-100 md:mb-4 sm:text-xl">
+    {{-- ✅ PERBAIKAN: Responsive padding --}}
+    <div class="relative z-10 flex flex-col items-center justify-center h-full text-center px-4 sm:px-6">
+        <div class="max-w-screen-md w-full">
+            {{-- ✅ Heading: Mobile (text-2xl) → Tablet (text-3xl) → Desktop (text-4xl) --}}
+            <h2 class="mb-3 sm:mb-4 text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight text-white">Cari Postingan</h2>
+            
+            {{-- ✅ Subtitle: Responsive font sizes --}}
+            <p class="mx-auto mb-4 sm:mb-6 md:mb-8 max-w-2xl text-sm sm:text-base md:text-lg font-light text-gray-100">
                 Jelajahi postingan terbaru, penulis favorit, dan kategori yang sesuai dengan minat Anda.
             </p>
             
-            {{-- ✅ PERBAIKAN: FORM PENCARIAN YANG LEBIH BAIK --}}
+            {{-- ✅ PERBAIKAN: FORM PENCARIAN YANG LEBIH RESPONSIVE --}}
             <form action="{{ route('posts.index') }}" method="GET">
                 {{-- ✅ SIMPAN PARAMETER FILTER YANG SUDAH ADA --}}
                 @if (request('category'))
@@ -55,17 +60,22 @@
                     <input type="hidden" name="sort" value="{{ request('sort') }}">
                 @endif
                 
-                <div class="items-center mx-auto mb-3 space-y-4 max-w-screen-sm sm:flex sm:space-y-0">
+                {{-- ✅ Responsive spacing & layout --}}
+                <div class="items-center mx-auto mb-3 space-y-3 max-w-screen-sm sm:flex sm:gap-2">
                     <div class="relative w-full">
                         <label for="search" class="hidden mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">Cari</label>
+                        
+                        {{-- ✅ Responsive icon size --}}
                         <div class="flex absolute inset-y-0 left-0 items-center pl-3 pointer-events-none">
-                            <svg class="w-5 h-5 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <svg class="w-4 h-4 sm:w-5 sm:h-5 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                             </svg>
                         </div>
+                        
+                        {{-- ✅ Responsive input: padding & font size --}}
                         <input 
-                            class="block p-4 pl-10 w-full text-sm text-gray-900 bg-white rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" 
-                            placeholder="Cari judul, penulis, kategori, atau kata kunci..." 
+                            class="block p-3 sm:p-4 pl-9 sm:pl-10 w-full text-xs sm:text-sm text-gray-900 bg-white rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" 
+                            placeholder="Cari judul, penulis, kategori..." 
                             type="search" 
                             id="search" 
                             name="search" 
@@ -74,8 +84,10 @@
                             required
                         >
                     </div>
-                    <div>
-                        <button type="submit" class="py-4 px-6 w-full text-sm font-medium text-white bg-blue-700 rounded-lg border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 transition-colors">
+                    
+                    {{-- ✅ Button: Full width di mobile, auto di desktop --}}
+                    <div class="w-full sm:w-auto">
+                        <button type="submit" class="py-3 sm:py-4 px-5 sm:px-6 w-full text-xs sm:text-sm font-medium text-white bg-blue-700 rounded-lg border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 transition-colors">
                             Cari
                         </button>
                     </div>

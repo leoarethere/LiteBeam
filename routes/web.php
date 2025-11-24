@@ -2,23 +2,19 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\PageController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\ThemeController;
 use App\Http\Controllers\BannerController;
 use App\Http\Controllers\RegisterController;
-
-// Controllers Dashboard
-use App\Http\Controllers\BroadcastController;
+use App\Http\Controllers\VisiMisiController;
+use App\Http\Controllers\BroadcastController; 
 use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\DashboardPostController; 
-use App\Http\Controllers\DashboardHistoryController;
+use App\Http\Controllers\DashboardPostController;
 use App\Http\Controllers\DashboardVisiMisiController;
-
-// Controller Frontend Baru
 use App\Http\Controllers\DashboardBroadcastController;
 use App\Http\Controllers\DashboardPostCategoryController;
-
 use App\Http\Controllers\DashboardBroadcastCategoryController;
 
 /*
@@ -50,6 +46,7 @@ Route::get('/penyiaran/{broadcast:slug}', [BroadcastController::class, 'show'])-
 Route::get('/categories/{category:slug}', [PostController::class, 'category'])->name('categories.show');
 Route::get('/authors/{user:username}', [PostController::class, 'author'])->name('authors.show');
 
+Route::get('/visi-misi', [VisiMisiController::class, 'visiMisi'])->name('visi-misi');
 
 // == AUTENTIKASI ==
 // Rute ini dikelompokkan dan hanya bisa diakses oleh pengguna yang BELUM login (guest).

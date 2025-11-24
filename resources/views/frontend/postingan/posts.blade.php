@@ -116,21 +116,14 @@
         
         {{-- BAGIAN DAFTAR POSTINGAN (GRID) --}}
         <div class="pb-8 lg:pb-4">
-            {{-- 
-                 GRID SYSTEM:
-                 Menggunakan grid 3 kolom (lg:grid-cols-3) agar lebih pas untuk blog post.
-            --}}
             <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
                 @forelse ($posts as $post)
                 
-                    {{-- ▼▼▼ KARTU POSTINGAN BARU (GAYA SIARAN) ▼▼▼ --}}
-                    {{-- Kita tidak menggunakan <x-post-card> lagi, tapi menulis HTML langsung --}}
-                    <a href="{{ route('posts.show', $post->slug) }}" 
-                    class="group bg-white dark:bg-gray-800 rounded-2xl overflow-hidden transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl dark:hover:shadow-none h-full flex flex-col">
+                    {{-- ✅ KARTU POSTINGAN - DIPERBAIKI UNTUK VISIBILITY --}}
+                    <article class="group bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-sm hover:shadow-lg overflow-hidden transition-all duration-300 hover:-translate-y-1 h-full flex flex-col">
                         
-                        {{-- CONTAINER GAMBAR (Relative) --}}
-                        {{-- Menggunakan aspect-video (16:9) yang lebih cocok untuk blog daripada 3:4 siaran --}}
-                        <div class="relative overflow-hidden bg-gray-100 dark:bg-gray-900 w-full aspect-video">
+                        {{-- CONTAINER GAMBAR --}}
+                        <a href="{{ route('posts.show', $post->slug) }}" class="block relative overflow-hidden bg-gray-100 dark:bg-gray-900 w-full aspect-video">
                             
                             {{-- GAMBAR UTAMA --}}
                             @if ($post->featured_image && Storage::exists($post->featured_image))
@@ -140,25 +133,24 @@
                                      loading="lazy">
                             @else
                                 {{-- Fallback Image --}}
-                                <div class="w-full h-full flex flex-col items-center justify-center bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-600">
+                                <div class="w-full h-full flex flex-col items-center justify-center bg-gray-200 dark:bg-gray-700 text-gray-400 dark:text-gray-600">
                                     <svg class="w-12 h-12 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                                     </svg>
                                 </div>
                             @endif
 
-                            {{-- OVERLAY GRADASI (Hover Effect) - Ini kunci efek 'Siaran' --}}
+                            {{-- OVERLAY GRADASI (Hover Effect) --}}
                             <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end">
-                                {{-- Teks 'Baca Selengkapnya' yang naik dari bawah --}}
                                 <div class="p-4 w-full transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
                                     <span class="inline-flex items-center gap-2 text-white text-sm font-bold">
-                                        Baca Selengkapnya
+                                        Lihat Selengkapnya
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
                                     </span>
                                 </div>
                             </div>
 
-                            {{-- KATEGORI BADGE (Pojok Kiri Atas) --}}
+                            {{-- KATEGORI BADGE --}}
                             @if($post->category)
                                 <div class="absolute top-3 left-3">
                                     <span class="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-bold shadow-sm {{ $post->category->color_classes ?? 'bg-blue-600 text-white' }}">
@@ -166,35 +158,38 @@
                                     </span>
                                 </div>
                             @endif
-                        </div>
+                        </a>
 
-                    {{-- KONTEN TEKS --}}
-                    <div class="p-5 flex flex-col flex-grow">
-                        {{-- Meta Data --}}
-                        <div class="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400 mb-3">
-                            <span class="flex items-center gap-1">
-                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                                {{ $post->created_at->format('d M Y') }}
-                            </span>
-                            @if($post->user)
+                        {{-- KONTEN TEKS --}}
+                        <div class="p-5 flex flex-col flex-grow">
+                            {{-- Meta Data --}}
+                            <div class="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400 mb-3">
                                 <span class="flex items-center gap-1">
-                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
-                                    {{ $post->user->name }}
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                                    {{ $post->created_at->format('d M Y') }}
                                 </span>
-                            @endif
+                                @if($post->user)
+                                    <span class="flex items-center gap-1 truncate max-w-[150px]">
+                                        <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                                        {{ $post->user->name }}
+                                    </span>
+                                @endif
+                            </div>
+
+                            {{-- Judul --}}
+                            <a href="{{ route('posts.show', $post->slug) }}">
+                                <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-2" title="{{ $post->title }}">
+                                    {{ $post->title }}
+                                </h3>
+                            </a>
+
+                            {{-- Excerpt / Ringkasan --}}
+                            <p class="text-sm text-gray-600 dark:text-gray-400 mb-4 flex-grow line-clamp-3">
+                                {{ Str::limit($post->excerpt ? $post->excerpt : strip_tags($post->body), 150, '...') }}
+                            </p>
+
                         </div>
-
-                        {{-- Judul: Dibatasi max 2 baris --}}
-                        <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-2" title="{{ $post->title }}">
-                            {{ $post->title }}
-                        </h3>
-
-                        {{-- Excerpt / Ringkasan --}}
-                        <p class="text-sm text-gray-600 dark:text-gray-400 mb-4 flex-grow line-clamp-3">
-                            {{-- SOLUSI: Kita limit HASIL dari (excerpt ATAU body) --}}
-                            {{ Str::limit($post->excerpt ? $post->excerpt : strip_tags($post->body), 150, '...') }}
-                        </p>
-                    </div>
+                    </article>
 
                 @empty
                     <div class="lg:col-span-3 text-center py-16">
@@ -229,6 +224,6 @@
             </div>
         @endif
 
-    </div> {{-- PENUTUP KONTENER UTAMA --}}
+    </div>
 
 </x-layout>

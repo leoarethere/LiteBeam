@@ -27,31 +27,6 @@
 
     <main class="pt-0 pb-0 lg:pt-0 lg:pb-0 bg-white dark:bg-gray-900 antialiased">
         <div class="mt-0 px-4 sm:px-6 lg:px-8">
-            
-            {{-- BREADCRUMB --}}
-            <nav class="flex mb-6 text-gray-700 dark:text-gray-400" aria-label="Breadcrumb">
-                <ol class="inline-flex items-center space-x-1 md:space-x-2 rtl:space-x-reverse">
-                    <li>
-                        <a href="/" class="hover:text-blue-600 dark:hover:text-blue-400 text-sm font-medium">Beranda</a>
-                    </li>
-                    <li><span class="mx-1 text-gray-400">/</span></li>
-                    <li>
-                        <a href="{{ route('broadcasts.index') }}" class="hover:text-blue-600 dark:hover:text-blue-400 text-sm font-medium">Program</a>
-                    </li>
-                    @if($broadcast->broadcastCategory)
-                        <li><span class="mx-1 text-gray-400">/</span></li>
-                        <li>
-                            <a href="{{ route('broadcasts.index', ['category' => $broadcast->broadcastCategory->slug]) }}" class="hover:text-blue-600 dark:hover:text-blue-400 text-sm font-medium">
-                                {{ $broadcast->broadcastCategory->name }}
-                            </a>
-                        </li>
-                    @endif
-                    <li><span class="mx-1 text-gray-400">/</span></li>
-                    <li aria-current="page" class="text-sm font-medium text-gray-500 dark:text-gray-500 line-clamp-1">
-                        {{ $broadcast->title }}
-                    </li>
-                </ol>
-            </nav>
 
             {{-- ARTIKEL KONTEN --}}
             <article class="mx-auto w-full max-2xl format format-sm sm:format-base lg:format-lg format-blue dark:format-invert">
