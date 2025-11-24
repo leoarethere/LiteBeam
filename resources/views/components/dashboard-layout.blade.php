@@ -12,12 +12,27 @@
         'resources/js/dashboard.js' 
     ])
     
-    <link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
+    {{-- 👇 TEMPELKAN KODE GOOGLE FONTS BARU DI SINI --}}
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Google+Sans+Flex:opsz,wght@6..144,1..1000&display=swap" rel="stylesheet">
 
     <style>
         [x-cloak] { display: none !important; }
         .turbo-loading { opacity: 0.7; pointer-events: none; }
         .notification-banner { transition: all 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55); }
+
+        .google-sans-flex-<uniquifier> {
+        font-family: "Google Sans Flex", sans-serif;
+        font-optical-sizing: auto;
+        font-weight: <weight>;
+        font-style: normal;
+        font-variation-settings:
+            "slnt" 0,
+            "wdth" 100,
+            "GRAD" 0,
+            "ROND" 0;
+        }
     </style>
 </head>
 <body class="bg-gray-50 dark:bg-gray-900">

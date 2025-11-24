@@ -43,7 +43,7 @@
     class="pb-6">
         
         {{-- HEADER HALAMAN --}}
-        <div class="flex flex-col md:flex-row md:justify-between md:items-start gap-4 mb-6 pt-2">
+        <div class="flex flex-col md:flex-row md:justify-between md:items-start gap-4 mb-8 pt-2">
             <div>
                 <h1 class="text-2xl lg:text-3xl font-bold text-gray-900 dark:text-white">
                     Pengaturan Hero Carousel

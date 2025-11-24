@@ -32,10 +32,12 @@ module.exports = {
       },
       fontFamily: {
         sans: [
-          'Inter', defaultTheme.fontFamily.sans
+          '"Google Sans Flex"', 
+          ...defaultTheme.fontFamily.sans
         ],
         body: [
-          'Inter', defaultTheme.fontFamily.sans
+          '"Google Sans Flex"', 
+          ...defaultTheme.fontFamily.sans
         ],
       },
     },

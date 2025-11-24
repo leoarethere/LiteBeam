@@ -62,7 +62,7 @@
                 <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
                     <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-300">
                         <tr>
-                            <th class="px-6 py-4 text-center w-16">No</th>
+                            <th class="px-6 py-4 text-center w-12">No</th>
                             <th class="px-6 py-4 text-center w-24">Gambar</th>
                             <th class="px-6 py-4">Judul & Konten</th>
                             <th class="px-6 py-4 text-center w-32">Status</th>

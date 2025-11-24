@@ -65,7 +65,7 @@ Route::middleware('auth')->prefix('dashboard')->group(function () {
     Route::resource('/visi-misi', DashboardVisiMisiController::class)->names('dashboard.visi-misi');
     
     // 👇 ROUTE SEJARAH (URL: /dashboard/sejarah)
-    Route::resource('/sejarah', DashboardHistoryController::class)->names('dashboard.histories');
+    Route::resource('/sejarah', DashboardHistoryController::class)->names('dashboard.sejarah')->parameters(['sejarah' => 'history']); // <--- TAMBAHKAN BARIS INI
 
     // Rute Kategori Penyiaran (Modal)
     Route::post('/broadcast-categories', [DashboardBroadcastCategoryController::class, 'store'])->name('dashboard.broadcast-categories.store');

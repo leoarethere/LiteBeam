@@ -13,13 +13,29 @@
         body {
             overscroll-behavior-y: contain;
         }
+
+        .google-sans-flex-<uniquifier> {
+        font-family: "Google Sans Flex", sans-serif;
+        font-optical-sizing: auto;
+        font-weight: <weight>;
+        font-style: normal;
+        font-variation-settings:
+            "slnt" 0,
+            "wdth" 100,
+            "GRAD" 0,
+            "ROND" 0;
+        }
     </style>
     @vite([
         'resources/css/app.css', 
         'resources/js/app.js', 
         'resources/js/dashboard.js'
     ])
-    <link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
+
+    {{-- 👇 TEMPELKAN KODE GOOGLE FONTS BARU DI SINI --}}
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Google+Sans+Flex:opsz,wght@6..144,1..1000&display=swap" rel="stylesheet">
 </head>
 
 {{-- PERBAIKAN 1: Hapus kelas yang tidak perlu dari body --}}
