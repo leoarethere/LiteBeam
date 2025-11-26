@@ -63,7 +63,7 @@
                     <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-300">
                         <tr>
                             <th class="px-6 py-4 text-center w-12">No</th>
-                            <th class="px-6 py-4 text-center w-24">Gambar</th>
+                            <th class="px-6 py-4 text-center w-28">Gambar</th> {{-- Diperlebar dari w-24 menjadi w-28 --}}
                             <th class="px-6 py-4">Judul & Konten</th>
                             <th class="px-6 py-4 text-center w-32">Status</th>
                             <th class="px-6 py-4 text-center w-36">Aksi</th>
@@ -78,10 +78,15 @@
                                 <td class="px-6 py-4 text-center">
                                     @if($item->image)
                                         <img src="{{ Storage::url($item->image) }}" 
-                                             alt="Img" 
-                                             class="h-10 w-10 rounded-md object-cover mx-auto border border-gray-200 dark:border-gray-600">
+                                             alt="Gambar {{ $item->title }}" 
+                                             class="w-20 h-14 object-cover rounded-lg ring-1 ring-gray-200 dark:ring-gray-700 inline-block"> {{-- Menggunakan desain yang sama dengan postingan --}}
                                     @else
-                                        <span class="text-xs text-gray-400">-</span>
+                                        {{-- Placeholder yang sama dengan postingan --}}
+                                        <div class="w-20 h-14 inline-flex items-center justify-center bg-gray-100 dark:bg-gray-700 rounded-lg ring-1 ring-gray-200 dark:ring-gray-700">
+                                            <svg class="w-6 h-6 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                            </svg>
+                                        </div>
                                     @endif
                                 </td>
                                 <td class="px-6 py-4">

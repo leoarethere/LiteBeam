@@ -2,28 +2,15 @@
 
 <article class="bg-white rounded-lg border border-gray-200 shadow-md dark:bg-gray-800 dark:border-gray-700 overflow-hidden flex flex-col group h-full">
     
-    {{-- GAMBAR --}}
+    {{-- GAMBAR dengan Responsive Images --}}
     <a href="{{ route('posts.show', $post->slug) }}" class="block overflow-hidden relative h-40">
-        @if ($post->featured_image && Storage::exists($post->featured_image))
-            <img src="{{ Storage::url($post->featured_image) }}" 
-                 alt="Gambar untuk {{ $post->title }}" 
-                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 ease-in-out"
-                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-            
-            {{-- Fallback jika gambar error --}}
-            <div class="w-full h-full hidden items-center justify-center bg-gray-100 dark:bg-gray-700">
-                <svg class="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                </svg>
-            </div>
-        @else
-            {{-- Placeholder standar --}}
-            <div class="w-full h-full flex items-center justify-center bg-gray-100 dark:bg-gray-700">
-                <svg class="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                </svg>
-            </div>
-        @endif
+        <x-responsive-image 
+            :path="$post->featured_image" 
+            :alt="$post->title"
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+            loading="lazy"
+            class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 ease-in-out"
+        />
     </a>
 
     {{-- KONTEN --}}
@@ -32,7 +19,6 @@
             {{-- Meta Header --}}
             <div class="flex justify-between items-center mb-3 text-gray-500 dark:text-gray-400">
                 @if ($post->category)
-                    {{-- PERUBAHAN: Link kategori dihapus, hanya menampilkan nama --}}
                     <span class="text-xs font-medium inline-flex items-center px-2 py-0.5 rounded {{ $post->category->color_classes ?? 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300' }}">
                         {{ $post->category->name }}
                     </span>
@@ -58,9 +44,9 @@
                     <img class="w-6 h-6 rounded-full" 
                          src="https://ui-avatars.com/api/?name={{ urlencode($post->user->name) }}&background=random&color=fff" 
                          alt="{{ $post->user->name }}" 
+                         loading="lazy"
                          onerror="this.src='https://ui-avatars.com/api/?name=User&background=random&color=fff'"/>
                     
-                    {{-- PERUBAHAN: Link author dihapus, style hover dihilangkan --}}
                     <span class="text-sm text-gray-700 dark:text-gray-300 font-medium truncate max-w-[100px]">
                         {{ $post->user->name }}
                     </span>
@@ -71,7 +57,7 @@
             
             <a href="{{ route('posts.show', $post->slug) }}" 
                class="inline-flex items-center text-sm font-medium text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition-colors">
-                Baca Selengkapnya
+                Baca
                 <svg class="ml-1 w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                     <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"></path>
                 </svg>

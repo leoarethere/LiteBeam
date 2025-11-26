@@ -7,9 +7,10 @@ use App\Http\Controllers\PostController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\ThemeController;
 use App\Http\Controllers\BannerController;
+use App\Http\Controllers\HistoryController;
 use App\Http\Controllers\RegisterController;
-use App\Http\Controllers\VisiMisiController;
-use App\Http\Controllers\BroadcastController; 
+use App\Http\Controllers\VisiMisiController; 
+use App\Http\Controllers\BroadcastController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DashboardPostController;
 use App\Http\Controllers\DashboardHistoryController;
@@ -44,6 +45,9 @@ Route::get('/categories/{category:slug}', [PostController::class, 'category'])->
 Route::get('/authors/{user:username}', [PostController::class, 'author'])->name('authors.show');
 
 Route::get('/visi-misi', [VisiMisiController::class, 'visiMisi'])->name('visi-misi');
+
+// Route untuk Halaman Sejarah (Publik)
+Route::get('/sejarah', [HistoryController::class, 'index'])->name('sejarah');
 
 // == AUTENTIKASI ==
 Route::middleware('guest')->group(function () {
