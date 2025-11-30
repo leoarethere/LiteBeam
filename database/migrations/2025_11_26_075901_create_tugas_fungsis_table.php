@@ -8,7 +8,8 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('task_functions', function (Blueprint $table) {
+        // Pastikan nama tabelnya 'tugas_fungsis' dan kolom-kolomnya ada
+        Schema::create('tugas_fungsis', function (Blueprint $table) {
             $table->id();
             $table->enum('type', ['tugas', 'fungsi']); // Pembeda: Tugas atau Fungsi
             $table->integer('order')->default(0);       // Urutan
@@ -21,6 +22,6 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::dropIfExists('task_functions');
+        Schema::dropIfExists('tugas_fungsis');
     }
 };

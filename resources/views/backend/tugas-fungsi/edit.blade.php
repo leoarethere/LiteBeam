@@ -55,7 +55,7 @@
         </div>
 
         <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md border border-gray-200 dark:border-gray-700">
-            <form action="{{ route('dashboard.tugas-fungsi.update', $task->id) }}" method="POST" enctype="multipart/form-data">
+            <form action="{{ route('dashboard.tugas-fungsi.update', $tugasFungsi->id) }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 @method('PUT')
                 
@@ -65,8 +65,8 @@
                     <div>
                         <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Tipe Data</label>
                         <select name="type" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white" required>
-                            <option value="tugas" {{ old('type', $task->type) == 'tugas' ? 'selected' : '' }}>Tugas</option>
-                            <option value="fungsi" {{ old('type', $task->type) == 'fungsi' ? 'selected' : '' }}>Fungsi</option>
+                            <option value="tugas" {{ old('type', $tugasFungsi->type) == 'tugas' ? 'selected' : '' }}>Tugas</option>
+                            <option value="fungsi" {{ old('type', $tugasFungsi->type) == 'fungsi' ? 'selected' : '' }}>Fungsi</option>
                         </select>
                         @error('type')
                             <p class="mt-2 text-sm text-red-600 dark:text-red-500">{{ $message }}</p>
@@ -74,7 +74,7 @@
                     </div>
 
                     {{-- Input Gambar dengan Preview --}}
-                    <div x-data="{ preview: '{{ $task->image ? Storage::url($task->image) : null }}' }">
+                    <div x-data="{ preview: '{{ $tugasFungsi->image ? Storage::url($tugasFungsi->image) : null }}' }">
                         <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Gambar / Ikon (Opsional)</label>
                         
                         {{-- Preview Image --}}
@@ -90,9 +90,9 @@
                         </div>
 
                         <input type="file" name="image" x-ref="fileInput" 
-                               @change="preview = URL.createObjectURL($event.target.files[0])" 
-                               accept="image/png, image/jpeg, image/jpg, image/webp" 
-                               class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400">
+                            @change="preview = URL.createObjectURL($event.target.files[0])" 
+                            accept="image/png, image/jpeg, image/jpg, image/webp" 
+                            class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400">
                         <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Ganti gambar jika ingin mengubahnya. PNG, JPG, WEBP (Max. 5MB).</p>
                         @error('image')
                             <p class="mt-2 text-sm text-red-600 dark:text-red-500">{{ $message }}</p>
@@ -102,7 +102,7 @@
                     {{-- Konten Trix --}}
                     <div>
                         <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Isi Konten <span class="text-red-500">*</span></label>
-                        <input id="content" type="hidden" name="content" value="{{ old('content', $task->content) }}">
+                        <input id="content" type="hidden" name="content" value="{{ old('content', $tugasFungsi->content) }}">
                         <trix-editor input="content" class="trix-content bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"></trix-editor>
                         @error('content')
                             <p class="mt-2 text-sm text-red-600 dark:text-red-500">{{ $message }}</p>
@@ -113,8 +113,8 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
                             <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Urutan Tampil</label>
-                            <input type="number" name="order" value="{{ old('order', $task->order) }}" min="1" 
-                                   class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white" required>
+                            <input type="number" name="order" value="{{ old('order', $tugasFungsi->order) }}" min="1" 
+                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white" required>
                             <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Angka lebih kecil tampil lebih dulu.</p>
                             @error('order')
                                 <p class="mt-2 text-sm text-red-600 dark:text-red-500">{{ $message }}</p>
@@ -123,7 +123,7 @@
                         <div class="flex items-center pt-8">
                             <label class="relative inline-flex items-center cursor-pointer">
                                 <input type="hidden" name="is_active" value="0">
-                                <input type="checkbox" name="is_active" value="1" class="sr-only peer" {{ old('is_active', $task->is_active) ? 'checked' : '' }}>
+                                <input type="checkbox" name="is_active" value="1" class="sr-only peer" {{ old('is_active', $tugasFungsi->is_active) ? 'checked' : '' }}>
                                 <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
                                 <span class="ml-3 text-sm font-medium text-gray-900 dark:text-gray-300">Status Aktif</span>
                             </label>

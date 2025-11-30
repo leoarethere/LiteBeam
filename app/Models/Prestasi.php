@@ -5,19 +5,23 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class TaskFunction extends Model
+class Prestasi extends Model
 {
     use HasFactory;
 
     protected $fillable = [
+        'title',
+        'award_name',
         'type',
-        'order',
+        'category',
+        'year',
+        'description',
         'image',
-        'content',
         'is_active',
     ];
 
     protected $casts = [
         'is_active' => 'boolean',
+        'year' => 'integer',
     ];
 }

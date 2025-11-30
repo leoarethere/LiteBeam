@@ -2,16 +2,18 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\View\View;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\RedirectResponse;
 
 class LoginController extends Controller
 {
     /**
      * Menampilkan halaman form login.
      */
-    public function index()
+    public function index(): View
     {
         return view('auth.login', [
             'title' => 'Login',
@@ -20,40 +22,53 @@ class LoginController extends Controller
     }
 
     /**
-     * PERBAIKAN: Menambahkan metode store untuk menangani proses login.
-     * Metode ini sebelumnya tidak ada, sehingga menyebabkan error.
+     * Menangani proses login pengguna.
      */
-    public function store(Request $request)
+    public function store(Request $request): RedirectResponse
     {
         // 1. Validasi input dari form
         $credentials = $request->validate([
-            'email' => ['required', 'email'],
-            'password' => ['required'],
+            'email' => ['required', 'email:dns'],
+            'password' => ['required', 'min:6'],
+        ], [
+            'email.required' => 'Email wajib diisi.',
+            'email.email' => 'Format email tidak valid.',
+            'password.required' => 'Password wajib diisi.',
+            'password.min' => 'Password minimal 6 karakter.',
         ]);
 
-        // 2. Coba untuk mengautentikasi pengguna
-        if (Auth::attempt($credentials)) {
+        // 2. Coba untuk mengautentikasi pengguna dengan remember me
+        $remember = $request->has('remember');
+
+        if (Auth::attempt($credentials, $remember)) {
             // Jika berhasil, regenerate session untuk keamanan
             $request->session()->regenerate();
 
-            // Arahkan ke halaman yang diinginkan setelah login (misal: dashboard)
-            return redirect()->intended('/dashboard');
+            // Arahkan ke halaman dashboard dengan notifikasi sukses
+            return redirect()->intended(route('dashboard'))
+                ->with('success', 'Selamat datang kembali, ' . Auth::user()->name . '!');
         }
 
         // 3. Jika autentikasi gagal
-        // Kembalikan ke halaman login dengan pesan error
         return back()->withErrors([
-            'email' => 'Kredensial yang diberikan tidak cocok dengan catatan kami.',
+            'email' => 'Email atau password yang Anda masukkan salah.',
         ])->onlyInput('email');
     }
 
-    public function logout(Request $request)
+    /**
+     * Menangani proses logout pengguna.
+     */
+    public function logout(Request $request): RedirectResponse
     {
+        // Dapatkan nama user sebelum logout
+        $userName = Auth::user()->name;
+
         Auth::logout();
         
         $request->session()->invalidate();
         $request->session()->regenerateToken();
         
-        return redirect('/');
+        return redirect()->route('home')
+            ->with('success', 'Anda telah berhasil logout. Sampai jumpa, ' . $userName . '!');
     }
 }

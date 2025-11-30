@@ -1,5 +1,5 @@
 <x-dashboard-layout>
-    <x-slot:title>Manajemen Dokumen PPID</x-slot:title>
+    <x-slot:title>Manajemen Informasi Magang</x-slot:title>
 
     {{-- Style untuk modal & x-cloak --}}
     <style>
@@ -36,45 +36,42 @@
         <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-6 pt-2">
             <div>
                 <h1 class="text-2xl lg:text-3xl font-bold text-gray-900 dark:text-white">
-                    Dokumen PPID
+                    Informasi Magang
                 </h1>
                 <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                    Kelola semua dokumen dan informasi publik di sini.
+                    Kelola informasi lowongan dan panduan magang / PKL di sini.
                 </p>
             </div>
             
             {{-- Tombol Aksi Header --}}
             <div class="flex-shrink-0 flex items-center gap-3">
-                <a href="{{ route('dashboard.ppid.create') }}" 
+                <a href="{{ route('dashboard.info-magang.create') }}" 
                     class="inline-flex items-center justify-center px-4 py-2.5 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800 transition-colors whitespace-nowrap">
                     <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd"></path></svg>
-                    Tambah Dokumen
+                    Tambah Info Magang
                 </a>
             </div>
         </div>
 
-        {{-- FORM FILTER & PENCARIAN (BARU DITAMBAHKAN) --}}
-        <form method="GET" action="{{ route('dashboard.ppid.index') }}" class="mb-6">
+        {{-- FORM FILTER & PENCARIAN --}}
+        <form method="GET" action="{{ route('dashboard.info-magang.index') }}" class="mb-6">
             <div class="flex flex-col md:flex-row gap-4">
-                {{-- Input Pencarian --}}
                 <div class="relative flex-grow">
                     <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                         <svg class="w-5 h-5 text-gray-500 dark:text-gray-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"></path></svg>
                     </div>
-                    <input type="text" name="search" value="{{ request('search') }}" class="block w-full p-3 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" placeholder="Cari dokumen...">
+                    <input type="text" name="search" value="{{ request('search') }}" class="block w-full p-3 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" placeholder="Cari info magang...">
                 </div>
 
-                {{-- Select Sort --}}
                 <select name="sort" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full md:w-48 p-3 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white">
                     <option value="latest" @selected(request('sort', 'latest') == 'latest')>Terbaru</option>
                     <option value="oldest" @selected(request('sort') == 'oldest')>Terlama</option>
                 </select>
 
-                {{-- Tombol Aksi --}}
                 <div class="flex gap-2">
                     <button type="submit" class="w-full md:w-auto px-5 py-3 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:ring-4 focus:ring-blue-300">Cari</button>
                     @if(request()->hasAny(['search', 'sort']))
-                        <a href="{{ route('dashboard.ppid.index') }}" class="w-full md:w-auto px-5 py-3 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-600">Reset</a>
+                        <a href="{{ route('dashboard.info-magang.index') }}" class="w-full md:w-auto px-5 py-3 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-600">Reset</a>
                     @endif
                 </div>
             </div>
@@ -83,7 +80,7 @@
         {{-- INFO HASIL FILTER --}}
         @if(request()->hasAny(['search', 'sort']))
             <div class="mb-4 text-sm text-gray-600 dark:text-gray-400">
-                Menampilkan {{ $ppids->total() }} hasil
+                Menampilkan {{ $items->total() }} hasil
                 @if(request('search'))
                     untuk pencarian <strong class="text-gray-900 dark:text-white">"{{ request('search') }}"</strong>
                 @endif
@@ -104,21 +101,21 @@
                     <tr>
                         <th scope="col" class="px-4 py-4 text-center w-12">No</th>
                         <th scope="col" class="px-4 py-4 text-center w-24">Cover</th>
-                        <th scope="col" class="px-4 py-4 text-left">Judul & Sumber</th>
+                        <th scope="col" class="px-4 py-4 text-left">Judul & Link</th>
                         <th scope="col" class="px-4 py-4 text-left">Keterangan</th>
                         <th scope="col" class="px-4 py-4 text-center w-32">Status</th>
                         <th scope="col" class="px-4 py-4 text-center w-36">Aksi</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
-                    @forelse ($ppids as $item)
+                    @forelse ($items as $item)
                         <tr class="bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
-                            <td class="px-4 py-4 align-top text-center font-medium text-gray-900 dark:text-white">{{ $loop->iteration + $ppids->firstItem() - 1 }}</td>
+                            <td class="px-4 py-4 align-top text-center font-medium text-gray-900 dark:text-white">{{ $loop->iteration + $items->firstItem() - 1 }}</td>
                             
                             {{-- Cover --}}
                             <td class="px-4 py-4 align-top text-center">
                                 @if ($item->cover_image)
-                                    <img src="{{ Storage::url($item->cover_image) }}" alt="Cover {{ $item->title }}" 
+                                    <img src="{{ Storage::url($item->cover_image) }}" alt="Cover" 
                                          class="w-20 h-14 object-cover rounded-lg ring-1 ring-gray-200 dark:ring-gray-700 inline-block">
                                 @else
                                     <div class="w-20 h-14 inline-flex items-center justify-center bg-gray-100 dark:bg-gray-700 rounded-lg ring-1 ring-gray-200 dark:ring-gray-700">
@@ -166,11 +163,11 @@
                             {{-- Aksi --}}
                             <td class="px-4 py-4 align-top text-center">
                                 <div class="flex items-center justify-center gap-3">
-                                    <a href="{{ route('dashboard.ppid.edit', $item->id) }}" 
+                                    <a href="{{ route('dashboard.info-magang.edit', $item->id) }}" 
                                        class="inline-flex items-center justify-center w-10 h-10 text-xs font-medium 
                                               rounded-lg bg-yellow-100 text-yellow-800 hover:bg-yellow-200 
                                               dark:bg-yellow-900/30 dark:text-yellow-300 dark:hover:bg-yellow-800/50 
-                                              transition-colors group" title="Edit Dokumen">
+                                              transition-colors group" title="Edit Info">
                                         <svg class="w-4 h-4 group-hover:scale-110 transition-transform" 
                                              fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
@@ -183,7 +180,7 @@
                                         class="inline-flex items-center justify-center w-10 h-10 text-xs font-medium 
                                                rounded-lg bg-red-100 text-red-600 hover:bg-red-200 
                                                dark:bg-red-900/30 dark:text-red-400 dark:hover:bg-red-800/50 
-                                               transition-colors group" title="Hapus Dokumen">
+                                               transition-colors group" title="Hapus Info">
                                         <svg class="w-4 h-4 group-hover:scale-110 transition-transform" 
                                              fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
@@ -200,12 +197,8 @@
                                     <svg class="w-16 h-16 text-gray-300 dark:text-gray-600 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                                     </svg>
-                                    <p class="text-lg font-medium text-gray-500 dark:text-gray-400">Tidak ada dokumen ditemukan</p>
-                                    @if(request()->hasAny(['search', 'sort']))
-                                        <p class="text-sm text-gray-400 dark:text-gray-500 mt-1">Coba kata kunci lain atau reset filter</p>
-                                    @else
-                                        <p class="text-sm text-gray-400 dark:text-gray-500 mt-1">Silakan tambahkan dokumen baru</p>
-                                    @endif
+                                    <p class="text-lg font-medium text-gray-500 dark:text-gray-400">Tidak ada informasi magang</p>
+                                    <p class="text-sm text-gray-400 dark:text-gray-500 mt-1">Silakan tambahkan informasi baru</p>
                                 </div>
                             </td>
                         </tr>
@@ -215,9 +208,9 @@
         </div>
 
         {{-- PAGINASI --}}
-        @if($ppids->hasPages())
+        @if($items->hasPages())
             <div class="mt-6">
-                {{ $ppids->links() }}
+                {{ $items->links() }}
             </div>
         @endif
 
@@ -247,7 +240,7 @@
                             <svg class="w-6 h-6 text-red-600 dark:text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
                         </div>
                         <div class="ml-4 flex-1">
-                            <p class="text-gray-900 dark:text-white font-medium mb-2">Anda yakin ingin menghapus dokumen ini?</p>
+                            <p class="text-gray-900 dark:text-white font-medium mb-2">Anda yakin ingin menghapus data ini?</p>
                             <p class="text-sm text-gray-600 dark:text-gray-400 font-semibold line-clamp-2" x-text="deleteItemTitle"></p>
                         </div>
                     </div>
@@ -258,7 +251,7 @@
                 <div class="flex items-center justify-end gap-3 p-6 border-t dark:border-gray-700">
                     <button @click="closeDeleteModal()" type="button" class="px-5 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-600 transition-colors">Batal</button>
                     
-                    <form :action="`{{ route('dashboard.ppid.destroy', '') }}/${deleteItemId}`" method="POST" class="inline">
+                    <form :action="`{{ route('dashboard.info-magang.destroy', '') }}/${deleteItemId}`" method="POST" class="inline">
                         @csrf
                         @method('DELETE')
                         <button type="submit" class="px-5 py-2.5 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 focus:ring-4 focus:ring-red-300 dark:bg-red-600 dark:hover:bg-red-700 transition-colors">

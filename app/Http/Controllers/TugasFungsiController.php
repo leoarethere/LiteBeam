@@ -2,22 +2,21 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\TaskFunction;
+use App\Models\TugasFungsi;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 
-class TaskFunctionController extends Controller
+class TugasFungsiController extends Controller
 {
     public function index()
     {
-        // Ambil data tugas (type = 'tugas') yang aktif, urutkan berdasarkan order
-        $tugas = TaskFunction::where('type', 'tugas')
+        // 3. Gunakan Model Baru
+        $tugas = TugasFungsi::where('type', 'tugas')
             ->where('is_active', true)
             ->orderBy('order')
             ->get();
 
-        // Ambil data fungsi (type = 'fungsi') yang aktif, urutkan berdasarkan order
-        $fungsi = TaskFunction::where('type', 'fungsi')
+        $fungsi = TugasFungsi::where('type', 'fungsi')
             ->where('is_active', true)
             ->orderBy('order')
             ->get();

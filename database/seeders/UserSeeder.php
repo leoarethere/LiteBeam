@@ -16,11 +16,11 @@ class UserSeeder extends Seeder
     public function run(): void
     {
         User::create([
-            'name' => 'Beam Admin',
-            'username' => 'litebeam',
-            'email' => 'litebeam@gmail.com',
+            'name' => 'Leo',
+            'username' => 'leo',
+            'email' => 'leonardounofficialz@gmail.com',
             'email_verified_at' => now(),
-            'password' => Hash::make('password'),
+            'password' => Hash::make('12345678'),
             'remember_token' => Str::random(10)
         ]);
         

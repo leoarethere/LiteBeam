@@ -2,9 +2,9 @@
     class="fixed top-0 left-0 z-40 h-screen bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 transition-all duration-300 ease-in-out md:translate-x-0 will-change-transform"
     x-data="{ 
         dropdowns: {
-            publikasi: {{ request()->is('dashboard/broadcasts*', 'dashboard/pola-acara*', 'dashboard/jadwal-acara*') ? 'true' : 'false' }},
+            publikasi: {{ request()->is('dashboard/broadcasts*', 'dashboard/jadwal-acara*') ? 'true' : 'false' }},
             layanan: {{ request()->is('dashboard/ppid*', 'dashboard/info-rb*', 'dashboard/info-magang*', 'dashboard/info-kunjungan*') ? 'true' : 'false' }},
-            tentang: {{ request()->is('dashboard/sejarah*', 'dashboard/visi-misi*', 'dashboard/prestasi*', 'dashboard/tugas-fungsi*', 'dashboard/unit-kerja*', 'dashboard/himne-tvri*') ? 'true' : 'false' }}
+            tentang: {{ request()->is('dashboard/sejarah*', 'dashboard/visi-misi*', 'dashboard/prestasi*', 'dashboard/tugas-fungsi*', 'dashboard/himne-tvri*') ? 'true' : 'false' }}
         },
         
         closeAllDropdowns() {
@@ -47,7 +47,7 @@
 
                 {{-- Dropdown Publikasi --}}
                 @php 
-                    $isPublikasiActive = request()->is('dashboard/broadcasts*', 'dashboard/pola-acara*', 'dashboard/jadwal-acara*'); 
+                    $isPublikasiActive = request()->is('dashboard/broadcasts*', 'dashboard/jadwal-acara*'); 
                 @endphp
                 
                 <li class="relative">
@@ -113,19 +113,6 @@
                                     <path d="M4 11a9 9 0 0 1 9 9"></path><path d="M4 4a16 16 0 0 1 16 16"></path><circle cx="5" cy="19" r="1"></circle>
                                 </svg>
                                 Penyiaran
-                            </a>
-                        </li>
-                        <li>
-                            <a href="/dashboard/pola-acara" 
-                               class="flex items-center gap-3 py-2 px-3 text-sm rounded-md transition-colors duration-200 group"
-                               :class="{
-                                   'bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white font-medium': {{ request()->is('dashboard/pola-acara*') ? 'true' : 'false' }},
-                                   'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white': {{ !request()->is('dashboard/pola-acara*') ? 'true' : 'false' }}
-                               }">
-                                <svg class="h-5 w-5 flex-shrink-0 transition-transform duration-200 group-hover:scale-110" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line>
-                                </svg>
-                                Pola Acara
                             </a>
                         </li>
                         <li>
@@ -265,7 +252,7 @@
 
                 {{-- Dropdown Tentang --}}
                 @php 
-                    $isTentangActive = request()->is('dashboard/sejarah*', 'dashboard/visi-misi*', 'dashboard/prestasi*', 'dashboard/tugas-fungsi*', 'dashboard/unit-kerja*', 'dashboard/himne-tvri*'); 
+                    $isTentangActive = request()->is('dashboard/sejarah*', 'dashboard/visi-misi*', 'dashboard/prestasi*', 'dashboard/tugas-fungsi*', 'dashboard/himne-tvri*'); 
                 @endphp
                 <li class="relative">
                     <button 
@@ -355,19 +342,6 @@
                                     <polyline points="9 11 12 14 22 4"></polyline><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
                                 </svg>
                                 Tugas dan Fungsi
-                            </a>
-                        </li>
-                        <li>
-                            <a href="/dashboard/unit-kerja" 
-                               class="flex items-center gap-3 py-2 px-3 text-sm rounded-md transition-colors duration-200 group"
-                               :class="{
-                                   'bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white font-medium': {{ request()->is('dashboard/unit-kerja*') ? 'true' : 'false' }},
-                                   'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white': {{ !request()->is('dashboard/unit-kerja*') ? 'true' : 'false' }}
-                               }">
-                                <svg class="h-5 w-5 flex-shrink-0 transition-transform duration-200 group-hover:scale-110" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect>
-                                </svg>
-                                Unit Kerja
                             </a>
                         </li>
                         <li>

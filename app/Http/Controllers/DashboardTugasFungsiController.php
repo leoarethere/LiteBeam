@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\View\View;
+use App\Models\TugasFungsi;
 use Illuminate\Support\Str;
-use App\Models\TaskFunction;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Intervention\Image\ImageManager;
@@ -12,16 +12,15 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Storage;
 use Intervention\Image\Drivers\Gd\Driver;
 
-class DashboardTaskFunctionController extends Controller
+class DashboardTugasFungsiController extends Controller
 {
     public function index(): View
     {
-        // Urutkan berdasarkan Tipe (Tugas dulu, baru Fungsi), lalu Urutan
-        $tasks = TaskFunction::orderBy('type', 'desc') // 'tugas' (T) > 'fungsi' (F) secara abjad desc
+        $tugasFungsi = TugasFungsi::orderBy('type', 'desc')
                              ->orderBy('order', 'asc')
                              ->get();
 
-        return view('backend.tugas-fungsi.index', compact('tasks'));
+        return view('backend.tugas-fungsi.index', ['tugasFungsi' => $tugasFungsi]);
     }
 
     public function create(): View
@@ -38,10 +37,8 @@ class DashboardTaskFunctionController extends Controller
             'content'   => 'required|string',
         ]);
 
-        // Handle Checkbox "Status Aktif"
         $validated['is_active'] = $request->has('is_active');
 
-        // Handle Image
         if ($request->hasFile('image')) {
             try {
                 $file = $request->file('image');
@@ -60,18 +57,18 @@ class DashboardTaskFunctionController extends Controller
             }
         }
 
-        TaskFunction::create($validated);
+        TugasFungsi::create($validated);
 
         return redirect()->route('dashboard.tugas-fungsi.index')
             ->with('success', 'Data berhasil ditambahkan!');
     }
 
-    public function edit(TaskFunction $tugas_fungsi): View
+    public function edit(TugasFungsi $tugasFungsi): View
     {
-        return view('backend.tugas-fungsi.edit', ['task' => $tugas_fungsi]);
+        return view('backend.tugas-fungsi.edit', ['tugasFungsi' => $tugasFungsi]);
     }
 
-    public function update(Request $request, TaskFunction $tugas_fungsi): RedirectResponse
+    public function update(Request $request, TugasFungsi $tugasFungsi): RedirectResponse
     {
         $validated = $request->validate([
             'type'      => 'required|in:tugas,fungsi',
@@ -83,8 +80,8 @@ class DashboardTaskFunctionController extends Controller
         $validated['is_active'] = $request->has('is_active');
 
         if ($request->hasFile('image')) {
-            if ($tugas_fungsi->image && Storage::disk('public')->exists($tugas_fungsi->image)) {
-                Storage::disk('public')->delete($tugas_fungsi->image);
+            if ($tugasFungsi->image && Storage::disk('public')->exists($tugasFungsi->image)) {
+                Storage::disk('public')->delete($tugasFungsi->image);
             }
 
             try {
@@ -104,19 +101,19 @@ class DashboardTaskFunctionController extends Controller
             }
         }
 
-        $tugas_fungsi->update($validated);
+        $tugasFungsi->update($validated);
 
         return redirect()->route('dashboard.tugas-fungsi.index')
             ->with('success', 'Data berhasil diperbarui!');
     }
 
-    public function destroy(TaskFunction $tugas_fungsi): RedirectResponse
+    public function destroy(TugasFungsi $tugasFungsi): RedirectResponse
     {
-        if ($tugas_fungsi->image && Storage::disk('public')->exists($tugas_fungsi->image)) {
-            Storage::disk('public')->delete($tugas_fungsi->image);
+        if ($tugasFungsi->image && Storage::disk('public')->exists($tugasFungsi->image)) {
+            Storage::disk('public')->delete($tugasFungsi->image);
         }
 
-        $tugas_fungsi->delete();
+        $tugasFungsi->delete();
 
         return redirect()->route('dashboard.tugas-fungsi.index')
             ->with('success', 'Data berhasil dihapus!');

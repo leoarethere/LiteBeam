@@ -1,76 +1,183 @@
 <x-dashboard-layout>
     <x-slot:title>Edit Jadwal Acara</x-slot:title>
 
-    <div class="pb-6">
+    {{-- 
+        Alpine.js Data:
+        Diinisialisasi dengan data lama ($jadwalAcara) agar form terisi otomatis.
+    --}}
+    <div class="pb-6" x-data="{
+        title: '{{ old('title', $jadwalAcara->title) }}',
+        slug: '{{ old('slug', $jadwalAcara->slug) }}',
+        
+        generateSlug() {
+            this.slug = this.title
+                .toLowerCase()
+                .replace(/[^a-z0-9\s-]/g, '')
+                .replace(/\s+/g, '-')
+                .replace(/-+/g, '-')
+                .trim();
+        }
+    }">
+        {{-- HEADER --}}
         <div class="flex flex-col md:flex-row md:justify-between md:items-start gap-4 mb-8 pt-2">
             <div>
-                <h1 class="text-2xl lg:text-3xl font-bold text-gray-900 dark:text-white">Edit Jadwal</h1>
-                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Perbarui informasi jadwal acara TV.</p>
+                <h1 class="text-2xl lg:text-3xl font-bold text-gray-900 dark:text-white">
+                    Edit Jadwal Acara
+                </h1>
+                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                    Perbarui informasi penayangan program.
+                </p>
             </div>
         </div>
 
         <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md border border-gray-200 dark:border-gray-700">
-            <form action="{{ route('dashboard.jadwal-acara.update', $tvSchedule) }}" method="POST">
+            {{-- Form Update (PUT Method) --}}
+            <form action="{{ route('dashboard.jadwal-acara.update', $jadwalAcara) }}" method="POST">
                 @csrf
                 @method('PUT')
                 
                 <div class="p-6 space-y-6">
-                    
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        {{-- Pilih Hari --}}
+
+                    {{-- Error Summary --}}
+                    @if ($errors->any())
+                        <div class="p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400 border border-red-300 dark:border-red-900" role="alert">
+                            <div class="font-medium mb-2">Oops! Ada beberapa kesalahan:</div>
+                            <ul class="list-disc list-inside">
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
+
+                    <div class="grid gap-6 md:grid-cols-2">
+                        
+                        {{-- Nama Acara --}}
+                        <div class="col-span-2">
+                            <label for="title" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                                Nama Acara <span class="text-red-500">*</span>
+                            </label>
+                            <input type="text" 
+                                name="title" 
+                                id="title"
+                                x-model="title" 
+                                @input="generateSlug()" 
+                                class="bg-gray-50 border text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white {{ $errors->has('title') ? 'border-red-500' : 'border-gray-300' }}" 
+                                placeholder="Contoh: Berita Pagi" 
+                                required>
+                            @error('title')
+                                <p class="mt-2 text-sm text-red-600 dark:text-red-500">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        {{-- Slug URL --}}
+                        <div class="col-span-2">
+                            <label for="slug" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                                Slug URL <span class="text-red-500">*</span>
+                            </label>
+                            <input type="text" 
+                                name="slug" 
+                                id="slug"
+                                x-model="slug" 
+                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white font-mono" 
+                                readonly>
+                            @error('slug')
+                                <p class="mt-2 text-sm text-red-600 dark:text-red-500">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        {{-- Pukul Penayangan --}}
                         <div>
-                            <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Hari Tayang <span class="text-red-500">*</span></label>
-                            <select name="day" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white" required>
-                                @foreach(['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu'] as $day)
-                                    <option value="{{ $day }}" @selected(old('day', $tvSchedule->day) == $day)>{{ $day }}</option>
+                            <label for="start_time" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                                Pukul Penayangan <span class="text-red-500">*</span>
+                            </label>
+                            <div class="relative">
+                                <div class="absolute inset-y-0 end-0 top-0 flex items-center pe-3.5 pointer-events-none">
+                                    <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Zm11-4a1 1 0 1 0-2 0v4a1 1 0 0 0 .293.707l3 3a1 1 0 0 0 1.414-1.414L13 11.586V8Z" clip-rule="evenodd"/></svg>
+                                </div>
+                                {{-- Value di-parse menggunakan Carbon agar formatnya H:i (sesuai input time) --}}
+                                <input type="time" 
+                                    name="start_time" 
+                                    id="start_time"
+                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white" 
+                                    required 
+                                    value="{{ old('start_time', \Carbon\Carbon::parse($jadwalAcara->start_time)->format('H:i')) }}">
+                            </div>
+                            @error('start_time')
+                                <p class="mt-2 text-sm text-red-600 dark:text-red-500">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        {{-- Kategori --}}
+                        <div>
+                            <label for="broadcast_category_id" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                                Kategori Acara <span class="text-red-500">*</span>
+                            </label>
+                            <select name="broadcast_category_id" 
+                                id="broadcast_category_id"
+                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white" 
+                                required>
+                                <option value="">Pilih Kategori...</option>
+                                @foreach($categories as $category)
+                                    <option value="{{ $category->id }}" 
+                                        @selected(old('broadcast_category_id', $jadwalAcara->broadcast_category_id) == $category->id)>
+                                        {{ $category->name }}
+                                    </option>
                                 @endforeach
                             </select>
+                            @error('broadcast_category_id')
+                                <p class="mt-2 text-sm text-red-600 dark:text-red-500">{{ $message }}</p>
+                            @enderror
                         </div>
 
-                        {{-- Input Jam --}}
-                        <div>
-                            <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Jam Tayang (WIB) <span class="text-red-500">*</span></label>
-                            {{-- Format jam diambil 5 karakter pertama (HH:MM) agar sesuai input type time --}}
-                            <input type="time" name="time" value="{{ old('time', substr($tvSchedule->time, 0, 5)) }}" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white" required>
+                        {{-- Status --}}
+                        <div class="col-span-2">
+                            <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                                Status Penayangan
+                            </label>
+                            <div class="flex gap-4">
+                                {{-- Radio Aktif --}}
+                                <label class="flex items-center p-3 border rounded-lg w-full cursor-pointer bg-gray-50 dark:bg-gray-700 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
+                                    <input type="radio" 
+                                        name="is_active" 
+                                        value="1" 
+                                        class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                                        @checked(old('is_active', $jadwalAcara->is_active) == 1)>
+                                    <span class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">
+                                        Aktif (Tayang)
+                                    </span>
+                                </label>
+                                
+                                {{-- Radio Non-Aktif --}}
+                                <label class="flex items-center p-3 border rounded-lg w-full cursor-pointer bg-gray-50 dark:bg-gray-700 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
+                                    <input type="radio" 
+                                        name="is_active" 
+                                        value="0" 
+                                        class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                                        @checked(old('is_active', $jadwalAcara->is_active) == 0)>
+                                    <span class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">
+                                        Non-Aktif
+                                    </span>
+                                </label>
+                            </div>
+                            @error('is_active')
+                                <p class="mt-2 text-sm text-red-600 dark:text-red-500">{{ $message }}</p>
+                            @enderror
                         </div>
-                    </div>
 
-                    {{-- Nama Program --}}
-                    <div>
-                        <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Nama Program / Acara <span class="text-red-500">*</span></label>
-                        <input type="text" name="program_name" value="{{ old('program_name', $tvSchedule->program_name) }}" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white" required>
                     </div>
-
-                    {{-- Link Source (Opsional) --}}
-                    <div>
-                        <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Sumber Link (Opsional)</label>
-                        <select name="link_source_id" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-                            <option value="">-- Tidak Ada Link --</option>
-                            @forelse($sources as $source)
-                                <option value="{{ $source->id }}" @selected(old('link_source_id', $tvSchedule->link_source_id) == $source->id)>
-                                    {{ $source->name }} ({{ $source->url }})
-                                </option>
-                            @empty
-                                <option value="" disabled>Belum ada data Sumber Link</option>
-                            @endforelse
-                        </select>
-                    </div>
-
-                    {{-- Status Aktif --}}
-                    <div class="flex items-center pt-2">
-                        <label class="relative inline-flex items-center cursor-pointer">
-                            <input type="checkbox" name="is_active" value="1" class="sr-only peer" @checked(old('is_active', $tvSchedule->is_active))>
-                            <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
-                            <span class="ml-3 text-sm font-medium text-gray-900 dark:text-gray-300">Status Aktif</span>
-                        </label>
-                    </div>
-
                 </div>
 
-                {{-- Footer Tombol --}}
+                {{-- Action Buttons --}}
                 <div class="flex items-center justify-between p-6 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700/50 rounded-b-lg">
-                    <a href="{{ route('dashboard.jadwal-acara.index') }}" class="px-5 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-600 transition-colors">Batal</a>
-                    <button type="submit" class="px-5 py-2.5 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 transition-colors">Simpan Perubahan</button>
+                    <a href="{{ route('dashboard.jadwal-acara.index') }}" 
+                       class="px-5 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-600 transition-colors">
+                        Batal
+                    </a>
+                    <button type="submit" 
+                            class="px-5 py-2.5 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 transition-colors">
+                        Simpan Perubahan
+                    </button>
                 </div>
             </form>
         </div>

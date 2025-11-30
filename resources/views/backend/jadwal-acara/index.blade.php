@@ -10,106 +10,135 @@
 
     <div x-data="{ 
         deleteModal: false, 
-        deleteItemId: null, 
-        deleteItemName: '',
-        openDeleteModal(itemId, itemName) {
-            this.deleteItemId = itemId;
-            this.deleteItemName = itemName;
+        deleteId: null, 
+        deleteTitle: '',
+        
+        openDeleteModal(id, title) {
+            this.deleteId = id;
+            this.deleteTitle = title;
             this.deleteModal = true;
             document.body.style.overflow = 'hidden';
         },
+        
         closeDeleteModal() {
             this.deleteModal = false;
-            this.deleteItemId = null;
-            this.deleteItemName = '';
             document.body.style.overflow = '';
         }
     }" class="pb-6">
         
-        <div class="flex flex-col md:flex-row md:justify-between md:items-start gap-4 mb-8 pt-2">
+        {{-- HEADER --}}
+        <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-6 pt-2">
             <div>
                 <h1 class="text-2xl lg:text-3xl font-bold text-gray-900 dark:text-white">Jadwal Acara TV</h1>
-                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Kelola jadwal siaran harian televisi.</p>
+                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Atur jadwal penayangan program harian.</p>
             </div>
-            {{-- ROUTE UPDATE --}}
+            
             <a href="{{ route('dashboard.jadwal-acara.create') }}" 
-               class="inline-flex items-center justify-center px-4 py-2.5 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800 transition-colors shadow-sm hover:shadow-md">
-                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-                Tambah Jadwal
+               class="inline-flex items-center justify-center px-4 py-2.5 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 transition-colors">
+               <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd"></path></svg>
+               Buat Jadwal
             </a>
         </div>
 
-        <div class="bg-white dark:bg-gray-800 shadow-md sm:rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
-            <div class="table-container">
-                <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-                    <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-300">
-                        <tr>
-                            <th class="px-6 py-4 text-center w-12">No</th>
-                            <th class="px-6 py-4 w-32">Hari</th>
-                            <th class="px-6 py-4 w-24">Jam</th>
-                            <th class="px-6 py-4">Nama Program</th>
-                            <th class="px-6 py-4">Link Source</th>
-                            <th class="px-6 py-4 text-center w-32">Status</th>
-                            <th class="px-6 py-4 text-center w-36">Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
-                        @forelse ($schedules as $index => $item)
-                            <tr class="bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
-                                <td class="px-6 py-4 text-center">{{ $schedules->firstItem() + $index }}</td>
-                                <td class="px-6 py-4 font-medium text-gray-900 dark:text-white">{{ $item->day }}</td>
-                                <td class="px-6 py-4 text-gray-900 dark:text-white">{{ \Carbon\Carbon::parse($item->time)->format('H:i') }}</td>
-                                <td class="px-6 py-4 font-semibold text-blue-600 dark:text-blue-400">{{ $item->program_name }}</td>
-                                <td class="px-6 py-4 text-xs">
-                                    @if($item->linkSource)
-                                        <span class="px-2 py-1 bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300 rounded border border-gray-200 dark:border-gray-600">{{ $item->linkSource->name }}</span>
-                                    @else
-                                        <span class="text-gray-400 italic">-</span>
-                                    @endif
-                                </td>
-                                <td class="px-6 py-4 text-center">
-                                    @if($item->is_active)
-                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300 border border-green-200 dark:border-green-800">Aktif</span>
-                                    @else
-                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-600">Non-Aktif</span>
-                                    @endif
-                                </td>
-                                <td class="px-6 py-4 text-center">
-                                    <div class="flex items-center justify-center gap-3">
-                                        {{-- ROUTE UPDATE --}}
-                                        <a href="{{ route('dashboard.jadwal-acara.edit', $item) }}" 
-                                           class="inline-flex items-center justify-center w-8 h-8 text-xs font-medium rounded-lg bg-yellow-100 text-yellow-800 hover:bg-yellow-200 dark:bg-yellow-900/30 dark:text-yellow-300 dark:hover:bg-yellow-800/50 transition-colors">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
-                                        </a>
-                                        <button @click="openDeleteModal({{ $item->id }}, '{{ addslashes($item->program_name) }} ({{ $item->day }})')" 
-                                                class="inline-flex items-center justify-center w-8 h-8 text-xs font-medium rounded-lg bg-red-100 text-red-600 hover:bg-red-200 dark:bg-red-900/30 dark:text-red-400 dark:hover:bg-red-800/50 transition-colors">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                        @empty
-                            <tr><td colspan="7" class="px-6 py-12 text-center text-gray-500 dark:text-gray-400">Belum ada data jadwal. Silakan tambahkan baru.</td></tr>
-                        @endforelse
-                    </tbody>
-                </table>
+        {{-- FILTER --}}
+        <form method="GET" action="{{ route('dashboard.jadwal-acara.index') }}" class="mb-6">
+            <div class="flex flex-col md:flex-row gap-4">
+                <div class="relative flex-grow">
+                    <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                        <svg class="w-5 h-5 text-gray-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"></path></svg>
+                    </div>
+                    <input type="text" name="search" value="{{ request('search') }}" class="block w-full p-3 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" placeholder="Cari acara...">
+                </div>
+                <select name="category" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full md:w-48 p-3 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                    <option value="">Semua Kategori</option>
+                    @foreach ($categories as $category)
+                        <option value="{{ $category->slug }}" @selected(request('category') == $category->slug)>{{ $category->name }}</option>
+                    @endforeach
+                </select>
+                <button type="submit" class="px-5 py-3 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700">Cari</button>
             </div>
-            <div class="p-4 border-t border-gray-200 dark:border-gray-700">{{ $schedules->links() }}</div>
+        </form>
+
+        {{-- ALERT --}}
+        @if(session('success'))
+            <div class="mb-4 p-4 text-sm text-green-800 rounded-lg bg-green-50 dark:bg-green-900/30 dark:text-green-400 border border-green-200 dark:border-green-800">
+                <span class="font-medium">Sukses!</span> {{ session('success') }}
+            </div>
+        @endif
+
+        {{-- TABEL --}}
+        <div class="table-container bg-white dark:bg-gray-800 shadow-md sm:rounded-lg border border-gray-200 dark:border-gray-700">
+            <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+                <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-300">
+                    <tr>
+                        <th class="p-4 text-center w-24">Pukul</th>
+                        <th class="p-4 text-left">Nama Program</th>
+                        <th class="p-4 text-center">Kategori</th>
+                        <th class="p-4 text-center w-28">Status</th>
+                        <th class="p-4 text-center w-32">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+                    @forelse ($jadwalAcaras as $jadwal)
+                        <tr class="bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                            <td class="p-4 align-middle text-center font-mono text-lg font-bold text-blue-600 dark:text-blue-400">
+                                {{ \Carbon\Carbon::parse($jadwal->start_time)->format('H:i') }}
+                            </td>
+                            <td class="p-4 align-middle">
+                                <span class="font-semibold text-gray-900 dark:text-white text-base">{{ $jadwal->title }}</span>
+                            </td>
+                            <td class="p-4 align-middle text-center">
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $jadwal->broadcastCategory->color_classes ?? 'bg-gray-100 text-gray-800' }}">
+                                    {{ $jadwal->broadcastCategory->name ?? '-' }}
+                                </span>
+                            </td>
+                            <td class="p-4 align-middle text-center">
+                                @if($jadwal->is_active)
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300">
+                                        Tayang
+                                    </span>
+                                @else
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400">
+                                        Off
+                                    </span>
+                                @endif
+                            </td>
+                            <td class="p-4 align-middle text-center">
+                                <div class="flex items-center justify-center gap-2">
+                                    <a href="{{ route('dashboard.jadwal-acara.edit', $jadwal) }}" class="p-2 text-yellow-600 bg-yellow-100 rounded-lg hover:bg-yellow-200 dark:bg-yellow-900/30 dark:text-yellow-300">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                                    </a>
+                                    <button @click="openDeleteModal({{ $jadwal->id }}, '{{ addslashes($jadwal->title) }}')" class="p-2 text-red-600 bg-red-100 rounded-lg hover:bg-red-200 dark:bg-red-900/30 dark:text-red-400">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="5" class="p-8 text-center text-gray-500 dark:text-gray-400">Belum ada jadwal acara.</td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
         </div>
 
-        <div x-show="deleteModal" x-cloak class="fixed inset-0 z-50 overflow-y-auto bg-gray-900/75 backdrop-blur-sm flex items-center justify-center p-4">
-            <div class="relative bg-white rounded-lg shadow-xl dark:bg-gray-800 max-w-md w-full" @click.away="closeDeleteModal()">
-                <div class="p-6 text-center">
-                    <svg class="mx-auto mb-4 text-gray-400 w-12 h-12 dark:text-gray-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                    <h3 class="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">Apakah anda yakin ingin menghapus jadwal <br> "<span x-text="deleteItemName" class="font-bold text-gray-900 dark:text-white"></span>"?</h3>
-                    <div class="flex justify-center gap-4">
-                        <button @click="closeDeleteModal()" type="button" class="px-5 py-2.5 text-sm font-medium text-gray-500 bg-white rounded-lg border border-gray-200 hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600">Batal</button>
-                        {{-- ROUTE UPDATE --}}
-                        <form :action="`{{ route('dashboard.jadwal-acara.destroy', '') }}/${deleteItemId}`" method="POST">
-                            @csrf @method('DELETE')
-                            <button type="submit" class="px-5 py-2.5 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800">Ya, Hapus</button>
-                        </form>
-                    </div>
+        {{-- PAGINASI --}}
+        <div class="mt-4">{{ $jadwalAcaras->links() }}</div>
+
+        {{-- MODAL HAPUS --}}
+        <div x-show="deleteModal" x-cloak class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/75 backdrop-blur-sm"
+             x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
+             x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0">
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full p-6" @click.away="closeDeleteModal()">
+                <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Hapus Jadwal?</h3>
+                <p class="text-gray-600 dark:text-gray-300 mb-6">Anda yakin ingin menghapus jadwal <strong x-text="deleteTitle"></strong>?</p>
+                <div class="flex justify-end gap-3">
+                    <button @click="closeDeleteModal()" class="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200">Batal</button>
+                    <form :action="`{{ route('dashboard.jadwal-acara.destroy', '') }}/${deleteId}`" method="POST">
+                        @csrf @method('DELETE')
+                        <button type="submit" class="px-4 py-2 text-white bg-red-600 rounded-lg hover:bg-red-700">Hapus</button>
+                    </form>
                 </div>
             </div>
         </div>
