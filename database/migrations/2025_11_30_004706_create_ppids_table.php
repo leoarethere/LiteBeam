@@ -11,9 +11,9 @@ return new class extends Migration
         Schema::create('ppids', function (Blueprint $table) {
             $table->id();
             $table->string('title');
-            $table->text('description'); // Trix Editor output HTML
-            $table->string('source_link'); // Link Google Drive/Dropbox/Website
-            $table->string('cover_image')->nullable(); // Gambar cover (opsional)
+            $table->text('description');    // Untuk konten Trix Editor
+            $table->string('source_link');  // Link Google Drive / Website
+            $table->string('cover_image')->nullable(); // Foto Cover
             $table->boolean('is_active')->default(true);
             $table->timestamps();
         });

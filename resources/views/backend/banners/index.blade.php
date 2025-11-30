@@ -128,7 +128,7 @@
                     <div class="p-4 flex flex-col flex-grow">
                         <div class="flex-grow">
                             {{-- Judul --}}
-                            <h3 class="mb-2 text-lg font-bold  font-bold text-gray-900 dark:text-white leading-snug line-clamp-2">
+                            <h3 class="mb-2 text-lg font-bold text-gray-900 dark:text-white leading-snug line-clamp-2">
                                 {{ $banner->title }}
                             </h3>
 
@@ -140,16 +140,6 @@
                         
                         {{-- Footer dengan Tombol Aksi --}}
                         <div class="flex items-center justify-between mt-auto pt-3 border-t border-gray-100 dark:border-gray-700/50">
-
-                            {{-- Link --}}
-                            @if($banner->link)
-                                <div class="flex items-start text-xs text-gray-500 dark:text-gray-400 mb-2">
-                                    <svg class="w-3 h-3 mr-1 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path>
-                                    </svg>
-                                    <span class="truncate">{{ Str::limit($banner->link, 30) }}</span>
-                                </div>
-                            @endif
                             
                             <div class="flex items-center gap-2">
                                 {{-- Tombol Edit --}}

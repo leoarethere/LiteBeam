@@ -7,34 +7,32 @@ use App\Models\TvSchedule;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 
-class DashboardTvScheduleController extends Controller
+class DashboardJadwalAcaraController extends Controller
 {
     /**
-     * Menampilkan daftar jadwal acara.
+     * Menampilkan daftar jadwal.
      */
     public function index()
     {
-        // Kita ambil data dan urutkan berdasarkan urutan hari (Senin s/d Minggu) dan Jam
         $schedules = TvSchedule::orderByRaw("FIELD(day, 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu')")
                                ->orderBy('time', 'asc')
                                ->paginate(20);
 
-        return view('backend.tv-schedules.index', compact('schedules'));
+        // Perhatikan view-nya mengarah ke folder 'jadwal-acara'
+        return view('backend.jadwal-acara.index', compact('schedules'));
     }
 
     /**
-     * Menampilkan form tambah jadwal baru.
+     * Form tambah.
      */
     public function create()
     {
-        // Ambil data sumber link yang aktif untuk pilihan dropdown
         $sources = LinkSource::where('is_active', true)->get();
-        
-        return view('backend.tv-schedules.create', compact('sources'));
+        return view('backend.jadwal-acara.create', compact('sources'));
     }
 
     /**
-     * Menyimpan data jadwal baru ke database.
+     * Simpan data.
      */
     public function store(Request $request)
     {
@@ -46,29 +44,33 @@ class DashboardTvScheduleController extends Controller
             'is_active' => 'nullable|in:0,1',
         ]);
 
-        // Set default is_active ke 1 jika dicek, atau logika default controller
         $validated['is_active'] = $request->has('is_active') ? 1 : 1; 
 
         TvSchedule::create($validated);
 
-        return redirect()->route('dashboard.tv-schedules.index')
+        // Redirect ke route 'dashboard.jadwal-acara.index'
+        return redirect()->route('dashboard.jadwal-acara.index')
                          ->with('success', 'Jadwal berhasil ditambahkan!');
     }
 
     /**
-     * Menampilkan form edit jadwal.
+     * Form edit.
      */
-    public function edit(TvSchedule $tvSchedule)
+    public function edit(TvSchedule $jadwal_acara) // Parameter binding bisa disesuaikan, tapi menggunakan model TvSchedule
     {
         $sources = LinkSource::where('is_active', true)->get();
         
-        return view('backend.tv-schedules.edit', compact('tvSchedule', 'sources'));
+        // Kita kirim variabel $tvSchedule ke view agar tidak perlu ubah banyak kode view
+        return view('backend.jadwal-acara.edit', [
+            'tvSchedule' => $jadwal_acara,
+            'sources' => $sources
+        ]);
     }
 
     /**
-     * Memperbarui data jadwal yang diedit.
+     * Update data.
      */
-    public function update(Request $request, TvSchedule $tvSchedule)
+    public function update(Request $request, TvSchedule $jadwal_acara)
     {
         $validated = $request->validate([
             'day' => 'required|in:Senin,Selasa,Rabu,Kamis,Jumat,Sabtu,Minggu',
@@ -78,23 +80,22 @@ class DashboardTvScheduleController extends Controller
             'is_active' => 'nullable|in:0,1',
         ]);
 
-        // Pastikan checkbox terhandle dengan benar (jika tidak dicentang, nilainya 0)
         $validated['is_active'] = $request->has('is_active') ? 1 : 0;
 
-        $tvSchedule->update($validated);
+        $jadwal_acara->update($validated);
 
-        return redirect()->route('dashboard.tv-schedules.index')
+        return redirect()->route('dashboard.jadwal-acara.index')
                          ->with('success', 'Jadwal berhasil diperbarui!');
     }
 
     /**
-     * Menghapus jadwal.
+     * Hapus data.
      */
-    public function destroy(TvSchedule $tvSchedule)
+    public function destroy(TvSchedule $jadwal_acara)
     {
-        $tvSchedule->delete();
+        $jadwal_acara->delete();
 
-        return redirect()->route('dashboard.tv-schedules.index')
+        return redirect()->route('dashboard.jadwal-acara.index')
                          ->with('success', 'Jadwal berhasil dihapus!');
     }
 }

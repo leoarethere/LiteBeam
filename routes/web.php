@@ -95,7 +95,9 @@ Route::middleware('auth')->prefix('dashboard')->group(function () {
     ->names('dashboard.ppid')
     ->parameters(['ppid' => 'ppid']);
 
-    Route::resource('/tv-schedules', \App\Http\Controllers\DashboardTvScheduleController::class)->names('dashboard.tv-schedules'); 
+    Route::resource('/jadwal-acara', \App\Http\Controllers\DashboardJadwalAcaraController::class)
+    ->names('dashboard.jadwal-acara')
+    ->parameters(['jadwal-acara' => 'jadwal_acara']);
 });
 
 // == FITUR UTILITAS ==

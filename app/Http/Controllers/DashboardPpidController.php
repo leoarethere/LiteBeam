@@ -27,58 +27,42 @@ class DashboardPpidController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
-        // Validasi sederhana
-        $request->validate([
+        // Validasi
+        $validated = $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'required|string',
-            'file_path' => 'required|file|max:20480',
-            'cover_image' => 'nullable|image|max:5120',
+            'source_link' => 'required|url|max:500', // ✅ PERBAIKAN: Sesuai dengan database
+            'cover_image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
             'is_active' => 'nullable',
         ]);
 
-        $data = [
-            'title' => $request->title,
-            'description' => $request->description,
-            'is_active' => $request->has('is_active'),
-        ];
+        $validated['is_active'] = $request->has('is_active');
 
-        // Upload file dokumen
-        if ($request->hasFile('file_path')) {
-            $file = $request->file('file_path');
-            $extension = $file->getClientOriginalExtension();
-            $filename = time() . '_' . uniqid() . '.' . $extension;
-            
-            // Simpan ke storage/app/public/ppid-docs
-            $file->move(public_path('storage/ppid-docs'), $filename);
-            $data['file_path'] = 'ppid-docs/' . $filename;
-        }
-
-        // Upload cover image
+        // Upload cover image (opsional)
         if ($request->hasFile('cover_image')) {
-            $image = $request->file('cover_image');
-            $imageName = time() . '_' . uniqid() . '.jpg';
-            
             try {
+                $image = $request->file('cover_image');
+                $imageName = time() . '_' . uniqid() . '.jpg';
+                
                 $manager = new ImageManager(new Driver());
                 $imgProcessed = $manager->read($image);
                 $imgProcessed->scale(width: 800);
                 $encoded = $imgProcessed->toJpeg(quality: 80);
                 
-                // Simpan ke storage/app/public/ppid-covers
+                // Pastikan folder ada
                 if (!file_exists(public_path('storage/ppid-covers'))) {
                     mkdir(public_path('storage/ppid-covers'), 0755, true);
                 }
                 
                 file_put_contents(public_path('storage/ppid-covers/' . $imageName), $encoded);
-                $data['cover_image'] = 'ppid-covers/' . $imageName;
+                $validated['cover_image'] = 'ppid-covers/' . $imageName;
+                
             } catch (\Exception $e) {
-                // Jika gagal, simpan original
-                $image->move(public_path('storage/ppid-covers'), $imageName);
-                $data['cover_image'] = 'ppid-covers/' . $imageName;
+                return back()->withErrors(['cover_image' => 'Gagal upload gambar: ' . $e->getMessage()])->withInput();
             }
         }
 
-        Ppid::create($data);
+        Ppid::create($validated);
 
         return redirect()->route('dashboard.ppid.index')
             ->with('success', 'Dokumen PPID berhasil ditambahkan!');
@@ -91,38 +75,15 @@ class DashboardPpidController extends Controller
 
     public function update(Request $request, Ppid $ppid): RedirectResponse
     {
-        $request->validate([
+        $validated = $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'required|string',
-            'file_path' => 'nullable|file|max:20480',
-            'cover_image' => 'nullable|image|max:5120',
+            'source_link' => 'required|url|max:500', // ✅ PERBAIKAN: Sesuai dengan database
+            'cover_image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
             'is_active' => 'nullable',
         ]);
 
-        $data = [
-            'title' => $request->title,
-            'description' => $request->description,
-            'is_active' => $request->has('is_active'),
-        ];
-
-        // Update file dokumen jika ada
-        if ($request->hasFile('file_path')) {
-            // Hapus file lama
-            if ($ppid->file_path && file_exists(public_path('storage/' . $ppid->file_path))) {
-                unlink(public_path('storage/' . $ppid->file_path));
-            }
-
-            $file = $request->file('file_path');
-            $extension = $file->getClientOriginalExtension();
-            $filename = time() . '_' . uniqid() . '.' . $extension;
-            
-            if (!file_exists(public_path('storage/ppid-docs'))) {
-                mkdir(public_path('storage/ppid-docs'), 0755, true);
-            }
-            
-            $file->move(public_path('storage/ppid-docs'), $filename);
-            $data['file_path'] = 'ppid-docs/' . $filename;
-        }
+        $validated['is_active'] = $request->has('is_active');
 
         // Update cover image jika ada
         if ($request->hasFile('cover_image')) {
@@ -131,10 +92,10 @@ class DashboardPpidController extends Controller
                 unlink(public_path('storage/' . $ppid->cover_image));
             }
 
-            $image = $request->file('cover_image');
-            $imageName = time() . '_' . uniqid() . '.jpg';
-            
             try {
+                $image = $request->file('cover_image');
+                $imageName = time() . '_' . uniqid() . '.jpg';
+                
                 $manager = new ImageManager(new Driver());
                 $imgProcessed = $manager->read($image);
                 $imgProcessed->scale(width: 800);
@@ -145,14 +106,14 @@ class DashboardPpidController extends Controller
                 }
                 
                 file_put_contents(public_path('storage/ppid-covers/' . $imageName), $encoded);
-                $data['cover_image'] = 'ppid-covers/' . $imageName;
+                $validated['cover_image'] = 'ppid-covers/' . $imageName;
+                
             } catch (\Exception $e) {
-                $image->move(public_path('storage/ppid-covers'), $imageName);
-                $data['cover_image'] = 'ppid-covers/' . $imageName;
+                return back()->withErrors(['cover_image' => 'Gagal upload gambar: ' . $e->getMessage()])->withInput();
             }
         }
 
-        $ppid->update($data);
+        $ppid->update($validated);
 
         return redirect()->route('dashboard.ppid.index')
             ->with('success', 'Data PPID berhasil diperbarui!');
@@ -160,12 +121,7 @@ class DashboardPpidController extends Controller
 
     public function destroy(Ppid $ppid): RedirectResponse
     {
-        // Hapus file dokumen
-        if ($ppid->file_path && file_exists(public_path('storage/' . $ppid->file_path))) {
-            unlink(public_path('storage/' . $ppid->file_path));
-        }
-
-        // Hapus cover image
+        // Hapus cover image jika ada
         if ($ppid->cover_image && file_exists(public_path('storage/' . $ppid->cover_image))) {
             unlink(public_path('storage/' . $ppid->cover_image));
         }

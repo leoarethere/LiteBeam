@@ -12,7 +12,7 @@ class Ppid extends Model
     protected $fillable = [
         'title',
         'description',
-        'source_link',
+        'source_link',  // ✅ Konsisten dengan database
         'cover_image',
         'is_active',
     ];
@@ -20,4 +20,4 @@ class Ppid extends Model
     protected $casts = [
         'is_active' => 'boolean',
     ];
-}   
+}

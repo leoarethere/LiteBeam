@@ -1,15 +1,16 @@
 <x-dashboard-layout>
     <x-slot:title>Manajemen Dokumen PPID</x-slot:title>
 
-    {{-- Style untuk modal & x-cloak --}}
+    {{-- Style untuk modal & x-cloak (Konsisten dengan Postingan) --}}
     <style>
         [x-cloak] { display: none !important; }
         .modal-hidden { opacity: 0; visibility: hidden; transform: scale(0.9); }
         .modal-visible { opacity: 1; visibility: visible; transform: scale(1); }
         .table-container { overflow-x: auto; }
+        .alert-transition { transition: all 0.3s ease-in-out; }
     </style>
 
-    {{-- Data Alpine.js --}}
+    {{-- Data Alpine.js untuk Modal Hapus --}}
     <div x-data="{ 
         deleteModal: false, 
         deleteItemId: null, 
@@ -38,7 +39,7 @@
                     Dokumen PPID
                 </h1>
                 <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                    Kelola dokumen dan informasi publik PPID di sini.
+                    Kelola semua dokumen dan informasi publik di sini.
                 </p>
             </div>
             
@@ -49,15 +50,10 @@
             </a>
         </div>
 
-        {{-- Alert Success --}}
+        {{-- INFO HASIL (Alert Success) --}}
         @if(session('success'))
-            <div class="mb-4 p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
-                <div class="flex">
-                    <svg class="w-5 h-5 text-green-600 dark:text-green-400" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
-                    </svg>
-                    <p class="ml-3 text-sm font-medium text-green-800 dark:text-green-400">{{ session('success') }}</p>
-                </div>
+            <div class="mb-4 p-4 text-sm text-green-800 rounded-lg bg-green-50 dark:bg-green-900/30 dark:text-green-400 border border-green-200 dark:border-green-800 alert-transition" role="alert">
+                <span class="font-medium">Sukses!</span> {{ session('success') }}
             </div>
         @endif
 
@@ -68,40 +64,43 @@
                     <tr>
                         <th scope="col" class="px-6 py-4 text-center w-12">No</th>
                         <th scope="col" class="px-6 py-4 text-center w-24">Cover</th>
-                        <th scope="col" class="px-6 py-4 text-left">Judul & File</th>
+                        <th scope="col" class="px-6 py-4 text-left">Judul & Sumber</th>
                         <th scope="col" class="px-6 py-4 text-left">Keterangan</th>
                         <th scope="col" class="px-6 py-4 text-center w-32">Status</th>
-                        <th scope="col" class="px-6 py-4 text-center w-32">Aksi</th>
+                        <th scope="col" class="px-6 py-4 text-center w-36">Aksi</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
                     @forelse ($ppids as $item)
                         <tr class="bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
-                            <td class="px-6 py-4 align-top text-center font-medium text-gray-900 dark:text-white">{{ $loop->iteration }}</td>
+                            <td class="px-6 py-4 align-top text-center font-medium text-gray-900 dark:text-white">{{ $loop->iteration + $ppids->firstItem() - 1 }}</td>
                             
                             {{-- Cover --}}
                             <td class="px-6 py-4 align-top text-center">
                                 @if ($item->cover_image)
-                                    <img src="{{ asset('storage/' . $item->cover_image) }}" alt="Cover" class="w-16 h-auto object-cover rounded shadow-sm mx-auto border dark:border-gray-600">
+                                    <img src="{{ Storage::url($item->cover_image) }}" alt="Cover" class="w-16 h-12 object-cover rounded-lg shadow-sm mx-auto border dark:border-gray-600 ring-1 ring-gray-200 dark:ring-gray-700">
                                 @else
-                                    <div class="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded flex items-center justify-center mx-auto text-xs text-gray-400">
-                                        No Cover
+                                    <div class="w-16 h-12 bg-gray-100 dark:bg-gray-700 rounded-lg flex items-center justify-center mx-auto text-xs text-gray-400 ring-1 ring-gray-200 dark:ring-gray-700">
+                                        <svg class="w-6 h-6 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
                                     </div>
                                 @endif
                             </td>
 
-                            {{-- Judul & File --}}
+                            {{-- Judul & Sumber Link --}}
                             <td class="px-6 py-4 align-top">
-                                <p class="text-base font-semibold text-gray-900 dark:text-white mb-1">{{ $item->title }}</p>
-                                <a href="{{ asset('storage/' . $item->file_path) }}" target="_blank" class="inline-flex items-center gap-1 text-xs text-blue-600 dark:text-blue-400 hover:underline">
-                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                                    Lihat Dokumen
-                                </a>
+                                <div class="space-y-1">
+                                    <p class="font-semibold text-gray-900 dark:text-white line-clamp-2 leading-tight">{{ $item->title }}</p>
+                                    <a href="{{ $item->source_link }}" target="_blank" rel="noopener noreferrer" 
+                                       class="inline-flex items-center gap-1 text-xs font-medium text-blue-600 dark:text-blue-400 hover:underline">
+                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                                        Buka Link Sumber
+                                    </a>
+                                </div>
                             </td>
 
                             {{-- Keterangan (Excerpt) --}}
                             <td class="px-6 py-4 align-top">
-                                <div class="text-sm text-gray-600 dark:text-gray-300 line-clamp-3 prose prose-sm dark:prose-invert">
+                                <div class="text-sm text-gray-600 dark:text-gray-300 line-clamp-2">
                                     {!! Str::limit(strip_tags($item->description), 100) !!}
                                 </div>
                             </td>
@@ -109,13 +108,11 @@
                             {{-- Status --}}
                             <td class="px-6 py-4 align-top text-center">
                                 @if($item->is_active)
-                                    <span class="inline-flex items-center bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded-full dark:bg-green-900 dark:text-green-300">
-                                        <span class="w-2 h-2 me-1 bg-green-500 rounded-full"></span>
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300 border border-green-200 dark:border-green-800">
                                         Aktif
                                     </span>
                                 @else
-                                    <span class="inline-flex items-center bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded-full dark:bg-red-900 dark:text-red-300">
-                                        <span class="w-2 h-2 me-1 bg-red-500 rounded-full"></span>
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-600">
                                         Non-Aktif
                                     </span>
                                 @endif
@@ -123,28 +120,29 @@
 
                             {{-- Aksi --}}
                             <td class="px-6 py-4 align-top text-center">
-                                <div class="flex items-center justify-center gap-2">
+                                <div class="flex items-center justify-center gap-3">
                                     {{-- Edit --}}
                                     <a href="{{ route('dashboard.ppid.edit', $item->id) }}" 
-                                       class="p-2 text-white bg-yellow-400 rounded-lg hover:bg-yellow-500 focus:ring-4 focus:outline-none focus:ring-yellow-300 dark:focus:ring-yellow-800 transition-colors" title="Edit">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                                       class="inline-flex items-center justify-center w-9 h-9 text-xs font-medium rounded-lg bg-yellow-100 text-yellow-800 hover:bg-yellow-200 dark:bg-yellow-900/30 dark:text-yellow-300 dark:hover:bg-yellow-800/50 transition-colors group" title="Edit Dokumen">
+                                        <svg class="w-4 h-4 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
                                     </a>
 
                                     {{-- Hapus --}}
                                     <button @click="openDeleteModal({{ $item->id }}, '{{ addslashes($item->title) }}')"
                                         type="button" 
-                                        class="p-2 text-white bg-red-600 rounded-lg hover:bg-red-700 focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800 transition-colors" title="Hapus">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                        class="inline-flex items-center justify-center w-9 h-9 text-xs font-medium rounded-lg bg-red-100 text-red-600 hover:bg-red-200 dark:bg-red-900/30 dark:text-red-400 dark:hover:bg-red-800/50 transition-colors group" title="Hapus Dokumen">
+                                        <svg class="w-4 h-4 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                                     </button>
                                 </div>
                             </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="6" class="px-6 py-8 text-center text-gray-500 dark:text-gray-400">
+                            <td colspan="6" class="px-6 py-16 text-center">
                                 <div class="flex flex-col items-center justify-center">
-                                    <svg class="w-12 h-12 mb-3 text-gray-300 dark:text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                                    <p>Belum ada dokumen PPID.</p>
+                                    <svg class="w-16 h-16 text-gray-300 dark:text-gray-600 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                                    <p class="text-lg font-medium text-gray-500 dark:text-gray-400">Belum ada dokumen PPID</p>
+                                    <p class="text-sm text-gray-400 dark:text-gray-500 mt-1">Silakan tambahkan dokumen baru</p>
                                 </div>
                             </td>
                         </tr>
@@ -154,9 +152,11 @@
         </div>
 
         {{-- PAGINASI --}}
-        <div class="mt-4">
-            {{ $ppids->links() }}
-        </div>
+        @if($ppids->hasPages())
+            <div class="mt-6">
+                {{ $ppids->links() }}
+            </div>
+        @endif
 
         {{-- MODAL HAPUS --}}
         <div x-show="deleteModal" 
