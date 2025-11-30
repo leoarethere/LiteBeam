@@ -10,12 +10,9 @@
     {{-- KONTAINER UTAMA --}}
     <div class="px-4 sm:px-6 lg:px-8">
 
-        {{-- HERO SECTION --}}
+        {{-- HERO SECTION (TETAP SAMA) --}}
         <div class="relative rounded-3xl overflow-hidden mb-10 bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 dark:from-blue-900 dark:via-blue-950 dark:to-indigo-950 shadow-xl">
-            {{-- Pola grid --}}
             <div class="absolute inset-0 bg-grid-white/[0.03] bg-[size:24px_24px] [mask-image:radial-gradient(ellipse_at_center,black_40%,transparent_100%)]"></div>
-            
-            {{-- Konten Hero --}}
             <div class="relative px-6 py-12 lg:px-12 lg:py-20 text-center">
                 <div class="max-w-3xl mx-auto">
                     <h1 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4 drop-shadow-md">
@@ -36,7 +33,7 @@
             </div>
         </div>
         
-        {{-- BAGIAN FILTER --}}
+        {{-- BAGIAN FILTER (TETAP SAMA) --}}
         <div class="mb-10">
             <div class="flex flex-col sm:flex-row items-start sm:items-center sm:justify-between mb-6 gap-4">
                 <div>
@@ -48,7 +45,6 @@
                     </p>
                 </div>
                 
-                {{-- Counter Badge --}}
                 <div class="flex-shrink-0 flex items-center gap-2 px-4 py-2 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
                     <svg class="w-5 h-5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 4v16M17 4v16M3 8h4m10 0h4M3 12h18M3 16h4m10 0h4M4 20h16a1 1 0 001-1V5a1 1 0 00-1-1H4a1 1 0 00-1 1v14a1 1 0 001 1z"></path>
@@ -59,7 +55,7 @@
                 </div>
             </div>
             
-            {{-- Category Filter Pills --}}
+            {{-- Category Filter Pills (TETAP SAMA) --}}
             <div class="relative">
                 <div class="absolute -left-4 top-0 bottom-0 w-12 bg-gradient-to-r from-white dark:from-gray-900 to-transparent z-10 pointer-events-none md:hidden"></div>
                 <div class="overflow-x-auto scrollbar-hide -mx-4 px-4 lg:mx-0 lg:px-0">
@@ -80,8 +76,6 @@
                            {{ request('category') == $category->slug 
                                ? 'bg-blue-600 text-white' 
                                : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700' }}">
-                            {{-- Titik Warna pada Filter --}}
-                            {{-- Karena color_classes mereturn bg-color-100, kita gunakan style badge biasa untuk titik ini agar konsisten --}}
                             <span class="w-3 h-3 rounded-full {{ $category->color_classes }}"></span>
                             {{ $category->name }}
                         </a>
@@ -114,21 +108,38 @@
                                         </div>
                                     </div>
                                 @else
+                                    {{-- Placeholder Image (TETAP SAMA) --}}
                                     <div class="w-full flex flex-col items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-900" style="aspect-ratio: 3 / 4;">
                                         <svg class="w-12 h-12 text-gray-400 dark:text-gray-600 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
                                         <span class="text-xs text-gray-500 dark:text-gray-400">No Poster</span>
                                     </div>
                                 @endif
                                 
-                                {{-- Badge Kategori (Pojok Kiri Atas Kartu) --}}
+                                {{-- 🟢 UPDATE: Badge Kategori & Status --}}
+                                
+                                {{-- Badge Kategori (Kiri Atas) --}}
                                 @if($broadcast->broadcastCategory)
-                                <div class="absolute top-2.5 left-2.5">
-                                    {{-- Menggunakan color_classes yang baru --}}
+                                <div class="absolute top-2.5 left-2.5 z-10">
                                     <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold {{ $broadcast->broadcastCategory->color_classes }} shadow-sm">
                                         {{ $broadcast->broadcastCategory->name }}
                                     </span>
                                 </div>
                                 @endif
+
+                                {{-- [BARU] Badge Status Produksi (Kanan Atas) --}}
+                                <div class="absolute top-2.5 right-2.5 z-10">
+                                    @if($broadcast->is_active)
+                                        <span class="inline-flex items-center gap-1 px-2 py-1 rounded-full text-[10px] font-bold bg-green-600/90 text-white backdrop-blur-sm shadow-sm border border-green-400/50">
+                                            <span class="w-1.5 h-1.5 bg-white rounded-full animate-pulse"></span>
+                                            ON AIR
+                                        </span>
+                                    @else
+                                        <span class="inline-flex items-center px-2 py-1 rounded-full text-[10px] font-bold bg-gray-900/80 text-gray-200 backdrop-blur-sm shadow-sm border border-gray-700/50">
+                                            TAMAT
+                                        </span>
+                                    @endif
+                                </div>
+
                             </div>
                             <div class="p-3 lg:p-4">
                                 <h3 class="text-sm lg:text-base font-semibold text-gray-900 dark:text-white line-clamp-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors leading-snug h-10 lg:h-12">
@@ -145,7 +156,8 @@
                     @endforeach
                 </div>
             @else
-                <div class="text-center py-20 lg:py-24">
+                {{-- EMPTY STATE (TETAP SAMA) --}}
+                <div class="text-center py-12 lg:py-12">
                     <div class="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gray-100 dark:bg-gray-800 mb-6">
                         <svg class="w-10 h-10 text-gray-400 dark:text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
                     </div>

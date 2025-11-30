@@ -7,8 +7,11 @@ use Illuminate\View\View;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
+use Intervention\Image\ImageManager;
 use Illuminate\Http\RedirectResponse;
+// ✅ Tambahkan Library Image
 use Illuminate\Support\Facades\Storage;
+use Intervention\Image\Drivers\Gd\Driver;
 
 class BannerController extends Controller
 {
@@ -34,30 +37,41 @@ class BannerController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
-        // Validasi untuk file upload biasa
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'subtitle' => 'required|string',
             'link' => 'required|url',
             'button_text' => 'nullable|string|max:50',
-            'image' => 'required|image|mimes:jpeg,png,jpg,webp|max:5120', // max 5MB
+            'image' => 'required|image|mimes:jpeg,png,jpg,webp|max:10240', // Max 10MB
             'order' => 'nullable|integer',
             'is_active' => 'required|boolean',
         ]);
 
-        // Proses upload gambar
+        // ✅ PROSES KOMPRESI GAMBAR
         if ($request->hasFile('image')) {
-            $image = $request->file('image');
-            $imageName = 'banners/' . Str::random(20) . '.' . $image->getClientOriginalExtension();
-            
-            // Simpan gambar
-            Storage::disk('public')->put($imageName, file_get_contents($image));
-            
-            $validated['image_path'] = $imageName;
-        }
+            try {
+                $file = $request->file('image');
+                $filename = 'banners/' . Str::random(40) . '.jpg'; // Ubah ekstensi jadi .jpg agar seragam
 
-        // Hapus field image dari validated data karena sudah diproses
-        unset($validated['image']);
+                // 1. Inisialisasi Image Manager
+                $manager = new ImageManager(new Driver());
+                $image = $manager->read($file);
+
+                // 2. Resize (Opsional: Banner biasanya lebar, misal max width 1920px)
+                $image->scale(width: 1920);
+
+                // 3. Kompresi ke JPEG kualitas 80%
+                $encoded = $image->toJpeg(quality: 80);
+
+                // 4. Simpan hasil kompresi
+                Storage::disk('public')->put($filename, (string) $encoded);
+                
+                $validated['image_path'] = $filename;
+
+            } catch (\Exception $e) {
+                return back()->withErrors(['image' => 'Gagal memproses gambar: ' . $e->getMessage()])->withInput();
+            }
+        }
 
         Banner::create($validated);
 
@@ -65,7 +79,7 @@ class BannerController extends Controller
     }
 
     /**
-     * Menampilkan form untuk mengedit banner.
+     * Menampilkan form edit banner.
      */
     public function edit(Banner $banner): View
     {
@@ -73,39 +87,49 @@ class BannerController extends Controller
     }
 
     /**
-     * Mengupdate data banner di database.
+     * Memperbarui banner di database.
      */
     public function update(Request $request, Banner $banner): RedirectResponse
     {
-        // Validasi untuk file upload biasa
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'subtitle' => 'required|string',
             'link' => 'required|url',
             'button_text' => 'nullable|string|max:50',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120', // max 5MB, nullable
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:10240',
             'order' => 'nullable|integer',
             'is_active' => 'required|boolean',
         ]);
 
-        // Proses upload gambar baru jika ada
+        // ✅ PROSES KOMPRESI GAMBAR BARU
         if ($request->hasFile('image')) {
-            // Hapus gambar lama jika ada
+            // Hapus gambar lama
             if ($banner->image_path && Storage::disk('public')->exists($banner->image_path)) {
                 Storage::disk('public')->delete($banner->image_path);
             }
             
-            // Upload gambar baru
-            $image = $request->file('image');
-            $imageName = 'banners/' . Str::random(20) . '.' . $image->getClientOriginalExtension();
-            
-            Storage::disk('public')->put($imageName, file_get_contents($image));
-            
-            $validated['image_path'] = $imageName;
-        }
+            try {
+                $file = $request->file('image');
+                $filename = 'banners/' . Str::random(40) . '.jpg';
 
-        // Hapus field image dari validated data karena sudah diproses
-        unset($validated['image']);
+                $manager = new ImageManager(new Driver());
+                $image = $manager->read($file);
+                
+                // Resize & Compress
+                $image->scale(width: 1920);
+                $encoded = $image->toJpeg(quality: 80);
+
+                Storage::disk('public')->put($filename, (string) $encoded);
+                
+                $validated['image_path'] = $filename;
+
+            } catch (\Exception $e) {
+                return back()->withErrors(['image' => 'Gagal memproses gambar: ' . $e->getMessage()])->withInput();
+            }
+        } else {
+            // Hapus field image dari array validasi jika tidak ada upload baru
+            unset($validated['image']);
+        }
 
         $banner->update($validated);
 
@@ -117,7 +141,6 @@ class BannerController extends Controller
      */
     public function destroy(Banner $banner): RedirectResponse
     {
-        // Hapus gambar dari storage saat banner dihapus
         if ($banner->image_path && Storage::disk('public')->exists($banner->image_path)) {
             Storage::disk('public')->delete($banner->image_path);
         }

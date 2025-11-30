@@ -21,13 +21,9 @@
         .table-container {
             overflow-x: auto;
         }
-        /* Animasi untuk alert */
-        .alert-transition {
-            transition: all 0.3s ease-in-out;
-        }
     </style>
 
-    {{-- Data Alpine.js LENGKAP untuk modal --}}
+    {{-- Data Alpine.js --}}
     <div x-data="{ 
         // State untuk modal hapus penyiaran
         deleteModal: false, 
@@ -54,7 +50,7 @@
         deleteCategoryName: '',
         deleteCategoryError: '',
 
-        // Fungsi untuk slugify
+        // Fungsi Slugify
         generateSlug() {
             this.categoryData.slug = this.categoryData.name
                 .toLowerCase()
@@ -64,7 +60,7 @@
                 .trim();
         },
 
-        // Fungsi untuk membuka modal Kategori (mode create)
+        // Modal Functions (Create/Edit/Delete Kategori)
         openCreateModal() {
             this.modalMode = 'create';
             this.modalTitle = 'Tambah Kategori Penyiaran Baru';
@@ -74,7 +70,6 @@
             document.body.style.overflow = 'hidden';
         },
 
-        // Fungsi untuk membuka modal Kategori (mode edit)
         openEditModal(category) {
             this.modalMode = 'edit';
             this.modalTitle = 'Edit Kategori Penyiaran';
@@ -89,13 +84,11 @@
             document.body.style.overflow = 'hidden';
         },
 
-        // Fungsi untuk menutup modal Kategori
         closeCategoryModal() {
             this.isCategoryModalOpen = false;
             document.body.style.overflow = '';
         },
 
-        // Fungsi untuk modal hapus kategori
         openDeleteCategoryModal(category) {
             this.deleteCategoryId = category.id;
             this.deleteCategoryName = category.name;
@@ -110,7 +103,7 @@
             document.body.style.overflow = '';
         },
 
-        // Fungsi untuk modal hapus penyiaran
+        // Modal Functions (Delete Broadcast)
         openDeleteModal(broadcastId, broadcastTitle) {
             this.deleteBroadcastId = broadcastId;
             this.deleteBroadcastTitle = broadcastTitle;
@@ -124,7 +117,6 @@
         }
     }" 
     class="pb-6"
-    
     @if ($errors->has('name') || $errors->has('slug') || $errors->has('color'))
         x-init="isCategoryModalOpen = true; document.body.style.overflow = 'hidden';"
     @endif
@@ -158,8 +150,6 @@
                 </a>
             </div>
         </div>
-
-        {{-- Notifikasi ditangani oleh layout --}}
 
         {{-- FORM FILTER --}}
         <form method="GET" action="{{ route('dashboard.broadcasts.index') }}" class="mb-6">
@@ -211,7 +201,8 @@
                 <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-300">
                     <tr>
                         <th scope="col" class="p-4 text-center w-12">No</th>
-                        <th scope="col" class="p-4 text-center">Judul & Kategori</th>
+                        {{-- Kolom ini diubah namanya agar lebih relevan --}}
+                        <th scope="col" class="p-4 text-center">Judul & Info</th>
                         <th scope="col" class="p-4 text-center w-28">Poster</th>
                         <th scope="col" class="p-4 text-center">Sinopsis</th>
                         <th scope="col" class="p-4 text-center w-32">Link</th>
@@ -220,22 +211,55 @@
                 </thead>
                 <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
                     @forelse ($broadcasts as $broadcast)
-                        {{-- [PERBAIKAN] Menggunakan 'align-top' agar rapi jika sinopsisnya panjang --}}
                         <tr class="bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
                             
                             <td class="p-4 align-top text-center font-medium text-gray-900 dark:text-white">
                                 {{ $loop->iteration + $broadcasts->firstItem() - 1 }}
                             </td>
                             
-                            {{-- Judul & Kategori --}}
+                            {{-- Judul & Info Lengkap --}}
                             <td class="p-4 align-top">
-                                <div class="space-y-1.5">
-                                    <p class="font-semibold text-gray-900 dark:text-white line-clamp-2 leading-tight">
-                                        {{ $broadcast->title }}
-                                    </p>
-                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium {{ $broadcast->broadcastCategory->color_classes ?? 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300' }}">
-                                        {{ $broadcast->broadcastCategory->name ?? 'N/A' }}
-                                    </span>
+                                <div class="space-y-2">
+                                    <div class="flex items-start justify-between gap-2">
+                                        <p class="font-semibold text-gray-900 dark:text-white line-clamp-2 leading-tight">
+                                            {{ $broadcast->title }}
+                                        </p>
+                                        
+                                        {{-- Badge Status Produksi (Is Active) --}}
+                                        @if($broadcast->is_active)
+                                            <span class="flex-shrink-0 inline-flex items-center bg-green-100 text-green-800 text-[10px] font-bold px-2 py-0.5 rounded-full dark:bg-green-900/50 dark:text-green-300 border border-green-200 dark:border-green-800">
+                                                <span class="w-1.5 h-1.5 me-1 bg-green-500 rounded-full animate-pulse"></span>
+                                                ON AIR
+                                            </span>
+                                        @else
+                                            <span class="flex-shrink-0 inline-flex items-center bg-gray-100 text-gray-600 text-[10px] font-bold px-2 py-0.5 rounded-full dark:bg-gray-700 dark:text-gray-400 border border-gray-200 dark:border-gray-600">
+                                                SELESAI
+                                            </span>
+                                        @endif
+                                    </div>
+                                    
+                                    <div class="flex flex-wrap gap-2 items-center">
+                                        {{-- Badge Kategori --}}
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium {{ $broadcast->broadcastCategory->color_classes ?? 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300' }}">
+                                            {{ $broadcast->broadcastCategory->name ?? 'N/A' }}
+                                        </span>
+
+                                        {{-- Separator Kecil --}}
+                                        <span class="text-gray-300 dark:text-gray-600">•</span>
+
+                                        {{-- Status Publikasi --}}
+                                        @if ($broadcast->status === 'published')
+                                            <span class="inline-flex items-center gap-1 text-xs text-blue-600 dark:text-blue-400" title="Dipublikasikan pada {{ $broadcast->published_at->format('d M Y H:i') }}">
+                                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                                Terbit: {{ $broadcast->published_at->format('d M Y') }}
+                                            </span>
+                                        @else
+                                            <span class="inline-flex items-center gap-1 text-xs text-orange-600 dark:text-orange-400">
+                                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                                                Draft
+                                            </span>
+                                        @endif
+                                    </div>
                                 </div>
                             </td>
                             
@@ -263,7 +287,7 @@
                             <td class="p-4 align-top text-center">
                                 @if ($broadcast->youtube_link)
                                     <a href="{{ $broadcast->youtube_link }}" target="_blank" rel="noopener noreferrer"
-                                        title="Tonton di Youtube: {{ $broadcast->youtube_link }}"
+                                        title="Tonton di Youtube"
                                         class="inline-flex items-center justify-center p-2 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/50 rounded-lg transition-colors group">
                                         <svg class="w-5 h-5 group-hover:scale-110 transition-transform" fill="currentColor" viewBox="0 0 24 24">
                                             <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
@@ -333,7 +357,6 @@
             </div>
         @endif
 
-        {{-- (Sisa file modal tetap sama persis seperti sebelumnya) --}}
         {{-- MODAL HAPUS PENYIARAN --}}
         <div x-show="deleteModal" 
              x-cloak

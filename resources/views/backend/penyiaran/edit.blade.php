@@ -94,7 +94,6 @@
                         </label>
                         <select name="broadcast_category_id" id="broadcast_category_id" class="bg-gray-50 border text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white {{ $errors->has('broadcast_category_id') ? 'border-red-500' : 'border-gray-300' }}" required>
                             @foreach($categories as $category)
-                                {{-- Logika 'old' dan 'selected' di-update --}}
                                 <option value="{{ $category->id }}" @selected(old('broadcast_category_id', $broadcast->broadcast_category_id) == $category->id)>
                                     {{ $category->name }}
                                 </option>
@@ -103,6 +102,34 @@
                         @error('broadcast_category_id')
                             <p class="mt-2 text-sm text-red-600 dark:text-red-500">{{ $message }}</p>
                         @enderror
+                    </div>
+
+                    {{-- [BARU] Status Produksi --}}
+                    <div>
+                        <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                            Status Produksi <span class="text-red-500">*</span>
+                        </label>
+                        <div class="flex items-center gap-4">
+                            {{-- Radio Aktif (On-Going) --}}
+                            <div class="flex items-center ps-4 border border-gray-200 rounded dark:border-gray-700 w-full bg-gray-50 dark:bg-gray-700">
+                                <input id="active_yes" type="radio" value="1" name="is_active" 
+                                    @checked(old('is_active', $broadcast->is_active) == 1)
+                                    class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                                <label for="active_yes" class="w-full py-3 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">
+                                    Sedang Tayang (On-Going)
+                                </label>
+                            </div>
+                            
+                            {{-- Radio Tidak Aktif (Completed) --}}
+                            <div class="flex items-center ps-4 border border-gray-200 rounded dark:border-gray-700 w-full bg-gray-50 dark:bg-gray-700">
+                                <input id="active_no" type="radio" value="0" name="is_active" 
+                                    @checked(old('is_active', $broadcast->is_active) == 0)
+                                    class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                                <label for="active_no" class="w-full py-3 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">
+                                    Selesai (Completed)
+                                </label>
+                            </div>
+                        </div>
                     </div>
 
                     {{-- Link Youtube --}}
@@ -190,5 +217,4 @@
             </form>
         </div>
     </div>
-
 </x-dashboard-layout>

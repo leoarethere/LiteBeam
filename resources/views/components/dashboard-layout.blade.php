@@ -34,6 +34,10 @@
             "ROND" 0;
         }
     </style>
+
+    {{-- PERBAIKAN FAVICON --}}
+    <link rel="icon" href="{{ asset('img/favicon.png') }}" type="image/png">
+    <link rel="shortcut icon" href="{{ asset('img/favicon.png') }}" type="image/png">
 </head>
 <body class="bg-gray-50 dark:bg-gray-900">
 

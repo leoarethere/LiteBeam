@@ -35,7 +35,7 @@
                         <span class="text-sm">{{ $post->created_at->diffForHumans() }}</span>
                     </div>
 
-                    <h1 class="mb-4 text-3xl font-extrabold text-gray-900 dark:text-white">
+                    <h1 class="mb-4 text-3xl font-bold text-gray-900 dark:text-white">
                         {{ $post->title }}
                     </h1>
 

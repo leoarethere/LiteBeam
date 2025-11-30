@@ -1,8 +1,3 @@
-{{-- ================================================================
-    SKRIP PENCEGAH KEDIPAN (FOUC FIX)
-    Dijalankan segera untuk mengatur tema sebelum halaman render.
-    Tidak bergantung pada Alpine.js atau app.js.
-================================================================ --}}
 <script>
     (function() {
         let theme = localStorage.getItem('theme');
@@ -22,10 +17,6 @@
     })();
 </script>
 
-{{-- ================================================================
-    KOMPONEN INTERAKTIF ALPINE.JS
-    Digunakan untuk MENGGANTI tema saat ikon diklik.
-================================================================ --}}
 <div 
     x-data="{
         theme: localStorage.getItem('theme') || 'light',
@@ -44,18 +35,22 @@
                bg-gray-200 dark:bg-gray-800 
                hover:bg-gray-300 dark:hover:bg-gray-700 
                transition-colors duration-300 ease-in-out shadow-lg border border-gray-300 dark:border-gray-600"
+        aria-label="Toggle Dark Mode"
     >
-        <!-- Ikon Matahari -->
-        <svg x-show="theme === 'light'" xmlns="http://www.w3.org/2000/svg" 
-             class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                  d="M12 3v2m0 14v2m9-9h-2M5 12H3m15.364-6.364l-1.414 1.414M6.05 17.95l-1.414 1.414M17.95 17.95l1.414 1.414M6.05 6.05L4.636 4.636M12 7a5 5 0 100 10 5 5 0 000-10z" />
+        <svg x-show="theme === 'light'" 
+             xmlns="http://www.w3.org/2000/svg" 
+             height="24px" viewBox="0 0 24 24" width="24px" 
+             fill="currentColor">
+            <path d="M0 0h24v24H0V0z" fill="none"/>
+            <path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1zM5.99 4.58c-.39-.39-1.03-.39-1.41 0-.39.39-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41L5.99 4.58zm12.37 12.37c-.39-.39-1.03-.39-1.41 0-.39.39-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0 .39-.39.39-1.03 0-1.41l-1.06-1.06zm1.06-10.96c.39-.39.39-1.03 0-1.41-.39-.39-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06zM7.05 18.36c.39-.39.39-1.03 0-1.41-.39-.39-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06z"/>
         </svg>
 
-        <!-- Ikon Bulan -->
-        <svg x-show="theme === 'dark'" xmlns="http://www.w3.org/2000/svg" 
-             class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-            <path d="M21 12.79A9 9 0 1111.21 3a7 7 0 009.79 9.79z"/>
+        <svg x-show="theme === 'dark'" 
+             xmlns="http://www.w3.org/2000/svg" 
+             height="24px" viewBox="0 0 24 24" width="24px" 
+             fill="currentColor">
+            <path d="M0 0h24v24H0V0z" fill="none"/>
+            <path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-2.98 0-5.4-2.42-5.4-5.4 0-1.81.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1z"/>
         </svg>
     </button>
 </div>

@@ -2,8 +2,16 @@
     <div class="px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
         <div class="md:flex md:justify-between">
             <div class="mb-6 md:mb-0 max-w-sm">
-                <a href="/" class="flex items-center mb-6">
-                    <img src="https://tailwindcss.com/plus-assets/img/logos/mark.svg?color=indigo&shade=500" class="h-8 me-3" alt="FlowBite Logo" />
+                <a href="/" class="flex items-center mb-6 gap-2">
+                    {{-- 1. Logo Gelap (Tampil di Light Mode, Hilang di Dark Mode) --}}
+                    <img src="{{ asset('img/logolight.png') }}" 
+                        class="h-9 md:h-12 w-auto block dark:hidden" 
+                        alt="LiteBeam Logo Dark" />
+
+                    {{-- 2. Logo Terang (Hilang di Light Mode, Tampil di Dark Mode) --}}
+                    <img src="{{ asset('img/logodark.png') }}" 
+                        class="h-9 md:h-12 w-auto hidden dark:block" 
+                        alt="LiteBeam Logo Light" />
                     <span class="self-center text-2xl font-semibold text-gray-900 dark:text-white whitespace-normal lg:whitespace-nowrap">
                     Media Pemersatu Bangsa
                 </a>

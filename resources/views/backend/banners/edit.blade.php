@@ -164,9 +164,9 @@
                         @enderror
                         
                         <p class="mt-2 text-xs text-gray-500 dark:text-gray-400">
-                            💡 Format: JPG, PNG, WebP | Maksimal: 5MB | Rasio disarankan: 16:9
+                            💡 Format: JPG, PNG, WebP | Maksimal: 5MB | Rasio disarankan: 16:9 |
                             @if($banner->image_path)
-                                <br>⚠️ Kosongkan jika tidak ingin mengubah gambar.
+                                Kosongkan jika tidak ingin mengubah gambar.
                             @endif
                         </p>
                     </div>

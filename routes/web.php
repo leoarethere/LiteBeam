@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\TaskFunction;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PageController;
@@ -12,6 +13,7 @@ use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\VisiMisiController; 
 use App\Http\Controllers\BroadcastController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\TaskFunctionController;
 use App\Http\Controllers\DashboardPostController;
 use App\Http\Controllers\DashboardHistoryController;
 use App\Http\Controllers\DashboardVisiMisiController;
@@ -44,7 +46,11 @@ Route::get('/penyiaran/{broadcast:slug}', [BroadcastController::class, 'show'])-
 Route::get('/categories/{category:slug}', [PostController::class, 'category'])->name('categories.show');
 Route::get('/authors/{user:username}', [PostController::class, 'author'])->name('authors.show');
 
+// Route untuk frontend Visi-Misi
 Route::get('/visi-misi', [VisiMisiController::class, 'visiMisi'])->name('visi-misi');
+
+// Route untuk frontend Tugas & Fungsi
+Route::get('/tugas-fungsi', [TaskFunctionController::class, 'index'])->name('tugas-fungsi');
 
 // Route untuk Halaman Sejarah (Publik)
 Route::get('/sejarah', [HistoryController::class, 'index'])->name('sejarah');
@@ -80,6 +86,16 @@ Route::middleware('auth')->prefix('dashboard')->group(function () {
     Route::post('/categories', [DashboardPostCategoryController::class, 'store'])->name('dashboard.categories.store');
     Route::put('/categories/{category}', [DashboardPostCategoryController::class, 'update'])->name('dashboard.categories.update');
     Route::delete('/categories/{category}', [DashboardPostCategoryController::class, 'destroy'])->name('dashboard.categories.destroy');
+
+    // Rute Tugas & Fungsi
+    Route::resource('/tugas-fungsi', \App\Http\Controllers\DashboardTaskFunctionController::class)->names('dashboard.tugas-fungsi')->parameters(['tugas-fungsi' => 'tugas_fungsi']);
+
+    // Rute PPID
+    Route::resource('/ppid', \App\Http\Controllers\DashboardPpidController::class)
+    ->names('dashboard.ppid')
+    ->parameters(['ppid' => 'ppid']);
+
+    Route::resource('/tv-schedules', \App\Http\Controllers\DashboardTvScheduleController::class)->names('dashboard.tv-schedules'); 
 });
 
 // == FITUR UTILITAS ==

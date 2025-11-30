@@ -1,13 +1,23 @@
 <footer class="bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700">
     <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
         <div class="md:flex md:justify-between">
-            <div class="mb-6 md:mb-0 max-w-sm">
-                <a href="/" class="flex items-center mb-6">
-                    <img src="https://tailwindcss.com/plus-assets/img/logos/mark.svg?color=indigo&shade=500" class="h-8 me-3" alt="FlowBite Logo" />
-                    <span class="self-center text-2xl font-semibold text-gray-900 dark:text-white whitespace-normal lg:whitespace-nowrap">
-                    Media Pemersatu Bangsa
+            <div class="mb-6 lg:mb-0 max-w-sm lg:max-w-md">
+                <a href="/" class="flex items-center mb-4 sm:mb-6 gap-2 sm:gap-3">
+                    {{-- 1. Logo Gelap (Tampil di Light Mode, Hilang di Dark Mode) --}}
+                    <img src="{{ asset('img/logolight.png') }}" 
+                        class="h-8 sm:h-9 md:h-12 w-auto block dark:hidden" 
+                        alt="LiteBeam Logo Dark" />
+
+                    {{-- 2. Logo Terang (Hilang di Light Mode, Tampil di Dark Mode) --}}
+                    <img src="{{ asset('img/logodark.png') }}" 
+                        class="h-8 sm:h-9 md:h-12 w-auto hidden dark:block" 
+                        alt="LiteBeam Logo Light" />
+                    
+                    <span class="self-center text-lg sm:text-xl md:text-2xl font-semibold text-gray-900 dark:text-white whitespace-normal break-words">
+                        Media Pemersatu Bangsa
+                    </span>
                 </a>
-                <p class="text-sm leading-6 text-gray-600 dark:text-gray-400">
+                <p class="text-sm sm:text-base leading-5 sm:leading-6 text-gray-600 dark:text-gray-400">
                     Lembaga Penyiaran Publik Televisi Republik Indonesia Stasiun D.I. Yogyakarta.
                 </p>
             </div>

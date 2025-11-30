@@ -20,7 +20,8 @@
         "publisher": {
             "@type": "Organization",
             "name": "{{ config('app.name', 'Laravel') }}"
-        }
+        },
+        "eventStatus": "{{ $broadcast->is_active ? 'https://schema.org/EventScheduled' : 'https://schema.org/EventMovedOnline' }}" 
     }
     </script>
     @endif
@@ -31,21 +32,52 @@
             {{-- ARTIKEL KONTEN --}}
             <article class="mx-auto w-full max-2xl format format-sm sm:format-base lg:format-lg format-blue dark:format-invert">
                 
-                {{-- [PERBAIKAN] Header disusun ulang: Judul di Kiri, Tanggal di Kanan --}}
+                {{-- HEADER --}}
                 <header class="mb-6 not-format">
                     <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
                         
                         {{-- Judul --}}
-                        <h1 class="text-3xl font-extrabold leading-tight text-gray-900 lg:text-4xl dark:text-white flex-1">
-                            {{ $broadcast->title }}
-                        </h1>
+                        <div class="flex-1">
+                            <h1 class="text-3xl font-bold text-gray-900 lg:text-4xl dark:text-white mb-2">
+                                {{ $broadcast->title }}
+                            </h1>
+                            
+                            {{-- Kategori Badges --}}
+                            @if($broadcast->broadcastCategory)
+                            <a href="{{ route('broadcasts.index', ['category' => $broadcast->broadcastCategory->slug]) }}" 
+                               class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium {{ $broadcast->broadcastCategory->color_classes }} hover:opacity-80 transition-opacity">
+                                {{ $broadcast->broadcastCategory->name }}
+                            </a>
+                            @endif
+                        </div>
 
-                        {{-- Meta Tanggal (Dipindah ke kanan) --}}
-                        <div class="flex-shrink-0 text-sm text-gray-500 dark:text-gray-400 md:text-right md:mt-2">
-                            <span class="block md:inline">Dipublikasikan pada</span>
-                            <span class="font-medium text-gray-900 dark:text-white">
-                                {{ $broadcast->published_at ? $broadcast->published_at->format('d M Y') : $broadcast->created_at->format('d M Y') }}
-                            </span>
+                        {{-- 🟢 UPDATE: Meta Info (Status + Tanggal) --}}
+                        <div class="flex-shrink-0 flex flex-col md:items-end gap-2 mt-2">
+                            
+                            {{-- Badge Status --}}
+                            <div>
+                                @if($broadcast->is_active)
+                                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 border border-green-200 dark:border-green-800">
+                                        <span class="relative flex h-2 w-2">
+                                          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                                          <span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                                        </span>
+                                        PROGRAM ON AIR
+                                    </span>
+                                @else
+                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400 border border-gray-200 dark:border-gray-700">
+                                        PROGRAM SELESAI
+                                    </span>
+                                @endif
+                            </div>
+
+                            {{-- Tanggal --}}
+                            <div class="text-sm text-gray-500 dark:text-gray-400 text-right">
+                                <span class="block text-xs uppercase tracking-wide opacity-70">Dipublikasikan</span>
+                                <span class="font-medium text-gray-900 dark:text-white">
+                                    {{ $broadcast->published_at ? $broadcast->published_at->format('d M Y') : $broadcast->created_at->format('d M Y') }}
+                                </span>
+                            </div>
                         </div>
 
                     </div>
@@ -76,7 +108,7 @@
                     </figure>
                 @endif
 
-                {{-- SINOPSIS --}}
+                {{-- SINOPSIS (TETAP SAMA) --}}
                 @if ($broadcast->synopsis)
                 <div class="my-8 pt-6 border-t border-gray-200 dark:border-gray-700">
                     <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4 uppercase tracking-wide">
@@ -89,7 +121,7 @@
                 </div>
                 @endif
 
-                {{-- FOOTER: TOMBOL SHARE & KEMBALI --}}
+                {{-- FOOTER: TOMBOL SHARE & KEMBALI (TETAP SAMA) --}}
                 <div class="mt-8 pt-6 border-t border-gray-200 dark:border-gray-700 flex flex-col sm:flex-row justify-between items-center gap-4">
                     <a href="{{ route('broadcasts.index') }}" class="inline-flex items-center gap-2 px-5 py-3 bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white text-sm font-medium rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition duration-150 ease-in-out">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

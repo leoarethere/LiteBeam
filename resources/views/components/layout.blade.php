@@ -1,10 +1,9 @@
 <!DOCTYPE html>
 <html lang="id {{ str_replace('_', '-', app()->getLocale()) }}" class="{{ session('theme', 'light') }} h-full bg-gray-800 scroll-smooth">
 <head>
-    {{-- ... (kode head Anda tidak berubah) ... --}}
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $title ?? config('app.name', 'Website') }}</title>
+    <title>{{ $title ?? config('yogyakarta.tvri.go.id', 'Beranda TVRI Yogyakarta') }}</title>
     <style>
         html, body {
             overscroll-behavior: none;
@@ -36,6 +35,10 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Google+Sans+Flex:opsz,wght@6..144,1..1000&display=swap" rel="stylesheet">
+
+    {{-- PERBAIKAN FAVICON --}}
+    <link rel="icon" href="{{ asset('img/favicon.png') }}" type="image/png">
+    <link rel="shortcut icon" href="{{ asset('img/favicon.png') }}" type="image/png">
 </head>
 
 {{-- PERBAIKAN 1: Hapus kelas yang tidak perlu dari body --}}
@@ -44,7 +47,7 @@
     <div class="flex flex-col min-h-screen">
         <x-navbar/>
         {{-- PERBAIKAN 2: Tambahkan 'pt-16' untuk memberi ruang bagi navbar --}}
-        <main class="flex-grow py-[60px]">
+        <main class="flex-grow pt-24">
             {{-- PERBAIKAN 3: Gunakan kontainer yang konsisten dengan halaman lain --}}
             {{-- Padding vertikal (py-8) ditambahkan di sini untuk jarak atas/bawah konten --}}
             <div class="container px-0 sm:px-0 lg:px-0 py-11 lg:py-11 relative mx-auto">

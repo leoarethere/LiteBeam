@@ -30,17 +30,6 @@
         </div>
 
         <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md border border-gray-200 dark:border-gray-700">
-        {{-- Tambahkan ini di create.blade.php untuk melihat error --}}
-        @if ($errors->any())
-            <div class="p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400" role="alert">
-                <span class="font-medium">Terjadi kesalahan!</span>
-                <ul class="mt-1.5 list-disc list-inside">
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        @endif
             <form action="{{ route('dashboard.broadcasts.store') }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 
@@ -115,6 +104,37 @@
                         @error('broadcast_category_id')
                             <p class="mt-2 text-sm text-red-600 dark:text-red-500">{{ $message }}</p>
                         @enderror
+                    </div>
+
+                    {{-- [BARU] Status Produksi --}}
+                    <div>
+                        <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                            Status Produksi <span class="text-red-500">*</span>
+                        </label>
+                        <div class="flex items-center gap-4">
+                            {{-- Radio Aktif (On-Going) --}}
+                            <div class="flex items-center ps-4 border border-gray-200 rounded dark:border-gray-700 w-full bg-gray-50 dark:bg-gray-700">
+                                <input checked id="active_yes" type="radio" value="1" name="is_active" 
+                                    {{ old('is_active', '1') == '1' ? 'checked' : '' }}
+                                    class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                                <label for="active_yes" class="w-full py-3 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">
+                                    Sedang Tayang (On-Going)
+                                </label>
+                            </div>
+                            
+                            {{-- Radio Tidak Aktif (Completed) --}}
+                            <div class="flex items-center ps-4 border border-gray-200 rounded dark:border-gray-700 w-full bg-gray-50 dark:bg-gray-700">
+                                <input id="active_no" type="radio" value="0" name="is_active" 
+                                    {{ old('is_active') == '0' ? 'checked' : '' }}
+                                    class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                                <label for="active_no" class="w-full py-3 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">
+                                    Selesai (Completed)
+                                </label>
+                            </div>
+                        </div>
+                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                            Pilih 'Sedang Tayang' jika program ini masih diproduksi secara rutin.
+                        </p>
                     </div>
 
                     {{-- Link Youtube --}}

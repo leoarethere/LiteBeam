@@ -5,7 +5,7 @@
 
 /**
  * A helper file for Laravel, to provide autocomplete information to your IDE
- * Generated for Laravel 11.46.0.
+ * Generated for Laravel 11.46.1.
  *
  * This file should not be included in your code, only analyzed by your IDE!
  *
@@ -23407,67 +23407,6 @@ namespace Spatie\LaravelIgnition\Facades {
             }
     }
 
-namespace Spatie\LaravelImageOptimizer\Facades {
-    /**
-     */
-    class ImageOptimizer {
-        /**
-         * @static
-         */
-        public static function getOptimizers()
-        {
-            /** @var \Spatie\ImageOptimizer\OptimizerChain $instance */
-            return $instance->getOptimizers();
-        }
-
-        /**
-         * @static
-         */
-        public static function addOptimizer($optimizer)
-        {
-            /** @var \Spatie\ImageOptimizer\OptimizerChain $instance */
-            return $instance->addOptimizer($optimizer);
-        }
-
-        /**
-         * @static
-         */
-        public static function setOptimizers($optimizers)
-        {
-            /** @var \Spatie\ImageOptimizer\OptimizerChain $instance */
-            return $instance->setOptimizers($optimizers);
-        }
-
-        /**
-         * @static
-         */
-        public static function setTimeout($timeoutInSeconds)
-        {
-            /** @var \Spatie\ImageOptimizer\OptimizerChain $instance */
-            return $instance->setTimeout($timeoutInSeconds);
-        }
-
-        /**
-         * @static
-         */
-        public static function useLogger($log)
-        {
-            /** @var \Spatie\ImageOptimizer\OptimizerChain $instance */
-            return $instance->useLogger($log);
-        }
-
-        /**
-         * @static
-         */
-        public static function optimize($pathToImage, $pathToOutput = null)
-        {
-            /** @var \Spatie\ImageOptimizer\OptimizerChain $instance */
-            return $instance->optimize($pathToImage, $pathToOutput);
-        }
-
-            }
-    }
-
 namespace Illuminate\Support {
     /**
      * @template TKey of array-key
@@ -28217,7 +28156,6 @@ namespace  {
     class Vite extends \Illuminate\Support\Facades\Vite {}
     class Debugbar extends \Barryvdh\Debugbar\Facades\Debugbar {}
     class Flare extends \Spatie\LaravelIgnition\Facades\Flare {}
-    class ImageOptimizer extends \Spatie\LaravelImageOptimizer\Facades\ImageOptimizer {}
 }
 
 

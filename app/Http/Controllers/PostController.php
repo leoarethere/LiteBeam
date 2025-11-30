@@ -14,74 +14,39 @@ class PostController extends Controller
     {
         $title = 'Semua Postingan';
         
-        $category = null;
-        $author = null;
-
         // Logika Judul Dinamis
         if ($request->filled('category')) {
             $category = Category::firstWhere('slug', $request->category);
-            if ($category) {
-                $title = 'Postingan di Kategori: ' . $category->name;
-            }
+            if ($category) $title = 'Postingan di Kategori: ' . $category->name;
         }
 
         if ($request->filled('author')) {
             $author = User::firstWhere('username', $request->author);
-            if ($author) {
-                $title = 'Postingan oleh: ' . $author->name;
-            }
+            if ($author) $title = 'Postingan oleh: ' . $author->name;
         }
 
         if ($request->filled('search')) {
             $title = 'Hasil Pencarian: "' . $request->search . '"';
-            if ($category) $title .= ' dalam Kategori: ' . $category->name;
-            if ($author) $title .= ' oleh: ' . $author->name;
         }
 
-        $query = Post::with(['user', 'category'])
-                    ->where('status', 'published');
+        // ✅ PERBAIKAN: Menggunakan ScopeFilter dari Model
+        $query = Post::latest()
+                    ->where('status', 'published') // Hanya yang published
+                    ->filter(request(['search', 'category', 'author'])); // Panggil scopeFilter
 
-        // ✅ PERBAIKAN: Filter Pencarian (Tags DIHAPUS Total)
-        if ($request->filled('search')) {
-            $search = $request->search;
-            $query->where(function($q) use ($search) {
-                $q->where('title', 'like', '%' . $search . '%')
-                  ->orWhere('excerpt', 'like', '%' . $search . '%')
-                  ->orWhere('body', 'like', '%' . $search . '%')
-                  // Tags dihapus dari sini agar tidak eror SQL
-                  ->orWhereHas('category', function($q) use ($search) {
-                      $q->where('name', 'like', '%' . $search . '%')
-                        ->orWhere('description', 'like', '%' . $search . '%');
-                  })
-                  ->orWhereHas('user', function($q) use ($search) {
-                      $q->where('name', 'like', '%' . $search . '%')
-                        ->orWhere('username', 'like', '%' . $search . '%')
-                        ->orWhere('bio', 'like', '%' . $search . '%');
-                  });
-            });
-        }
-
-        // Filter Kategori & Author
-        if ($request->filled('category')) {
-            $query->whereHas('category', fn($q) => $q->where('slug', $request->category));
-        }
-        if ($request->filled('author')) {
-            $query->whereHas('user', fn($q) => $q->where('username', $request->author));
-        }
-
-        // Sorting
-        switch ($request->get('sort', 'latest')) {
+        // Logika Sorting (Opsional, jika ingin ditambahkan di atas filter)
+        switch ($request->input('sort')) {
             case 'oldest': $query->orderBy('published_at', 'asc'); break;
             case 'popular': $query->orderBy('views', 'desc'); break;
             case 'title_asc': $query->orderBy('title', 'asc'); break;
             case 'title_desc': $query->orderBy('title', 'desc'); break;
-            case 'latest': 
             default: $query->latest('published_at'); break;
         }
 
         $posts = $query->paginate(9)->withQueryString();
         $categories = Category::all();
-        $authors = User::has('posts')->withCount('posts')->orderBy('name')->get();
+        // Ambil author yang memiliki postingan saja
+        $authors = User::has('posts')->orderBy('name')->get();
 
         return view('frontend.postingan.posts', compact('title', 'posts', 'categories', 'authors'));
     }
@@ -99,19 +64,15 @@ class PostController extends Controller
         ]);
     }
     
+    // Method category() dan author() BISA DIHAPUS jika sudah menggunakan filter di index(),
+    // Tapi jika ingin dipertahankan untuk rute khusus, kodenya sudah aman.
     public function category(Category $category)
     {
-        return view('frontend.postingan.kategori', [
-            'title' => 'Postingan di Kategori: ' . $category->name,
-            'posts' => $category->posts()->where('status', 'published')->latest()->paginate(6)
-        ]);
+        return redirect()->route('posts.index', ['category' => $category->slug]);
     }
 
     public function author(User $user)
     {
-        return view('frontend.postingan.author', [
-            'title' => 'Postingan oleh: ' . $user->name,
-            'posts' => $user->posts()->where('status', 'published')->latest()->paginate(6)
-        ]);
+        return redirect()->route('posts.index', ['author' => $user->username]);
     }
 }

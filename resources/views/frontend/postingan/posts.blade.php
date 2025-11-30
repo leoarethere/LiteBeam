@@ -2,13 +2,15 @@
     <x-slot:title>{{ $title }}</x-slot:title>
 
     {{-- KONTENER UTAMA --}}
-    <div class="px-4 sm:px-6 lg:px-8">
+    <div class="px-4 sm:px-6 lg:px-8"> {{-- ✅ PERBAIKAN: Padding mobile yang lebih kecil --}}
 
         {{-- BAGIAN HERO & PENCARIAN --}}
-        <x-hero-posts />
+        <div class="mb-6 sm:mb-8"> {{-- ✅ PERBAIKAN: Margin bottom yang responsif --}}
+            <x-hero-posts />
+        </div>
         
         {{-- BAGIAN FILTER DAN SORTING --}}
-        <div class="my-6 pt-2">
+        <div class="my-6 sm:my-8"> {{-- ✅ PERBAIKAN: Margin yang responsif --}}
             <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mt-4 mb-4">
                 <h2 class="text-2xl font-bold text-gray-900 dark:text-white">
                     {{ $title }}

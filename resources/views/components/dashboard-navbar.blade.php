@@ -31,12 +31,19 @@
                 </button>
 
                 {{-- Logo & Brand --}}
-                <a href="{{ url('/') }}" class="flex items-center gap-3">
-                    <img src="https://tailwindcss.com/plus-assets/img/logos/mark.svg?color=indigo&shade=500" 
-                         alt="TVRI Yogyakarta" 
-                         class="h-10 w-10 sm:h-12 sm:w-12" />
+                <a href="{{ url('/') }}" class="flex items-center gap-2">
+                    {{-- 1. Logo Gelap (Tampil di Light Mode, Hilang di Dark Mode) --}}
+                    <img src="{{ asset('img/logolight.png') }}" 
+                        class="h-9 md:h-12 w-auto block dark:hidden" 
+                        alt="LiteBeam Logo Dark" />
+
+                    {{-- 2. Logo Terang (Hilang di Light Mode, Tampil di Dark Mode) --}}
+                    <img src="{{ asset('img/logodark.png') }}" 
+                        class="h-9 md:h-12 w-auto hidden dark:block" 
+                        alt="LiteBeam Logo Light" />
+
                     <span class="text-gray-900 dark:text-white font-bold text-xl sm:text-2xl whitespace-nowrap">
-                        Dashboard TVRI Yogya
+                        Yogyakarta
                     </span>
                 </a>
             </div>
@@ -45,15 +52,6 @@
             <div class="hidden lg:flex items-center space-x-4">
                 {{-- Quick Actions --}}
                 <div class="flex items-center space-x-1">
-                    {{-- Notification Bell --}}
-                    <button type="button" 
-                        class="group flex items-center gap-2 rounded-lg px-4 py-3 text-base font-medium transition-all duration-200 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white">
-                        <span class="sr-only">View notifications</span>
-                        <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z"></path>
-                        </svg>
-                    </button>
-
                     {{-- Theme Toggle untuk Desktop --}}
                     <div class="border-l border-gray-200 dark:border-gray-700 pl-2">
                         <x-dashboard-theme-toggle />
@@ -137,16 +135,6 @@
             <div class="flex items-center lg:hidden space-x-2">
                 {{-- Theme Toggle untuk Mobile --}}
                 <x-dashboard-theme-toggle />
-
-                {{-- Notification Bell Mobile --}}
-                <button type="button" 
-                    class="p-2 text-gray-600 dark:text-gray-400 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white focus:outline-none focus:ring-2 focus:ring-gray-100 dark:focus:ring-gray-700 transition-colors duration-200">
-                    <span class="sr-only">View notifications</span>
-                    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z"></path>
-                    </svg>
-                </button>
-
                 {{-- Mobile Menu Toggle --}}
                 <button @click="isMobileMenuOpen = !isMobileMenuOpen" 
                         type="button" 

@@ -22,12 +22,15 @@ class Broadcast extends Model
         'poster',
         'youtube_link',
         'status',
+        'is_active', // <--- Tambahkan ini
         'published_at',
     ];
 
     protected $with = ['user', 'broadcastCategory'];
 
     protected $casts = [
+        'published_at' => 'datetime',
+        'is_active' => 'boolean',
         'published_at' => 'datetime',
     ];
 

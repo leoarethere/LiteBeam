@@ -4,14 +4,12 @@
         dropdowns: {
             publikasi: {{ request()->is('dashboard/broadcasts*', 'dashboard/pola-acara*', 'dashboard/jadwal-acara*') ? 'true' : 'false' }},
             layanan: {{ request()->is('dashboard/ppid*', 'dashboard/info-rb*', 'dashboard/info-magang*', 'dashboard/info-kunjungan*') ? 'true' : 'false' }},
-            kerjasama: {{ request()->is('dashboard/kerjasama-siaran*', 'dashboard/kerjasama-non-siaran*') ? 'true' : 'false' }},
             tentang: {{ request()->is('dashboard/sejarah*', 'dashboard/visi-misi*', 'dashboard/prestasi*', 'dashboard/tugas-fungsi*', 'dashboard/unit-kerja*', 'dashboard/himne-tvri*') ? 'true' : 'false' }}
         },
         
         closeAllDropdowns() {
             this.dropdowns.publikasi = false;
             this.dropdowns.layanan = false;
-            this.dropdowns.kerjasama = false;
             this.dropdowns.tentang = false;
         }
     }"
@@ -250,89 +248,6 @@
                                     <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle>
                                 </svg>
                                 Info Kunjungan
-                            </a>
-                        </li>
-                    </ul>
-                </li>
-
-                {{-- Dropdown Kerjasama --}}
-                @php 
-                    $isKerjasamaActive = request()->is('dashboard/kerjasama-siaran*', 'dashboard/kerjasama-non-siaran*'); 
-                @endphp
-                <li class="relative">
-                    <button 
-                        @click.prevent="if (isSidebarOpen) dropdowns.kerjasama = !dropdowns.kerjasama"
-                        @mouseenter="if (!isSidebarOpen) dropdowns.kerjasama = true"
-                        @mouseleave="if (!isSidebarOpen) dropdowns.kerjasama = false"
-                        class="flex items-center w-full p-2 text-base font-medium rounded-lg transition-colors duration-200 group"
-                        :class="{ 
-                            'justify-center': !isSidebarOpen,
-                            'bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white': {{ $isKerjasamaActive ? 'true' : 'false' }},
-                            'text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700': {{ !$isKerjasamaActive ? 'true' : 'false' }}
-                        }">
-                        <svg class="w-6 h-6 flex-shrink-0 transition-transform duration-200 group-hover:scale-110" 
-                             :class="{
-                                'text-gray-900 dark:text-white': {{ $isKerjasamaActive ? 'true' : 'false' }},
-                                'text-gray-500 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white': {{ !$isKerjasamaActive ? 'true' : 'false' }}
-                             }"
-                             fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-                        </svg>
-                        <span class="ml-3 flex-1 text-left whitespace-nowrap overflow-hidden" 
-                              x-show="isSidebarOpen"
-                              x-transition:enter="transition ease-out duration-200"
-                              x-transition:enter-start="opacity-0 -translate-x-2"
-                              x-transition:enter-end="opacity-100 translate-x-0"
-                              x-transition:leave="transition ease-in duration-150"
-                              x-transition:leave-start="opacity-100"
-                              x-transition:leave-end="opacity-0">
-                            Kerjasama
-                        </span>
-                        <svg class="w-4 h-4 ml-auto transition-transform duration-200 flex-shrink-0" 
-                             :class="{ 'rotate-90': dropdowns.kerjasama }" 
-                             x-show="isSidebarOpen" 
-                             fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <polyline points="9 18 15 12 9 6"></polyline>
-                        </svg>
-                    </button>
-
-                    <ul x-show="dropdowns.kerjasama" 
-                        x-transition:enter="transition ease-out duration-200"
-                        x-transition:enter-start="opacity-0 max-h-0"
-                        x-transition:enter-end="opacity-100 max-h-96"
-                        x-transition:leave="transition ease-in duration-150"
-                        x-transition:leave-start="opacity-100 max-h-96"
-                        x-transition:leave-end="opacity-0 max-h-0"
-                        :class="isSidebarOpen 
-                            ? 'pl-11 mt-1 space-y-1 overflow-hidden' 
-                            : 'absolute top-0 left-full ml-2 w-56 p-2 bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 space-y-1 z-50'
-                        "
-                        x-cloak>
-                        
-                        <li>
-                            <a href="/dashboard/kerjasama-siaran" 
-                               class="flex items-center gap-3 py-2 px-3 text-sm rounded-md transition-colors duration-200 group"
-                               :class="{
-                                   'bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white font-medium': {{ request()->is('dashboard/kerjasama-siaran*') ? 'true' : 'false' }},
-                                   'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white': {{ !request()->is('dashboard/kerjasama-siaran*') ? 'true' : 'false' }}
-                               }">
-                                <svg class="h-5 w-5 flex-shrink-0 transition-transform duration-200 group-hover:scale-110" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line>
-                                </svg>
-                                Siaran
-                            </a>
-                        </li>
-                        <li>
-                            <a href="/dashboard/kerjasama-non-siaran" 
-                               class="flex items-center gap-3 py-2 px-3 text-sm rounded-md transition-colors duration-200 group"
-                               :class="{
-                                   'bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white font-medium': {{ request()->is('dashboard/kerjasama-non-siaran*') ? 'true' : 'false' }},
-                                   'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white': {{ !request()->is('dashboard/kerjasama-non-siaran*') ? 'true' : 'false' }}
-                               }">
-                                <svg class="h-5 w-5 flex-shrink-0 transition-transform duration-200 group-hover:scale-110" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
-                                </svg>
-                                Non-Siaran
                             </a>
                         </li>
                     </ul>

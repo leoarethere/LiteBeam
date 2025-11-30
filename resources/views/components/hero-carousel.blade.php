@@ -49,7 +49,7 @@
     @mouseenter="stopAutoplay()"
     @mouseleave="startAutoplay()"
     {{-- ✅ PERBAIKAN: Menggunakan aspect-ratio untuk konsistensi --}}
-    class="relative w-full aspect-[16/9] md:aspect-[21/9] overflow-hidden rounded-xl md:rounded-2xl shadow-lg"
+    class="relative w-full aspect-[21/9] overflow-hidden rounded-xl md:rounded-2xl shadow-lg"
 >
 
     {{-- Slides Container --}}
@@ -83,7 +83,7 @@
                      class="max-w-xl">
                     
                     {{-- ✅ Heading: Mobile (text-xl) → Tablet (text-2xl) → Desktop (text-4xl) → Large (text-5xl) --}}
-                    <h1 class="mb-2 sm:mb-3 md:mb-4 text-xl sm:text-2xl md:text-4xl lg:text-5xl font-bold tracking-tight" 
+                    <h1 class="mb-2 sm:mb-3 md:mb-4 text-xl sm:text-2xl md:text-4xl lg:text-5xl font-bold" 
                         x-text="slide.title">
                     </h1>
                     

@@ -64,44 +64,39 @@ class DashboardBroadcastController extends Controller
     public function store(Request $request): RedirectResponse
     {
         // 1. Validasi Input
-        try {
-            $validated = $request->validate([
-                'title' => 'required|string|max:255',
-                'slug' => 'required|string|max:255|unique:broadcasts,slug',
-                'broadcast_category_id' => 'required|exists:broadcast_categories,id',
-                'poster' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120', // Max 5MB
-                'youtube_link' => 'nullable|url|max:255',
-                'synopsis' => 'nullable|string',
-                'action' => 'required|in:draft,publish'
-            ]);
-        } catch (\Illuminate\Validation\ValidationException $e) {
-            return back()->withErrors($e->validator)->withInput();
-        }
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'slug' => 'required|string|max:255|unique:broadcasts,slug',
+            'broadcast_category_id' => 'required|exists:broadcast_categories,id',
+            'poster' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
+            'youtube_link' => 'nullable|url|max:255',
+            'synopsis' => 'nullable|string',
+            'action' => 'required|in:draft,publish',
+            'is_active' => 'required|boolean'
+        ]);
 
+        // Tambahkan data user dan konversi boolean
         $validated['user_id'] = Auth::id();
+        $validated['is_active'] = $request->boolean('is_active');
 
-        // 2. Handle Upload Gambar (Poster) dengan Kompresi
+        // HAPUS Baris Broadcast::create() yang ada disini sebelumnya (Penyebab Double Insert)
+
+        // 2. Handle Upload Gambar
         if ($request->hasFile('poster')) {
             try {
                 $file = $request->file('poster');
                 $filename = Str::random(40) . '.jpg';
                 $path = 'broadcast-posters/' . $filename;
 
-                // Gunakan GD Driver (Konsisten)
                 $manager = new ImageManager(new Driver());
                 $image = $manager->read($file);
-                
-                // Resize agar tidak terlalu besar (lebar max 800px cukup untuk poster)
                 $image->scale(width: 800);
-                
-                // Encode ke JPG kualitas 75%
                 $encodedImage = $image->toJpeg(quality: 75);
                 
                 Storage::disk('public')->put($path, (string) $encodedImage);
                 $validated['poster'] = $path;
 
             } catch (\Exception $e) {
-                \Log::error('Broadcast poster upload error: ' . $e->getMessage());
                 return back()
                     ->withErrors(['poster' => 'Gagal memproses poster: ' . $e->getMessage()])
                     ->withInput();
@@ -117,12 +112,8 @@ class DashboardBroadcastController extends Controller
             $validated['published_at'] = null;
         }
 
-        // 4. Simpan ke Database
-        try {
-            Broadcast::create($validated);
-        } catch (\Exception $e) {
-            return back()->withErrors(['error' => 'Database error: ' . $e->getMessage()])->withInput();
-        }
+        // 4. Simpan ke Database (Hanya sekali di sini)
+        Broadcast::create($validated);
 
         $message = $validated['status'] === 'published' 
             ? 'Penyiaran berhasil dipublikasikan!' 
@@ -131,7 +122,6 @@ class DashboardBroadcastController extends Controller
         return redirect()->route('dashboard.broadcasts.index')
                         ->with('broadcast_success', $message);
     }
-
     public function show(Broadcast $broadcast): RedirectResponse
     {
         return redirect()->route('dashboard.broadcasts.edit', $broadcast);
@@ -145,25 +135,25 @@ class DashboardBroadcastController extends Controller
 
     public function update(Request $request, Broadcast $broadcast): RedirectResponse
     {
-        try {
-            $validated = $request->validate([
-                'title' => 'required|string|max:255',
-                'slug' => ['required', 'string', 'max:255', Rule::unique('broadcasts')->ignore($broadcast->id)], 
-                'broadcast_category_id' => 'required|exists:broadcast_categories,id',
-                'synopsis' => 'nullable|string',
-                'youtube_link' => 'nullable|url|max:255',
-                'poster' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
-                'published_at' => 'nullable|date',
-                'action' => 'required|in:draft,publish',
-            ]);
-        } catch (\Illuminate\Validation\ValidationException $e) {
-            return back()->withErrors($e->validator)->withInput();
-        }
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'slug' => ['required', 'string', 'max:255', Rule::unique('broadcasts')->ignore($broadcast->id)], 
+            'broadcast_category_id' => 'required|exists:broadcast_categories,id',
+            'synopsis' => 'nullable|string',
+            'youtube_link' => 'nullable|url|max:255',
+            'poster' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
+            'published_at' => 'nullable|date',
+            'action' => 'required|in:draft,publish',
+            'is_active' => 'required|boolean',
+        ]);
+
+        // PERBAIKAN: Cast boolean ditaruh diluar logika gambar
+        // agar status tetap terupdate meskipun tidak ganti gambar
+        $validated['is_active'] = $request->boolean('is_active');
 
         // Update Poster
         if ($request->hasFile('poster')) {
             try {
-                // Hapus poster lama jika ada
                 if ($broadcast->poster && Storage::disk('public')->exists($broadcast->poster)) {
                     Storage::disk('public')->delete($broadcast->poster);
                 }
@@ -172,7 +162,6 @@ class DashboardBroadcastController extends Controller
                 $filename = Str::random(40) . '.jpg';
                 $path = 'broadcast-posters/' . $filename;
 
-                // Gunakan GD Driver
                 $manager = new ImageManager(new Driver());
                 $image = $manager->read($file);
                 $image->scale(width: 800);
@@ -188,8 +177,10 @@ class DashboardBroadcastController extends Controller
             }
         }
 
+        // Update Status Draft/Publish
         if ($request->input('action') === 'publish') {
             $validated['status'] = 'published';
+            // Gunakan input tanggal jika ada, jika tidak pakai yang lama, jika tidak ada pakai now()
             $validated['published_at'] = $request->filled('published_at') 
                 ? $request->published_at 
                 : ($broadcast->published_at ?? now());

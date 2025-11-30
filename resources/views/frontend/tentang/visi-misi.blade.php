@@ -6,7 +6,7 @@
         
         {{-- Header Halaman --}}
         <div class="text-center mb-6 sm:mb-8">
-            <h1 class="text-2xl sm:text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white">
+            <h1 class="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 dark:text-white">
                 {{ $title }}
             </h1>
             <p class="mt-3 sm:mt-4 text-sm sm:text-base md:text-lg text-gray-500 dark:text-gray-400 max-w-3xl mx-auto">
@@ -44,7 +44,7 @@
 
                 {{-- TEKS KANAN (3 kolom) --}}
                 <div class="md:col-span-3 p-6 sm:p-8 lg:p-10 flex flex-col justify-center">
-                    <h2 class="mb-3 sm:mb-4 text-xl sm:text-2xl lg:text-3xl tracking-tight font-extrabold text-gray-900 dark:text-white">
+                    <h2 class="mb-3 sm:mb-4 text-xl sm:text-2xl lg:text-3xl  font-bold text-gray-900 dark:text-white">
                         Visi Kami
                     </h2>
                     <div class="text-sm sm:text-base text-gray-600 dark:text-gray-400 prose prose-sm sm:prose-base dark:prose-invert max-w-none">
@@ -66,7 +66,7 @@
                 
                 {{-- TEKS KIRI (3 kolom) --}}
                 <div class="md:col-span-3 p-6 sm:p-8 lg:p-10 flex flex-col justify-center order-2 md:order-1">
-                    <h2 class="mb-3 sm:mb-4 text-xl sm:text-2xl lg:text-3xl tracking-tight font-extrabold text-gray-900 dark:text-white">
+                    <h2 class="mb-3 sm:mb-4 text-xl sm:text-2xl lg:text-3xl  font-bold text-gray-900 dark:text-white">
                         Misi Kami
                     </h2>
                     

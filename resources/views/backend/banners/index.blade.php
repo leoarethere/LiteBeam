@@ -128,7 +128,7 @@
                     <div class="p-4 flex flex-col flex-grow">
                         <div class="flex-grow">
                             {{-- Judul --}}
-                            <h3 class="mb-2 text-lg font-bold tracking-tight text-gray-900 dark:text-white leading-snug line-clamp-2">
+                            <h3 class="mb-2 text-lg font-bold  font-bold text-gray-900 dark:text-white leading-snug line-clamp-2">
                                 {{ $banner->title }}
                             </h3>
 
