@@ -46,14 +46,13 @@ class ProfileController extends Controller
         $user->name = $validated['name'];
         $user->email = $validated['email'];
 
-        // 3. Logika Ganti Password (Jika user mengisi kolom password)
-        if ($request->filled('current_password') || $request->filled('password')) {
-            // Validasi password fields
+        // 3. Logika Ganti Password (OPSIONAL)
+        if ($request->filled('password') || $request->filled('current_password')) {
             $request->validate([
-                'current_password' => ['required_with:password'], 
+                'current_password' => ['required'],
                 'password' => ['required', 'min:8', 'confirmed'],
             ], [
-                'current_password.required_with' => 'Password lama wajib diisi jika ingin mengganti password.',
+                'current_password.required' => 'Password lama wajib diisi jika ingin mengganti password.',
                 'password.required' => 'Password baru wajib diisi.',
                 'password.min' => 'Password minimal 8 karakter.',
                 'password.confirmed' => 'Konfirmasi password tidak cocok.',
@@ -74,14 +73,23 @@ class ProfileController extends Controller
         try {
             $user->save();
             
-            return redirect()->route('profile.edit')
-                ->with('success', 'Profil berhasil diperbarui!');
+            // ✅ Cek tombol mana yang diklik
+            if ($request->input('action') === 'dashboard') {
+                return redirect()->route('dashboard')
+                    ->with('success', '✅ Profil berhasil diperbarui!');
+            } else {
+                // Default: tetap di halaman edit
+                return redirect()->route('profile.edit')
+                    ->with('success', '✅ Profil berhasil diperbarui!');
+            }
+                
         } catch (\Exception $e) {
             return redirect()->back()
                 ->withInput()
                 ->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
     }
+
 
     /**
      * Hapus akun user (opsional, jika diperlukan)

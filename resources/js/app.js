@@ -1,67 +1,71 @@
-// FILE: resources/js/app.js (FIXED)
+// FILE: resources/js/app.js (FIXED - Turbo + Alpine Conflict Resolution)
 
 import * as Turbo from '@hotwired/turbo';
 import Alpine from 'alpinejs';
 import './bootstrap';
 import 'flowbite';
 
-// --- BAGIAN INI DIPERBAIKI ---
+// --- Owl Carousel Setup ---
 import jQuery from 'jquery';
 import 'owl.carousel/dist/assets/owl.carousel.css';
 import 'owl.carousel/dist/assets/owl.theme.default.css';
 
-// 1. Pasang jQuery ke Window DULUAN
 window.$ = window.jQuery = jQuery;
 
-// 2. Baru panggil Owl Carousel (menggunakan dynamic import agar urutannya benar)
 import('owl.carousel').then(() => {
     console.log('🦉 Owl Carousel Loaded Successfully');
-    // Trigger event kustom jika perlu, atau biarkan script inline jalan
     document.dispatchEvent(new Event('owl-loaded'));
 }).catch((err) => console.error('Owl loading failed', err));
 
-// -----------------------------
-
+// --- Alpine Setup ---
 window.Alpine = Alpine;
 window.appInitialized = false;
 window.alpineStarted = false;
 
-// Theme setup (harus dijalankan SEBELUM Alpine)
-// if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-//   document.documentElement.classList.add('dark');
-// } else {
-//   document.documentElement.classList.remove('dark');
-// }
+// ============================================
+// ✅ FIX: INISIALISASI ALPINE SEBELUM TURBO
+// ============================================
+console.log('🔧 Starting Alpine.js immediately...');
+Alpine.start();
+window.alpineStarted = true;
+console.log('✅ Alpine.js started');
 
 // ============================================
-// TURBO EVENT HANDLERS - SINGLE SOURCE
+// TURBO EVENT HANDLERS
 // ============================================
 
-// Initialize everything on first load
+// ✅ FIX: Gunakan turbo:render (lebih lambat tapi lebih stabil)
+document.addEventListener('turbo:render', function() {
+    console.log('🎨 Turbo render complete');
+    
+    // Tunggu sebentar agar Alpine component ter-mount
+    setTimeout(() => {
+        checkForFlashMessages();
+        initializeFlowbite();
+    }, 100); // Delay 100ms
+});
+
+// Fallback untuk first load
 document.addEventListener('DOMContentLoaded', function() {
     if (window.appInitialized) return;
     
-    console.log('🚀 Initializing app...');
-    initializeAlpine();
-    initializeFlowbite();
+    console.log('🚀 DOMContentLoaded - First page load');
+    
+    setTimeout(() => {
+        checkForFlashMessages();
+        initializeFlowbite();
+    }, 150); // Delay lebih lama untuk first load
+    
     window.appInitialized = true;
 });
 
-// Handle Turbo navigations
-document.addEventListener('turbo:load', function() {
-    console.log('🔄 Turbo page loaded');
-    
-    // Re-initialize Flowbite for new DOM elements
-    initializeFlowbite();
-});
-
-// Cleanup before Turbo caches pages
+// Cleanup before cache
 document.addEventListener('turbo:before-cache', function() {
     console.log('🗑️ Turbo caching page - cleaning up');
     cleanupBeforeCache();
 });
 
-// Handle form submissions
+// Form submission handlers
 document.addEventListener('turbo:submit-start', function(event) {
     console.log('📤 Form submission started');
     showLoadingState(event.target);
@@ -72,30 +76,64 @@ document.addEventListener('turbo:submit-end', function(event) {
     hideLoadingState(event.target);
 });
 
-// Handle Turbo errors
+// Error handler
 document.addEventListener('turbo:fetch-request-error', function(event) {
     console.error('❌ Turbo fetch error:', event.detail);
     showErrorMessage('Network error occurred');
 });
 
 // ============================================
-// INITIALIZATION FUNCTIONS
+// ✅ FIX: FUNGSI FLASH MESSAGE YANG DIPERBAIKI
 // ============================================
-
-function initializeAlpine() {
-    if (window.alpineStarted) {
-        console.log('⚠️ Alpine.js already started, skipping...');
+function checkForFlashMessages() {
+    console.log('🔍 Checking for flash messages...');
+    
+    // Cek apakah Alpine component sudah ready
+    if (!window.Alpine || !window.Alpine.store) {
+        console.warn('⚠️ Alpine not ready, retrying in 100ms...');
+        setTimeout(checkForFlashMessages, 100);
         return;
     }
     
-    try {
-        Alpine.start();
-        window.alpineStarted = true;
-        console.log('✅ Alpine.js initialized successfully');
-    } catch (error) {
-        console.error('❌ Alpine.js initialization failed:', error);
+    // 1. Cek Toast Notification
+    const toastTrigger = document.getElementById('notification-trigger');
+    if (toastTrigger) {
+        const message = toastTrigger.getAttribute('data-message');
+        const type = toastTrigger.getAttribute('data-type');
+        
+        console.log('📢 Toast found:', { message, type });
+        
+        if (message) {
+            // Trigger Alpine event
+            window.dispatchEvent(new CustomEvent('show-notification', {
+                detail: { message, type }
+            }));
+            toastTrigger.remove();
+        }
+    }
+
+    // 2. Cek Modal Popup
+    const modalTrigger = document.getElementById('modal-trigger');
+    if (modalTrigger) {
+        const title = modalTrigger.getAttribute('data-title');
+        const message = modalTrigger.getAttribute('data-message');
+        const type = modalTrigger.getAttribute('data-type');
+        
+        console.log('🔔 Modal found:', { title, message, type });
+        
+        if (message) {
+            // Trigger Alpine event
+            window.dispatchEvent(new CustomEvent('show-modal', {
+                detail: { title, message, type }
+            }));
+            modalTrigger.remove();
+        }
     }
 }
+
+// ============================================
+// UTILITY FUNCTIONS
+// ============================================
 
 function initializeFlowbite() {
     if (typeof initFlowbite === 'function') {
@@ -105,16 +143,12 @@ function initializeFlowbite() {
         } catch (error) {
             console.error('❌ Flowbite initialization failed:', error);
         }
-    } else {
-        console.log('⚠️ Flowbite not available');
     }
 }
 
 function cleanupBeforeCache() {
-    // Close any open modals, dropdowns, etc.
     const openModals = document.querySelectorAll('[data-modal-toggle]');
     openModals.forEach(modal => {
-        // Trigger close event if available
         const event = new Event('hide.flowbite.modal');
         modal.dispatchEvent(event);
     });
@@ -126,7 +160,6 @@ function showLoadingState(form) {
         submitButton.disabled = true;
         submitButton.classList.add('opacity-50', 'cursor-not-allowed');
         
-        // Add loading text or spinner
         const originalText = submitButton.innerHTML;
         submitButton.setAttribute('data-original-text', originalText);
         submitButton.innerHTML = 'Loading...';
@@ -143,7 +176,6 @@ function hideLoadingState(form) {
 }
 
 function showErrorMessage(message) {
-    // Simple error notification
     const errorDiv = document.createElement('div');
     errorDiv.className = 'fixed top-4 right-4 bg-red-500 text-white p-4 rounded-lg shadow-lg z-50';
     errorDiv.textContent = message;
@@ -154,14 +186,9 @@ function showErrorMessage(message) {
     }, 5000);
 }
 
-// ============================================
-// TURBO CONFIGURATION
-// ============================================
+// Turbo configuration
+Turbo.setProgressBarDelay(500);
 
-// Configure Turbo
-Turbo.setProgressBarDelay(500); // Show progress bar after 500ms
-
-// Optional: Disable Turbo for specific links
 document.addEventListener('turbo:click', function(event) {
     const target = event.target;
     if (target.matches('[data-turbo="false"]')) {
@@ -169,9 +196,5 @@ document.addEventListener('turbo:click', function(event) {
         window.location.href = target.href;
     }
 });
-
-// ============================================
-// EXPORT FOR VITE (if needed)
-// ============================================
 
 export { Turbo, Alpine };

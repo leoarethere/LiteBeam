@@ -12,7 +12,6 @@
         'resources/js/dashboard.js' 
     ])
     
-    {{-- 👇 TEMPELKAN KODE GOOGLE FONTS BARU DI SINI --}}
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Google+Sans+Flex:opsz,wght@6..144,1..1000&display=swap" rel="stylesheet">
@@ -21,21 +20,8 @@
         [x-cloak] { display: none !important; }
         .turbo-loading { opacity: 0.7; pointer-events: none; }
         .notification-banner { transition: all 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55); }
-
-        .google-sans-flex-<uniquifier> {
-        font-family: "Google Sans Flex", sans-serif;
-        font-optical-sizing: auto;
-        font-weight: <weight>;
-        font-style: normal;
-        font-variation-settings:
-            "slnt" 0,
-            "wdth" 100,
-            "GRAD" 0,
-            "ROND" 0;
-        }
     </style>
 
-    {{-- PERBAIKAN FAVICON --}}
     <link rel="icon" href="{{ asset('img/favicon.png') }}" type="image/png">
     <link rel="shortcut icon" href="{{ asset('img/favicon.png') }}" type="image/png">
 </head>
@@ -151,38 +137,41 @@
                 modalMessage: '',
 
                 init() {
-                    console.log('🏠 Dashboard initialized (Enhanced Turbo Support)');
+                    console.log('🏠 Dashboard Alpine component initialized');
                     this.setupResizeHandler();
                     
-                    // Cek pesan setiap kali init() dipanggil (termasuk setelah Turbo render)
-                    this.checkForFlashMessages();
+                    // ✅ FIX: Listen untuk custom events dari app.js
+                    window.addEventListener('show-notification', (e) => {
+                        console.log('📨 Received show-notification event:', e.detail);
+                        this.showNotification(e.detail.message, e.detail.type);
+                    });
 
-                    // Event listeners untuk Turbo
-                    document.addEventListener('turbo:load', () => {
-                        console.log('🔄 Turbo load detected, checking for flash messages...');
-                        this.checkForFlashMessages();
+                    window.addEventListener('show-modal', (e) => {
+                        console.log('📨 Received show-modal event:', e.detail);
+                        this.showModal(e.detail.title, e.detail.message, e.detail.type);
                     });
                     
-                    document.addEventListener('turbo:render', () => {
-                        console.log('🎨 Turbo render detected, checking for flash messages...');
+                    // Cek pesan saat init (fallback)
+                    this.$nextTick(() => {
                         this.checkForFlashMessages();
                     });
                 },
 
                 checkForFlashMessages() {
-                    // 1. Cek Toast Notification
+                    // Toast Notification
                     const toastTrigger = document.getElementById('notification-trigger');
                     if (toastTrigger) {
                         const message = toastTrigger.getAttribute('data-message');
                         const type = toastTrigger.getAttribute('data-type');
                         
                         if (message) {
+                            console.log('📢 Toast trigger found in Alpine init');
                             this.showNotification(message, type);
-                            toastTrigger.remove(); // Hapus elemen agar tidak diproses dua kali
+                            toastTrigger.remove();
                         }
                     }
 
-                    // 2. Cek Modal Popup
+                    // Modal Popup
                     const modalTrigger = document.getElementById('modal-trigger');
                     if (modalTrigger) {
                         const title = modalTrigger.getAttribute('data-title');
@@ -190,6 +179,7 @@
                         const type = modalTrigger.getAttribute('data-type');
                         
                         if (message) {
+                            console.log('🔔 Modal trigger found in Alpine init');
                             this.showModal(title, message, type);
                             modalTrigger.remove();
                         }
@@ -198,6 +188,7 @@
 
                 // Fungsi Menampilkan Toast
                 showNotification(message, type) {
+                    console.log('✅ Showing notification:', { message, type });
                     this.notificationMessage = message;
                     this.notificationType = type;
                     this.notificationOpen = true;
@@ -209,11 +200,11 @@
 
                 // Fungsi Menampilkan Modal
                 showModal(title, message, type = 'success') {
+                    console.log('✅ Showing modal:', { title, message, type });
                     this.modalTitle = title;
                     this.modalMessage = message;
                     this.modalType = type;
                     this.modalOpen = true;
-                    // Tidak ada setTimeout, user harus klik OK
                 },
 
                 isMobile() { 
