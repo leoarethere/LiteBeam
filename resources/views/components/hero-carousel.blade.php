@@ -83,9 +83,9 @@
                      class="max-w-xl">
                     
                     {{-- ✅ Heading: Mobile (text-xl) → Tablet (text-2xl) → Desktop (text-4xl) → Large (text-5xl) --}}
-                    <h1 class="mb-2 sm:mb-3 md:mb-4 text-xl sm:text-2xl md:text-4xl lg:text-5xl font-bold" 
+                    <h2 class="mb-4 text-3xl font-bold tracking-tight text-white sm:text-4xl" 
                         x-text="slide.title">
-                    </h1>
+                    </h2>
                     
                     {{-- ✅ Subtitle: Responsive sizes + line clamp untuk mobile --}}
                     <p class="mb-4 sm:mb-6 md:mb-8 text-xs sm:text-sm md:text-base lg:text-lg text-gray-300 line-clamp-2 sm:line-clamp-3" 

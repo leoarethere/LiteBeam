@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\JadwalAcara;
 use Illuminate\Http\Request;
+use App\Models\JadwalCategory;
 use Illuminate\Validation\Rule;
 use App\Models\BroadcastCategory;
 use Illuminate\Routing\Controller;
@@ -32,14 +33,20 @@ class DashboardJadwalAcaraController extends Controller
                               ->withQueryString();
 
         $categories = BroadcastCategory::orderBy('name')->get();
+        $jadwalCategories = JadwalCategory::orderBy('id')->get();
 
-        return view('backend.jadwal-acara.index', compact('jadwalAcaras', 'categories'));
+        // PERBAIKAN: Tambahkan 'jadwalCategories' ke dalam compact
+        return view('backend.jadwal-acara.index', compact('jadwalAcaras', 'categories', 'jadwalCategories'));
     }
 
     public function create()
     {
         $categories = BroadcastCategory::orderBy('name')->get();
-        return view('backend.jadwal-acara.create', compact('categories'));
+        // PERBAIKAN: Ambil data kategori hari
+        $jadwalCategories = JadwalCategory::orderBy('id')->get();
+        
+        // PERBAIKAN: Kirim 'jadwalCategories' ke view
+        return view('backend.jadwal-acara.create', compact('categories', 'jadwalCategories'));
     }
 
     public function store(Request $request)
@@ -49,6 +56,8 @@ class DashboardJadwalAcaraController extends Controller
             'slug' => 'required|string|max:255|unique:jadwal_acaras,slug',
             'start_time' => 'required',
             'broadcast_category_id' => 'required|exists:broadcast_categories,id',
+            // Pastikan validasi untuk jadwal_category_id ada
+            'jadwal_category_id' => 'required|exists:jadwal_categories,id',
             'is_active' => 'required|boolean',
         ]);
 
@@ -60,8 +69,11 @@ class DashboardJadwalAcaraController extends Controller
 
     public function edit(JadwalAcara $jadwalAcara)
     {
+        $jadwalCategories = JadwalCategory::orderBy('id')->get();
         $categories = BroadcastCategory::orderBy('name')->get();
-        return view('backend.jadwal-acara.edit', compact('jadwalAcara', 'categories'));
+        
+        // PERBAIKAN: Tambahkan 'jadwalCategories' ke dalam compact
+        return view('backend.jadwal-acara.edit', compact('jadwalAcara', 'categories', 'jadwalCategories'));
     }
 
     public function update(Request $request, JadwalAcara $jadwalAcara)
@@ -71,6 +83,7 @@ class DashboardJadwalAcaraController extends Controller
             'slug' => ['required', 'string', 'max:255', Rule::unique('jadwal_acaras')->ignore($jadwalAcara->id)],
             'start_time' => 'required',
             'broadcast_category_id' => 'required|exists:broadcast_categories,id',
+            'jadwal_category_id' => 'required|exists:jadwal_categories,id',
             'is_active' => 'required|boolean',
         ]);
 

@@ -43,7 +43,7 @@ class BroadcastController extends Controller
                             ->withQueryString();
 
         // Kirim data ke view
-        return view('frontend.penyiaran.siaran', compact(
+        return view('frontend.publikasi.siaran', compact(
             'title', 
             'categories', 
             'broadcasts', 
@@ -57,7 +57,7 @@ class BroadcastController extends Controller
             abort(404);
         }
 
-        return view('frontend.penyiaran.detail', [
+        return view('frontend.publikasi.detail', [
             'title' => $broadcast->title,
             'broadcast' => $broadcast
         ]);

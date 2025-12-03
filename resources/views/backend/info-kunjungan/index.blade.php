@@ -1,5 +1,5 @@
 <x-dashboard-layout>
-    <x-slot:title>Manajemen Info Kunjungan</x-slot:title>
+    <x-slot:title>Manajemen Informasi Kunjungan</x-slot:title>
 
     {{-- Style untuk modal & x-cloak --}}
     <style>

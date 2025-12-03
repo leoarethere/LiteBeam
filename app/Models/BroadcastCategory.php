@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\Broadcast;
+use App\Models\JadwalAcara;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -42,5 +43,10 @@ class BroadcastCategory extends Model
                 return $colorMap[$colorName] ?? $colorMap['gray'];
             }
         );
+    }
+
+    public function jadwalAcaras()
+    {
+        return $this->hasMany(JadwalAcara::class, 'broadcast_category_id');
     }
 }

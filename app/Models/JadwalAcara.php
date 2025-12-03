@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\JadwalCategory;
 use App\Models\BroadcastCategory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -30,5 +31,10 @@ class JadwalAcara extends Model
     public function broadcastCategory(): BelongsTo
     {
         return $this->belongsTo(BroadcastCategory::class, 'broadcast_category_id');
+    }
+
+    public function jadwalCategory()
+    {
+        return $this->belongsTo(JadwalCategory::class, 'jadwal_category_id');
     }
 }

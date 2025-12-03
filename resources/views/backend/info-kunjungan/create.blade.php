@@ -1,5 +1,5 @@
 <x-dashboard-layout>
-    <x-slot:title>Tambah Info Kunjungan</x-slot:title>
+    <x-slot:title>Tambah Informasi Kunjungan</x-slot:title>
 
     {{-- Style Trix --}}
     <link rel="stylesheet" type="text/css" href="https://unpkg.com/trix@2.0.8/dist/trix.css">

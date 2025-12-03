@@ -27,16 +27,20 @@ class DashboardHymneTvriController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
+        // 1. Validasi Input
         $validated = $request->validate([
             'title'     => 'required|string|max:255',
             'info'      => 'nullable|string|max:255',
-            'poster'    => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120', // Max 5MB
+            'poster'    => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
             'synopsis'  => 'required|string',
-            'link'      => 'required|url', // Link Youtube/Streaming
+            'link'      => 'nullable|url', // ← UBAH jadi nullable
             'is_active' => 'nullable|boolean',
         ]);
 
-        // Handle Upload Poster
+        // 2. Atur Status Aktif
+        $validated['is_active'] = $request->has('is_active');
+
+        // 3. Handle Upload Poster
         if ($request->hasFile('poster')) {
             try {
                 $file = $request->file('poster');
@@ -44,7 +48,6 @@ class DashboardHymneTvriController extends Controller
 
                 $manager = new ImageManager(new Driver());
                 $image = $manager->read($file);
-                // Poster biasanya vertikal atau kotak, kita resize lebar 600px cukup
                 $image->scale(width: 600); 
                 $encoded = $image->toJpeg(quality: 80);
 
@@ -52,16 +55,24 @@ class DashboardHymneTvriController extends Controller
                 $validated['poster'] = $filename;
 
             } catch (\Exception $e) {
-                return back()->withErrors(['poster' => 'Gagal memproses gambar: ' . $e->getMessage()])->withInput();
+                return back()
+                    ->withErrors(['poster' => 'Gagal memproses gambar: ' . $e->getMessage()])
+                    ->withInput();
             }
         }
 
-        $validated['is_active'] = $request->has('is_active');
-
-        HymneTvri::create($validated);
-
-        return redirect()->route('dashboard.hymne-tvri.index')
-            ->with('success', 'Data Himne berhasil ditambahkan!');
+        // 4. Simpan ke Database
+        try {
+            HymneTvri::create($validated);
+            
+            return redirect()->route('dashboard.hymne-tvri.index')
+                ->with('success', 'Data Himne berhasil ditambahkan!');
+                
+        } catch (\Exception $e) {
+            return back()
+                ->withErrors(['error' => 'Gagal menyimpan data: ' . $e->getMessage()])
+                ->withInput();
+        }
     }
 
     public function edit(HymneTvri $hymneTvri): View
@@ -76,39 +87,25 @@ class DashboardHymneTvriController extends Controller
             'info'      => 'nullable|string|max:255',
             'poster'    => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
             'synopsis'  => 'required|string',
-            'link'      => 'required|url',
+            'link'      => 'nullable|url', // ← UBAH jadi nullable
             'is_active' => 'nullable|boolean',
         ]);
 
         $validated['is_active'] = $request->has('is_active');
 
-        // Handle Update Poster
-        if ($request->hasFile('poster')) {
-            if ($hymneTvri->poster && Storage::disk('public')->exists($hymneTvri->poster)) {
-                Storage::disk('public')->delete($hymneTvri->poster);
-            }
+        // ... kode upload poster ...
 
-            try {
-                $file = $request->file('poster');
-                $filename = 'hymne/' . Str::random(40) . '.jpg';
-
-                $manager = new ImageManager(new Driver());
-                $image = $manager->read($file);
-                $image->scale(width: 600);
-                $encoded = $image->toJpeg(quality: 80);
-
-                Storage::disk('public')->put($filename, (string) $encoded);
-                $validated['poster'] = $filename;
-
-            } catch (\Exception $e) {
-                return back()->withErrors(['poster' => 'Gagal memproses gambar: ' . $e->getMessage()])->withInput();
-            }
+        try {
+            $hymneTvri->update($validated);
+            
+            return redirect()->route('dashboard.hymne-tvri.index')
+                ->with('success', 'Data Himne berhasil diperbarui!');
+                
+        } catch (\Exception $e) {
+            return back()
+                ->withErrors(['error' => 'Gagal memperbarui data: ' . $e->getMessage()])
+                ->withInput();
         }
-
-        $hymneTvri->update($validated);
-
-        return redirect()->route('dashboard.hymne-tvri.index')
-            ->with('success', 'Data Himne berhasil diperbarui!');
     }
 
     public function destroy(HymneTvri $hymneTvri): RedirectResponse

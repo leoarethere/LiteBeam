@@ -53,8 +53,8 @@
                 {{-- Quick Actions --}}
                 <div class="flex items-center space-x-1">
                     {{-- Theme Toggle untuk Desktop --}}
-                    <div class="border-l border-gray-200 dark:border-gray-700 pl-2">
-                        <x-dashboard-theme-toggle />
+                    <div>
+                        <x-theme-toggle />
                     </div>
                 </div>
 
@@ -88,20 +88,6 @@
                             <span class="block text-sm text-gray-500 truncate dark:text-gray-400">{{ auth()->user()->email }}</span>
                         </div>
 
-                        {{-- Menu Items --}}
-                        <ul class="py-1">
-                            <li>
-                                {{-- ✅ PERBAIKAN: Link profile yang terhubung --}}
-                                <a href="{{ route('profile.edit') }}" class="flex items-center gap-2 px-4 py-2 text-sm transition-colors duration-200 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                    </svg>
-                                    Account Settings
-                                </a>
-                            </li>
-                        </ul>
-
                         {{-- Logout --}}
                         <ul class="py-1 border-t border-gray-100 dark:border-gray-600">
                             <li>
@@ -125,7 +111,9 @@
             {{-- Bagian Kanan: Menu Mobile --}}
             <div class="flex items-center lg:hidden space-x-2">
                 {{-- Theme Toggle untuk Mobile --}}
-                <x-dashboard-theme-toggle />
+                <div class="ml-2 border-l border-gray-200 dark:border-gray-700 pl-2">
+                    <x-theme-toggle />
+                </div>
                 {{-- Mobile Menu Toggle --}}
                 <button @click="isMobileMenuOpen = !isMobileMenuOpen" 
                         type="button" 
@@ -167,15 +155,6 @@
 
             {{-- Mobile Menu Items --}}
             <div class="flex flex-col space-y-2">
-                {{-- ✅ PERBAIKAN: Link profile yang terhubung --}}
-                <a href="{{ route('profile.edit') }}" class="flex items-center gap-3 rounded-lg px-4 py-3 text-base font-medium transition-all duration-200 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white">
-                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                    </svg>
-                    Account Settings
-                </a>
-
                 <form action="{{ route('logout') }}" method="POST">
                     @csrf
                     {{-- ✅ PERBAIKAN KONSISTENSI: Menggunakan gap-3 (sebelumnya mr-3) --}}

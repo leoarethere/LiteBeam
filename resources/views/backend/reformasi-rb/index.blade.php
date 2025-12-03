@@ -36,7 +36,7 @@
         <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-6 pt-2">
             <div>
                 <h1 class="text-2xl lg:text-3xl font-bold text-gray-900 dark:text-white">
-                    Reformasi Birokrasi
+                    Informasi Reformasi Birokrasi
                 </h1>
                 <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
                     Kelola data dan dokumen terkait Reformasi Birokrasi.

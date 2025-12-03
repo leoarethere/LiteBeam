@@ -15,7 +15,7 @@
         }
     }"
     x-init="startAutoplay()"
-    class="relative h-[70vh] md:h-[60vh] overflow-hidden rounded-xl md:rounded-2xl mb-8 shadow-lg"
+    class="relative w-full aspect-[21/9] overflow-hidden rounded-xl md:rounded-2xl shadow-lg"
 >
     {{-- Latar Belakang Gambar Slider --}}
     <template x-for="(slide, index) in slides" :key="index">

@@ -1,5 +1,5 @@
 <x-dashboard-layout>
-    <x-slot:title>Edit Info Magang</x-slot:title>
+    <x-slot:title>Edit Informasi Magang</x-slot:title>
 
     {{-- Style Trix --}}
     <link rel="stylesheet" type="text/css" href="https://unpkg.com/trix@2.0.8/dist/trix.css">

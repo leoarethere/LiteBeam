@@ -11,7 +11,7 @@
     <div class="px-4 sm:px-6 lg:px-8">
 
         {{-- HERO SECTION (TETAP SAMA) --}}
-        <div class="relative rounded-3xl overflow-hidden mb-10 bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 dark:from-blue-900 dark:via-blue-950 dark:to-indigo-950 shadow-xl">
+        <div class="relative rounded-3xl overflow-hidden mb-6 bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 dark:from-blue-900 dark:via-blue-950 dark:to-indigo-950 shadow-xl">
             <div class="absolute inset-0 bg-grid-white/[0.03] bg-[size:24px_24px] [mask-image:radial-gradient(ellipse_at_center,black_40%,transparent_100%)]"></div>
             <div class="relative px-6 py-12 lg:px-12 lg:py-20 text-center">
                 <div class="max-w-3xl mx-auto">
@@ -34,7 +34,7 @@
         </div>
         
         {{-- BAGIAN FILTER (TETAP SAMA) --}}
-        <div class="mb-10">
+        <div class="mb-6">
             <div class="flex flex-col sm:flex-row items-start sm:items-center sm:justify-between mb-6 gap-4">
                 <div>
                     <h2 class="text-2xl font-bold text-gray-900 dark:text-white">

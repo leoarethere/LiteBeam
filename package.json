@@ -24,6 +24,7 @@
         "apexcharts": "^5.3.6",
         "cropperjs": "^2.0.1",
         "jquery": "^3.7.1",
-        "owl.carousel": "^2.3.4"
+        "owl.carousel": "^2.3.4",
+        "sweetalert2": "^11.26.3"
     }
 }
