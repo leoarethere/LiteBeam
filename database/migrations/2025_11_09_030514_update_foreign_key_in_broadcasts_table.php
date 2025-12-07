@@ -17,9 +17,10 @@ return new class extends Migration
 
             // 3. Buat foreign key baru ke tabel 'broadcast_categories'
             $table->foreign('broadcast_category_id')
-                  ->references('id')
-                  ->on('broadcast_categories')
-                  ->onDelete('cascade');
+                ->references('id')
+                ->on('broadcast_categories')
+                // SEBELUM: ->onDelete('cascade');
+                ->onDelete('restrict'); // SESUDAH: Ubah ke restrict
         });
     }
 

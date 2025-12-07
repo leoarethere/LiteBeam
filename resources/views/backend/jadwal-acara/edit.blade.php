@@ -1,17 +1,11 @@
 <x-dashboard-layout>
     <x-slot:title>Edit Jadwal Acara</x-slot:title>
 
-    {{-- 
-        Alpine.js Data:
-        Diinisialisasi dengan data lama ($jadwalAcara) agar form terisi otomatis.
-    --}}
     <div class="pb-6" x-data="{
         title: '{{ old('title', $jadwalAcara->title) }}',
         slug: '{{ old('slug', $jadwalAcara->slug) }}',
-        
         generateSlug() {
-            this.slug = this.title
-                .toLowerCase()
+            this.slug = this.title.toLowerCase()
                 .replace(/[^a-z0-9\s-]/g, '')
                 .replace(/\s+/g, '-')
                 .replace(/-+/g, '-')
@@ -30,7 +24,7 @@
             </div>
         </div>
 
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md border border-gray-200 dark:border-gray-700">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md border border-gray-200 dark:border-gray-700 overflow-hidden">
             {{-- Form Update (PUT Method) --}}
             <form action="{{ route('dashboard.jadwal-acara.update', $jadwalAcara) }}" method="POST">
                 @csrf
@@ -40,8 +34,8 @@
 
                     {{-- Error Summary --}}
                     @if ($errors->any())
-                        <div class="p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400 border border-red-300 dark:border-red-900" role="alert">
-                            <div class="font-medium mb-2">Oops! Ada beberapa kesalahan:</div>
+                        <div class="p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-red-900/30 dark:text-red-400 border border-red-200 dark:border-red-800" role="alert">
+                            <div class="font-medium mb-1">Oops! Ada beberapa kesalahan:</div>
                             <ul class="list-disc list-inside">
                                 @foreach ($errors->all() as $error)
                                     <li>{{ $error }}</li>
@@ -53,7 +47,7 @@
                     <div class="grid gap-6 md:grid-cols-2">
                         
                         {{-- Nama Acara --}}
-                        <div class="col-span-2">
+                        <div class="md:col-span-2">
                             <label for="title" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
                                 Nama Acara <span class="text-red-500">*</span>
                             </label>
@@ -61,17 +55,17 @@
                                 name="title" 
                                 id="title"
                                 x-model="title" 
-                                @input="generateSlug()" 
-                                class="bg-gray-50 border text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white {{ $errors->has('title') ? 'border-red-500' : 'border-gray-300' }}" 
-                                placeholder="Contoh: Berita Pagi" 
-                                required>
+                                @input.debounce.500ms="generateSlug()"
+                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" 
+                                required
+                                autofocus>
                             @error('title')
                                 <p class="mt-2 text-sm text-red-600 dark:text-red-500">{{ $message }}</p>
                             @enderror
                         </div>
 
                         {{-- Slug URL --}}
-                        <div class="col-span-2">
+                        <div class="md:col-span-2">
                             <label for="slug" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
                                 Slug URL <span class="text-red-500">*</span>
                             </label>
@@ -79,8 +73,8 @@
                                 name="slug" 
                                 id="slug"
                                 x-model="slug" 
-                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white font-mono" 
-                                readonly>
+                                class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white font-mono text-xs" 
+                                required>
                             @error('slug')
                                 <p class="mt-2 text-sm text-red-600 dark:text-red-500">{{ $message }}</p>
                             @enderror
@@ -93,9 +87,10 @@
                             </label>
                             <div class="relative">
                                 <div class="absolute inset-y-0 end-0 top-0 flex items-center pe-3.5 pointer-events-none">
-                                    <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Zm11-4a1 1 0 1 0-2 0v4a1 1 0 0 0 .293.707l3 3a1 1 0 0 0 1.414-1.414L13 11.586V8Z" clip-rule="evenodd"/></svg>
+                                    <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
+                                        <path fill-rule="evenodd" d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Zm11-4a1 1 0 1 0-2 0v4a1 1 0 0 0 .293.707l3 3a1 1 0 0 0 1.414-1.414L13 11.586V8Z" clip-rule="evenodd"/>
+                                    </svg>
                                 </div>
-                                {{-- Value di-parse menggunakan Carbon agar formatnya H:i (sesuai input time) --}}
                                 <input type="time" 
                                     name="start_time" 
                                     id="start_time"
@@ -108,18 +103,28 @@
                             @enderror
                         </div>
 
-                        {{-- INPUT HARI (BARU) --}}
+                        {{-- Hari Penayangan --}}
                         <div>
-                            <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Hari Penayangan <span class="text-red-500">*</span></label>
-                            <select name="jadwal_category_id" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white" required>
+                            <label for="jadwal_category_id" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                                Hari Penayangan <span class="text-red-500">*</span>
+                            </label>
+                            <select name="jadwal_category_id" 
+                                    id="jadwal_category_id"
+                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white" 
+                                    required>
                                 <option value="">Pilih Hari...</option>
                                 @foreach($jadwalCategories as $day)
-                                    <option value="{{ $day->id }}" @selected(old('jadwal_category_id', $jadwalAcara->jadwal_category_id) == $day->id)>{{ $day->name }}</option>
+                                    <option value="{{ $day->id }}" @selected(old('jadwal_category_id', $jadwalAcara->jadwal_category_id) == $day->id)>
+                                        {{ $day->name }}
+                                    </option>
                                 @endforeach
                             </select>
+                            @error('jadwal_category_id')
+                                <p class="mt-2 text-sm text-red-600 dark:text-red-500">{{ $message }}</p>
+                            @enderror
                         </div>
 
-                        {{-- Kategori --}}
+                        {{-- Kategori Acara --}}
                         <div>
                             <label for="broadcast_category_id" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
                                 Kategori Acara <span class="text-red-500">*</span>
@@ -141,35 +146,37 @@
                             @enderror
                         </div>
 
-                        {{-- Status --}}
-                        <div class="col-span-2">
+                        {{-- Status Penayangan --}}
+                        <div class="md:col-span-2">
                             <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                                Status Penayangan
+                                Status Penayangan <span class="text-red-500">*</span>
                             </label>
-                            <div class="flex gap-4">
+                            <div class="flex flex-col sm:flex-row gap-3">
                                 {{-- Radio Aktif --}}
-                                <label class="flex items-center p-3 border rounded-lg w-full cursor-pointer bg-gray-50 dark:bg-gray-700 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
+                                <div class="flex items-center ps-4 border border-gray-200 rounded dark:border-gray-700 bg-gray-50 dark:bg-gray-700 flex-1">
                                     <input type="radio" 
                                         name="is_active" 
                                         value="1" 
+                                        id="active_yes"
                                         class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
                                         @checked(old('is_active', $jadwalAcara->is_active) == 1)>
-                                    <span class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">
+                                    <label for="active_yes" class="w-full py-3 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300 cursor-pointer">
                                         Aktif (Tayang)
-                                    </span>
-                                </label>
+                                    </label>
+                                </div>
                                 
                                 {{-- Radio Non-Aktif --}}
-                                <label class="flex items-center p-3 border rounded-lg w-full cursor-pointer bg-gray-50 dark:bg-gray-700 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
+                                <div class="flex items-center ps-4 border border-gray-200 rounded dark:border-gray-700 bg-gray-50 dark:bg-gray-700 flex-1">
                                     <input type="radio" 
                                         name="is_active" 
                                         value="0" 
+                                        id="active_no"
                                         class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
                                         @checked(old('is_active', $jadwalAcara->is_active) == 0)>
-                                    <span class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">
+                                    <label for="active_no" class="w-full py-3 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300 cursor-pointer">
                                         Non-Aktif
-                                    </span>
-                                </label>
+                                    </label>
+                                </div>
                             </div>
                             @error('is_active')
                                 <p class="mt-2 text-sm text-red-600 dark:text-red-500">{{ $message }}</p>

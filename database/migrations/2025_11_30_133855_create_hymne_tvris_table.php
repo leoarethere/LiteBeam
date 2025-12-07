@@ -14,8 +14,7 @@ return new class extends Migration
             $table->string('info')->nullable();
             $table->string('poster')->nullable();
             $table->text('synopsis');
-            $table->string('link');
-            $table->boolean('is_active')->default(true);
+            $table->string('link')->nullable();
             $table->timestamps();
         });
     }

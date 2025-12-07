@@ -2,145 +2,207 @@
     <x-slot:title>Reformasi Birokrasi</x-slot:title>
 
     {{-- KONTAINER UTAMA --}}
-    <div class="px-4 sm:px-6 lg:px-8">
+    <div class="px-4 sm:px-6 lg:px-8 py-8">
 
         {{-- HERO SECTION --}}
-        <div class="relative rounded-3xl overflow-hidden mb-6 bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 dark:from-blue-900 dark:via-blue-950 dark:to-indigo-950 shadow-xl">
-            {{-- Pattern Overlay --}}
-            <div class="absolute inset-0 bg-grid-white/[0.03] bg-[size:24px_24px] [mask-image:radial-gradient(ellipse_at_center,black_40%,transparent_100%)]"></div>
+        <div class="relative rounded-3xl overflow-hidden mb-10 bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 dark:from-blue-900 dark:via-blue-950 dark:to-indigo-950 shadow-xl">
+            {{-- Background Pattern --}}
+            <div class="absolute inset-0 bg-grid-white/[0.05] bg-[size:24px_24px]"></div>
+            <div class="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
             
-            <div class="relative px-6 py-12 lg:px-12 lg:py-20 text-center">
+            <div class="relative px-6 py-12 lg:px-12 lg:py-20 text-center z-10">
                 <div class="max-w-3xl mx-auto">
-                    <h1 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4 drop-shadow-md">
-                        Informasi Reformasi Birokrasi
+                    <h1 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mb-4 drop-shadow-sm">
+                        Reformasi Birokrasi
                     </h1>
-                    <p class="text-blue-100 text-lg max-w-2xl mx-auto leading-relaxed">
-                        Komitmen TVRI Stasiun D.I. Yogyakarta dalam Reformasi Birokrasi diwujudkan melalui tata kelola yang bersih, efektif, dan melayani, demi terciptanya pelayanan publik yang profesional dan akuntabel.
+                    <p class="text-blue-100 text-base sm:text-lg max-w-2xl mx-auto leading-relaxed">
+                        Komitmen TVRI Stasiun D.I. Yogyakarta dalam mewujudkan tata kelola yang bersih, efektif, dan melayani demi pelayanan publik yang profesional.
                     </p>
                 </div>
             </div>
         </div>
 
-        {{-- FORM PENCARIAN & FILTER --}}
-        <div class="mb-6">
-            <form method="GET" action="{{ route('info-rb.index') }}" class="mx-auto">
-                <div class="flex flex-col md:flex-row gap-4 p-2 bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+        {{-- BAGIAN FILTER & SORTING --}}
+        <div class="mb-10">
+            <form method="GET" action="{{ route('info-rb.index') }}" class="max-w-7xl mx-auto">
+                <div class="flex flex-col md:flex-row justify-between items-center gap-4 p-4 bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700">
                     
-                    {{-- Input Search --}}
-                    <div class="relative flex-grow">
-                        <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                            <svg class="w-5 h-5 text-gray-500 dark:text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"></path>
-                            </svg>
-                        </div>
-                        <input type="text" 
-                            name="search" 
-                            value="{{ request('search') }}" 
-                            class="block w-full p-3 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" 
-                            placeholder="Cari informasi atau dokumen RB...">
+                    {{-- Judul Seksi --}}
+                    <div class="w-full md:w-auto">
+                        <h2 class="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                            <svg class="w-5 h-5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                            Semua Dokumen RB
+                        </h2>
                     </div>
 
-                    {{-- Select Sort (Urutan) --}}
-                    <select name="sort" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full md:w-48 p-3 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                        <option value="latest" {{ request('sort', 'latest') == 'latest' ? 'selected' : '' }}>Terbaru</option>
-                        <option value="oldest" {{ request('sort') == 'oldest' ? 'selected' : '' }}>Terlama</option>
-                    </select>
+                    {{-- Group Filter --}}
+                    <div class="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+                        
+                        {{-- Search Input --}}
+                        <div class="relative w-full sm:w-64">
+                            <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                                </svg>
+                            </div>
+                            <input type="text" 
+                                   name="search" 
+                                   value="{{ request('search') }}"
+                                   class="block w-full py-2.5 pl-10 pr-4 text-sm text-gray-900 bg-gray-50 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" 
+                                   placeholder="Cari dokumen RB...">
+                        </div>
 
-                    {{-- Tombol Action --}}
-                    <div class="flex gap-2">
-                        <button type="submit" class="w-full md:w-auto px-6 py-3 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 transition-colors">
-                            Cari
-                        </button>
-                        @if(request()->hasAny(['search', 'sort']))
-                            <a href="{{ route('info-rb.index') }}" class="w-full md:w-auto px-6 py-3 text-sm font-medium text-gray-700 bg-gray-100 border border-gray-300 rounded-lg hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-600 transition-colors flex items-center justify-center">
-                                Reset
-                            </a>
-                        @endif
+                        {{-- Sorting --}}
+                        <div class="relative w-full sm:w-48">
+                            <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12"></path>
+                                </svg>
+                            </div>
+                            <select name="sort" onchange="this.form.submit()" 
+                                    class="block w-full py-2.5 pl-10 pr-8 text-sm text-gray-900 bg-gray-50 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white cursor-pointer">
+                                <option value="latest" @selected(request('sort', 'latest') == 'latest')>Terbaru</option>
+                                <option value="oldest" @selected(request('sort') == 'oldest')>Terlama</option>
+                                <option value="title_asc" @selected(request('sort') == 'title_asc')>Judul A-Z</option>
+                                <option value="title_desc" @selected(request('sort') == 'title_desc')>Judul Z-A</option>
+                            </select>
+                        </div>
+
                     </div>
                 </div>
             </form>
 
-            {{-- Info Hasil Pencarian --}}
+            {{-- Info Hasil Pencarian / Filter Aktif --}}
             @if(request()->hasAny(['search', 'sort']))
-                <div class="max-w-5xl mx-auto mt-4 text-sm text-gray-600 dark:text-gray-400">
-                    Menampilkan {{ $items->total() }} dokumen
-                    @if(request('search'))
-                        untuk pencarian <strong class="text-gray-900 dark:text-white">"{{ request('search') }}"</strong>
-                    @endif
+                <div class="max-w-7xl mx-auto mt-4 flex flex-wrap items-center justify-between gap-4 px-2">
+                    <div class="text-sm text-gray-600 dark:text-gray-400">
+                        Menampilkan <strong>{{ $items->total() }}</strong> dokumen
+                        @if(request('search'))
+                            untuk "<strong>{{ request('search') }}</strong>"
+                        @endif
+                    </div>
+                    
+                    <a href="{{ route('info-rb.index') }}" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-red-700 bg-red-100 rounded-full hover:bg-red-200 dark:bg-red-900/30 dark:text-red-300 dark:hover:bg-red-900/50 transition-colors">
+                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                        Reset Filter
+                    </a>
                 </div>
             @endif
         </div>
 
         {{-- CONTENT GRID --}}
-        <div class="mb-16">
+        <div class="max-w-7xl mx-auto mb-12">
             @if($items->count() > 0)
-                <div class="grid gap-6 mb-8 lg:mb-12 md:grid-cols-2">
+                {{-- Grid: 1 kolom mobile, 2 kolom large screen (Card Horizontal) --}}
+                <div class="grid gap-6 grid-cols-1 lg:grid-cols-2">
                     @foreach($items as $item)
-                        <div class="group bg-white dark:bg-gray-800 rounded-2xl shadow-sm hover:shadow-xl border border-gray-100 dark:border-gray-700 overflow-hidden transition-all duration-300 hover:-translate-y-1 flex flex-col sm:flex-row h-full">
+                        
+                        {{-- CARD ITEM (HORIZONTAL LAYOUT) --}}
+                        <div class="group relative flex flex-col md:flex-row bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
                             
-                            {{-- Bagian Gambar / Icon (Kiri/Atas) --}}
-                            <a href="{{ $item->file_link }}" target="_blank" class="flex-shrink-0 w-full sm:w-48 h-48 sm:h-auto relative overflow-hidden bg-gray-100 dark:bg-gray-700">
+                            {{-- 1. GAMBAR / ICON (KIRI) --}}
+                            {{-- Mobile: Aspect Video, Desktop: Fixed Width --}}
+                            <a href="{{ $item->file_link }}" target="_blank" class="relative w-full md:w-48 md:min-w-[12rem] aspect-video md:aspect-auto shrink-0 bg-gray-100 dark:bg-gray-700 block overflow-hidden">
                                 @if($item->cover_image)
-                                    <img class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" 
+                                    <img class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" 
                                          src="{{ Storage::url($item->cover_image) }}" 
                                          alt="{{ $item->title }}"
-                                         onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\"w-full h-full flex items-center justify-center bg-blue-50 dark:bg-gray-700 group-hover:bg-blue-100 dark:group-hover:bg-gray-600 transition-colors\"><svg class=\"w-16 h-16 text-blue-300 dark:text-gray-500\" fill=\"currentColor\" viewBox=\"0 0 20 20\"><path fill-rule=\"evenodd\" d=\"M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z\" clip-rule=\"evenodd\"></path></svg></div>'">
+                                         loading="lazy"
+                                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                    
+                                    {{-- Fallback jika error load gambar --}}
+                                    <div class="hidden w-full h-full items-center justify-center bg-gray-100 dark:bg-gray-700">
+                                        <svg class="w-10 h-10 text-gray-300 dark:text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                        </svg>
+                                    </div>
                                 @else
-                                    <div class="w-full h-full flex items-center justify-center bg-blue-50 dark:bg-gray-700 group-hover:bg-blue-100 dark:group-hover:bg-gray-600 transition-colors">
-                                        <svg class="w-16 h-16 text-blue-300 dark:text-gray-500" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" clip-rule="evenodd"></path>
+                                    {{-- Placeholder Default --}}
+                                    <div class="w-full h-full flex items-center justify-center bg-gray-100 dark:bg-gray-700 group-hover:bg-blue-50 dark:group-hover:bg-gray-600 transition-colors">
+                                        <svg class="w-12 h-12 text-blue-300 dark:text-gray-500 group-hover:text-blue-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                                         </svg>
                                     </div>
                                 @endif
+                                
+                                {{-- Overlay Hover --}}
+                                <div class="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-300"></div>
                             </a>
 
-                            {{-- Bagian Konten (Kanan/Bawah) --}}
-                            <div class="p-6 flex flex-col justify-between w-full">
+                            {{-- 2. KONTEN (KANAN) --}}
+                            <div class="flex-1 p-5 flex flex-col justify-between">
                                 <div>
-                                    <div class="flex items-center justify-between mb-2">
-                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/50 dark:text-blue-300">
+                                    {{-- Meta Data --}}
+                                    <div class="flex items-center justify-between mb-3">
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wide bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
                                             Dokumen RB
                                         </span>
-                                        <span class="text-xs text-gray-400 flex items-center gap-1">
-                                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                            </svg>
+                                        <span class="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1.5">
+                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
                                             {{ $item->created_at->format('d M Y') }}
                                         </span>
                                     </div>
-                                    
-                                    <h3 class="text-xl font-bold tracking-tight text-gray-900 dark:text-white mb-2 leading-snug">
-                                        <a href="{{ $item->file_link }}" target="_blank" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors line-clamp-2">
+
+                                    {{-- Judul --}}
+                                    <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2 leading-tight group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                                        <a href="{{ $item->file_link }}" target="_blank">
                                             {{ $item->title }}
                                         </a>
                                     </h3>
-                                    
-                                    <div class="font-light text-gray-500 dark:text-gray-400 text-sm line-clamp-2 mb-4">
-                                        {{ Str::limit(strip_tags($item->description), 100) }}
+
+                                    {{-- Deskripsi --}}
+                                    <div class="text-sm text-gray-600 dark:text-gray-400 line-clamp-2 mb-4 leading-relaxed">
+                                        {!! strip_tags($item->description) !!}
                                     </div>
                                 </div>
-                                
+
                                 {{-- Action Buttons --}}
-                                <div class="flex items-center gap-4 pt-4 border-t border-gray-100 dark:border-gray-700 mt-auto">
-                                    {{-- Tombol Buka --}}
-                                    <a href="{{ $item->file_link }}" target="_blank" class="flex items-center gap-2 text-sm font-medium text-gray-600 hover:text-blue-600 dark:text-gray-300 dark:hover:text-blue-400 transition-colors group/link">
-                                        <div class="p-1.5 rounded-lg bg-gray-100 dark:bg-gray-700 group-hover/link:bg-blue-50 dark:group-hover/link:bg-blue-900/30 transition-colors">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
-                                            </svg>
-                                        </div>
-                                        Buka File
+                                <div class="pt-4 border-t border-gray-100 dark:border-gray-700 flex items-center gap-3">
+                                    
+                                    {{-- Tombol Buka File --}}
+                                    <a href="{{ $item->file_link }}" target="_blank" 
+                                       class="flex-1 inline-flex justify-center items-center gap-2 px-4 py-2 text-sm font-semibold text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 dark:focus:ring-blue-800 transition-all shadow-sm">
+                                        <span>Buka File</span>
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
                                     </a>
 
-                                    {{-- Tombol Salin --}}
-                                    <button onclick="copyLink('{{ $item->file_link }}')" class="flex items-center gap-2 text-sm font-medium text-gray-600 hover:text-green-600 dark:text-gray-300 dark:hover:text-green-400 transition-colors group/copy ml-auto">
-                                        <div class="p-1.5 rounded-lg bg-gray-100 dark:bg-gray-700 group-hover/copy:bg-green-50 dark:group-hover/copy:bg-green-900/30 transition-colors">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
-                                            </svg>
-                                        </div>
-                                        <span class="hidden sm:inline">Salin Link</span>
-                                    </button>
+                                    {{-- Tombol Salin Link (Alpine.js) --}}
+                                    <div x-data="{ 
+                                        copied: false,
+                                        copyToClipboard() {
+                                            const text = '{{ $item->file_link }}';
+                                            if (navigator.clipboard) {
+                                                navigator.clipboard.writeText(text);
+                                            } else {
+                                                const textArea = document.createElement('textarea');
+                                                textArea.value = text;
+                                                document.body.appendChild(textArea);
+                                                textArea.select();
+                                                document.execCommand('copy');
+                                                document.body.removeChild(textArea);
+                                            }
+                                            this.copied = true;
+                                            setTimeout(() => this.copied = false, 2000);
+                                        }
+                                    }">
+                                        <button @click="copyToClipboard()" 
+                                                class="p-2 text-gray-500 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-400 dark:hover:bg-gray-600 rounded-lg transition-colors border border-gray-200 dark:border-gray-600 relative group/tooltip"
+                                                :class="{'text-green-600 bg-green-50 border-green-200 dark:bg-green-900/30 dark:border-green-800 dark:text-green-400': copied}"
+                                                title="Salin Link">
+                                            
+                                            {{-- Ikon Default --}}
+                                            <svg x-show="!copied" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"></path></svg>
+                                            
+                                            {{-- Ikon Sukses --}}
+                                            <svg x-show="copied" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="display: none;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+
+                                            {{-- Tooltip --}}
+                                            <span class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 text-xs text-white bg-gray-900 rounded opacity-0 group-hover/tooltip:opacity-100 transition-opacity whitespace-nowrap pointer-events-none"
+                                                  x-text="copied ? 'Tersalin!' : 'Salin Link'">
+                                            </span>
+                                        </button>
+                                    </div>
+
                                 </div>
                             </div>
                         </div>
@@ -148,23 +210,23 @@
                 </div>
             @else
                 {{-- Empty State --}}
-                <div class="text-center py-20 bg-gray-50 dark:bg-gray-800/50 rounded-3xl border-2 border-dashed border-gray-200 dark:border-gray-700">
-                    <div class="inline-flex items-center justify-center w-20 h-20 rounded-full bg-white dark:bg-gray-800 shadow-sm mb-6">
-                        <svg class="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                <div class="text-center py-16 bg-white dark:bg-gray-800 rounded-3xl border border-dashed border-gray-200 dark:border-gray-700">
+                    <div class="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gray-50 dark:bg-gray-700/50 mb-6 text-gray-400 dark:text-gray-500">
+                        <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                         </svg>
                     </div>
-                    <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">Informasi Tidak Ditemukan</h3>
-                    <p class="text-gray-600 dark:text-gray-400 max-w-md mx-auto mb-8">
+                    <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">Dokumen Tidak Ditemukan</h3>
+                    <p class="text-gray-500 dark:text-gray-400 max-w-md mx-auto mb-8">
                         @if(request('search'))
                             Tidak ada dokumen RB yang cocok dengan kata kunci <strong>"{{ request('search') }}"</strong>.
                         @else
-                            Belum ada data Reformasi Birokrasi yang tersedia saat ini.
+                            Belum ada informasi Reformasi Birokrasi yang tersedia saat ini.
                         @endif
                     </p>
                     @if(request('search'))
-                        <a href="{{ route('info-rb.index') }}" class="inline-flex items-center px-5 py-2.5 border border-transparent text-sm font-medium rounded-xl text-white bg-blue-600 hover:bg-blue-700 transition-colors shadow-sm">
-                            Tampilkan Semua
+                        <a href="{{ route('info-rb.index') }}" class="inline-flex items-center px-6 py-2.5 text-sm font-medium text-white bg-blue-600 rounded-xl hover:bg-blue-700 transition-colors shadow-sm">
+                            Reset Pencarian
                         </a>
                     @endif
                 </div>
@@ -172,35 +234,10 @@
 
             {{-- Pagination --}}
             @if($items->hasPages())
-                <div class="mt-8 flex justify-center">
+                <div class="mt-12 flex justify-center">
                     {{ $items->withQueryString()->links('vendor.pagination.tailwind') }}
                 </div>
             @endif
         </div>
     </div>
-
-    {{-- JavaScript untuk copy link --}}
-    <script>
-        function copyLink(url) {
-            navigator.clipboard.writeText(url).then(function() {
-                // Gunakan toast atau alert yang lebih baik
-                const toast = document.createElement('div');
-                toast.className = 'fixed top-4 right-4 bg-green-600 text-white px-4 py-2 rounded-lg shadow-lg z-50';
-                toast.textContent = 'Link berhasil disalin ke clipboard!';
-                document.body.appendChild(toast);
-                
-                setTimeout(() => {
-                    toast.remove();
-                }, 3000);
-            }).catch(function(err) {
-                console.error('Gagal menyalin link: ', err);
-                alert('Gagal menyalin link. Silakan salin manual.');
-            });
-        }
-        
-        // Fallback untuk browser yang tidak mendukung clipboard API
-        if (!navigator.clipboard) {
-            console.warn('Clipboard API tidak didukung');
-        }
-    </script>
 </x-layout>

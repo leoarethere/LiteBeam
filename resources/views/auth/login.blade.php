@@ -337,7 +337,7 @@
 
                 {{-- Footer --}}
                 <div class="mt-6 text-center text-xs text-gray-400 dark:text-gray-500">
-                    <p>&copy; {{ date('Y') }} Lembaga Penyiaran Publik TVRI D.I. Yogyakarta</p>
+                    <p>Copyright {{ date('Y') }} Lembaga Penyiaran Publik TVRI D.I. Yogyakarta</p>
                     <p class="mt-1">All rights reserved.</p>
                 </div>
             </div>

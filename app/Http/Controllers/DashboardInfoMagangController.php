@@ -66,37 +66,41 @@ class DashboardInfoMagangController extends Controller
     }
 
     public function update(Request $request, InfoMagang $infoMagang)
-    {
-        $validated = $request->validate([
-            'title'       => 'required|string|max:255',
-            'source_link' => 'required|url',
-            'cover_image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
-            'description' => 'required|string',
-        ]);
+        {
+            $validated = $request->validate([
+                'title'       => 'required|string|max:255',
+                'source_link' => 'required|url',
+                'cover_image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
+                'description' => 'required|string',
+            ]);
 
-        $data = $validated;
-        
-        // Update Slug jika judul berubah
-        if ($request->title !== $infoMagang->title) {
-            $data['slug'] = Str::slug($validated['title']) . '-' . Str::random(5);
-        }
+            $data = $validated;
+            
+            // [PERBAIKAN SEO] Hapus logika perubahan slug otomatis.
+            // Slug hanya dibuat sekali saat create agar link permanen.
+            // if ($request->title !== $infoMagang->title) { ... } <--- DIHAPUS
 
-        $data['is_active'] = $request->has('is_active');
+            $data['is_active'] = $request->has('is_active');
 
-        // Handle Upload Cover Baru
-        if ($request->hasFile('cover_image')) {
-            // Hapus cover lama
-            if ($infoMagang->cover_image && Storage::disk('public')->exists($infoMagang->cover_image)) {
-                Storage::disk('public')->delete($infoMagang->cover_image);
+            // [PERBAIKAN LOGIKA GAMBAR] Upload baru sukses -> Baru hapus lama
+            if ($request->hasFile('cover_image')) {
+                // 1. Simpan gambar baru
+                $path = $request->file('cover_image')->store('magang-covers', 'public');
+                
+                // 2. Jika sukses, baru hapus yang lama
+                if ($path) {
+                    if ($infoMagang->cover_image && Storage::disk('public')->exists($infoMagang->cover_image)) {
+                        Storage::disk('public')->delete($infoMagang->cover_image);
+                    }
+                    $data['cover_image'] = $path;
+                }
             }
-            $data['cover_image'] = $request->file('cover_image')->store('magang-covers', 'public');
+
+            $infoMagang->update($data);
+
+            return redirect()->route('dashboard.info-magang.index')
+                ->with('success', 'Informasi Magang berhasil diperbarui!');
         }
-
-        $infoMagang->update($data);
-
-        return redirect()->route('dashboard.info-magang.index')
-            ->with('success', 'Informasi Magang berhasil diperbarui!');
-    }
 
     public function destroy(InfoMagang $infoMagang)
     {

@@ -79,12 +79,10 @@ class DashboardTugasFungsiController extends Controller
 
         $validated['is_active'] = $request->has('is_active');
 
+        // [REFACTOR SAFE UPDATE]
         if ($request->hasFile('image')) {
-            if ($tugasFungsi->image && Storage::disk('public')->exists($tugasFungsi->image)) {
-                Storage::disk('public')->delete($tugasFungsi->image);
-            }
-
             try {
+                // 1. Proses Baru
                 $file = $request->file('image');
                 $filename = 'tf-' . Str::random(20) . '.jpg';
                 $path = 'task-images/' . $filename;
@@ -94,7 +92,14 @@ class DashboardTugasFungsiController extends Controller
                 $image->scale(width: 800);
                 $encoded = $image->toJpeg(quality: 80);
 
+                // 2. Simpan
                 Storage::disk('public')->put($path, (string) $encoded);
+                
+                // 3. Hapus Lama
+                if ($tugasFungsi->image && Storage::disk('public')->exists($tugasFungsi->image)) {
+                    Storage::disk('public')->delete($tugasFungsi->image);
+                }
+                
                 $validated['image'] = $path;
             } catch (\Exception $e) {
                 return back()->withErrors(['image' => 'Gagal upload gambar: ' . $e->getMessage()])->withInput();

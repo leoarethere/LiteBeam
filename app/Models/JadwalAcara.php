@@ -16,13 +16,16 @@ class JadwalAcara extends Model
         'title',
         'slug',
         'start_time',
+        'end_time',              // ✅ TAMBAHAN: Agar jam selesai bisa disimpan
         'broadcast_category_id',
+        'jadwal_category_id',    // ✅ TAMBAHAN: Agar data Hari bisa disimpan
         'is_active',
     ];
 
     protected $casts = [
         'is_active' => 'boolean',
-        'start_time' => 'datetime:H:i', // Casting otomatis format jam
+        'start_time' => 'datetime:H:i',
+        'end_time' => 'datetime:H:i', // ✅ TAMBAHAN: Format otomatis jadi H:i (Jam:Menit)
     ];
 
     // Eager loading otomatis agar performa query cepat

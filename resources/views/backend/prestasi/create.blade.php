@@ -1,7 +1,7 @@
 <x-dashboard-layout>
     <x-slot:title>Tambah Prestasi</x-slot:title>
 
-    {{-- Style Trix (WAJIB ADA agar editor tampil benar) --}}
+    {{-- Style Trix --}}
     <link rel="stylesheet" type="text/css" href="https://unpkg.com/trix@2.0.8/dist/trix.css">
     <style>
         trix-toolbar [data-trix-button-group="file-tools"] { display: none; }
@@ -30,14 +30,14 @@
         </div>
 
         <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md border border-gray-200 dark:border-gray-700 overflow-hidden">
-            <form action="{{ route('dashboard.prestasi.store') }}" method="POST" enctype="multipart/form-data">
+            <form action="{{ route('dashboard.prestasi.store') }}" method="POST" enctype="multipart/form-data" novalidate>
                 @csrf
                 <div class="p-6 space-y-6">
                     
                     {{-- Error Summary --}}
                     @if ($errors->any())
-                        <div class="p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400 border border-red-300 dark:border-red-900" role="alert">
-                            <div class="font-medium mb-2">Oops! Ada beberapa kesalahan:</div>
+                        <div class="p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-red-900/30 dark:text-red-400 border border-red-200 dark:border-red-800" role="alert">
+                            <div class="font-medium mb-1">Oops! Ada beberapa kesalahan:</div>
                             <ul class="list-disc list-inside">
                                 @foreach ($errors->all() as $error)
                                     <li>{{ $error }}</li>
@@ -111,24 +111,39 @@
                             Deskripsi Singkat
                         </label>
                         <input id="description" type="hidden" name="description" value="{{ old('description') }}">
-                        <trix-editor input="description" class="trix-content bg-gray-50 border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white min-h-[150px]" placeholder="Tambahkan detail prestasi di sini..."></trix-editor>
+                        <trix-editor input="description" class="trix-content bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white min-h-[150px]" placeholder="Tambahkan detail prestasi di sini..."></trix-editor>
                         @error('description') <p class="mt-2 text-sm text-red-600 dark:text-red-500">{{ $message }}</p> @enderror
                     </div>
 
-                    {{-- Foto Dokumentasi --}}
-                    <div x-data="{ preview: null }">
+                    {{-- Foto Dokumentasi (Preview Alpine) --}}
+                    <div x-data="{ 
+                        preview: null,
+                        handleFile(event) {
+                            const file = event.target.files[0];
+                            if (!file) return;
+                            if (file.size > 5 * 1024 * 1024) {
+                                alert('Ukuran file terlalu besar. Maksimal 5MB.');
+                                event.target.value = '';
+                                return;
+                            }
+                            this.preview = URL.createObjectURL(file);
+                        }
+                    }">
                         <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
                             Foto Dokumentasi (Opsional)
                         </label>
+                        
+                        {{-- Preview Box --}}
                         <div class="mb-3" x-show="preview">
-                            <div class="relative w-full max-w-xs">
-                                <img :src="preview" class="w-full h-40 object-cover rounded-lg border-2 border-gray-300 dark:border-gray-600">
-                                <button type="button" @click="preview = null; $refs.fileInput.value = ''" class="absolute top-2 right-2 p-1.5 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                            <div class="relative w-32 h-32 rounded-lg overflow-hidden border border-gray-300 dark:border-gray-600">
+                                <img :src="preview" class="w-full h-full object-cover">
+                                <button type="button" @click="preview = null; document.getElementById('image').value = ''" class="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 transition-colors">
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                                 </button>
                             </div>
                         </div>
-                        <input type="file" name="image" x-ref="fileInput" @change="preview = URL.createObjectURL($event.target.files[0])" 
+
+                        <input type="file" name="image" id="image" @change="handleFile($event)" 
                             class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400" 
                             accept="image/png, image/jpeg, image/jpg, image/webp">
                         <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Format: JPG, PNG, WebP (Maks. 5MB)</p>
@@ -136,10 +151,10 @@
                     </div>
 
                     {{-- Status Toggle --}}
-                    <div>
-                        <label class="inline-flex items-center cursor-pointer">
+                    <div class="flex items-center">
+                        <label class="relative inline-flex items-center cursor-pointer">
                             <input type="checkbox" name="is_active" class="sr-only peer" checked>
-                            <div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                            <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
                             <span class="ml-3 text-sm font-medium text-gray-900 dark:text-gray-300">Tampilkan di Website (Aktif)</span>
                         </label>
                     </div>
@@ -148,7 +163,7 @@
                 {{-- Footer --}}
                 <div class="flex items-center justify-between p-6 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700/50 rounded-b-lg">
                     <a href="{{ route('dashboard.prestasi.index') }}" class="px-5 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-600 transition-colors">Batal</a>
-                    <button type="submit" class="px-5 py-2.5 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 transition-colors">Simpan Data</button>
+                    <button type="submit" class="px-5 py-2.5 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 transition-colors">Simpan Data</button>
                 </div>
             </form>
         </div>

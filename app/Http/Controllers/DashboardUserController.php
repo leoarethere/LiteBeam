@@ -39,12 +39,15 @@ class DashboardUserController extends Controller
     {
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
+            // [TAMBAHAN] Validasi Username
+            'username' => ['required', 'string', 'max:255', 'unique:users', 'alpha_dash'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'confirmed', 'min:8'],
         ]);
 
         User::create([
             'name' => $request->name,
+            'username' => $request->username, // [TAMBAHAN] Simpan username
             'email' => $request->email,
             'password' => Hash::make($request->password),
         ]);
@@ -64,15 +67,16 @@ class DashboardUserController extends Controller
     {
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            // Validasi email unik kecuali punya user ini sendiri
+            // [TAMBAHAN] Validasi Username saat update (ignore current user)
+            'username' => ['required', 'string', 'max:255', 'alpha_dash', Rule::unique('users')->ignore($user->id)],
             'email' => ['required', 'email', 'max:255', Rule::unique('users')->ignore($user->id)],
-            'password' => ['nullable', 'confirmed', 'min:8'], // Password opsional
+            'password' => ['nullable', 'confirmed', 'min:8'],
         ]);
 
         $user->name = $request->name;
+        $user->username = $request->username; // [TAMBAHAN]
         $user->email = $request->email;
 
-        // Hanya ganti password jika input password diisi
         if ($request->filled('password')) {
             $user->password = Hash::make($request->password);
         }

@@ -2,8 +2,13 @@
 
 {{-- Early return jika tidak ada slides untuk mencegah error --}}
 @if(empty($slides))
-    <div class="bg-gray-100 dark:bg-gray-800 rounded-lg h-96 flex items-center justify-center">
-        <p class="text-gray-500 dark:text-gray-400">No slides available</p>
+    <div class="bg-gray-100 dark:bg-gray-800 rounded-2xl h-96 flex items-center justify-center border border-gray-200 dark:border-gray-700">
+        <div class="text-center text-gray-500 dark:text-gray-400">
+            <svg class="w-12 h-12 mx-auto mb-3 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+            <p>Belum ada banner yang ditambahkan.</p>
+        </div>
     </div>
     @php return; @endphp
 @endif
@@ -48,8 +53,8 @@
     x-init="startAutoplay()"
     @mouseenter="stopAutoplay()"
     @mouseleave="startAutoplay()"
-    {{-- ✅ PERBAIKAN: Menggunakan aspect-ratio untuk konsistensi --}}
-    class="relative w-full aspect-[21/9] overflow-hidden rounded-xl md:rounded-2xl shadow-lg"
+    {{-- ✅ PERBAIKAN: Tinggi minimal 400px untuk mobile agar tidak gepeng, aspect-ratio 21/9 untuk desktop --}}
+    class="relative w-full min-h-[400px] md:min-h-0 md:aspect-[21/9] overflow-hidden rounded-2xl shadow-lg group bg-gray-900"
 >
 
     {{-- Slides Container --}}
@@ -57,47 +62,47 @@
         <div 
             x-show="activeSlide === index"
             x-transition:enter="transition ease-out duration-1000"
-            x-transition:enter-start="opacity-0"
-            x-transition:enter-end="opacity-100"
+            x-transition:enter-start="opacity-0 scale-105"
+            x-transition:enter-end="opacity-100 scale-100"
             x-transition:leave="transition ease-in duration-700"
-            x-transition:leave-start="opacity-100"
-            x-transition:leave-end="opacity-0"
+            x-transition:leave-start="opacity-100 scale-100"
+            x-transition:leave-end="opacity-0 scale-105"
             class="absolute inset-0"
         >
             {{-- Background Image --}}
             <img :src="slide.image" 
-                 class="h-full w-full object-cover transition-transform duration-[5000ms] ease-linear"
-                 :class="{ 'scale-110': activeSlide === index, 'scale-100': activeSlide !== index }" 
+                 class="h-full w-full object-cover"
                  :alt="slide.title"
                  loading="lazy">
             
-            {{-- Gradient Overlay --}}
-            <div class="absolute inset-0 bg-gradient-to-r from-black/70 via-black/50 to-transparent"></div>
+            {{-- Gradient Overlay (Lebih gelap di bawah untuk teks) --}}
+            <div class="absolute inset-0 bg-gradient-to-t from-gray-900/90 via-gray-900/40 to-transparent"></div>
             
-            {{-- Content - ✅ RESPONSIVE PADDING & FONT SIZES --}}
-            <div class="absolute inset-0 flex items-center justify-start p-4 sm:p-8 md:p-12 lg:p-24 text-left text-white">
-                <div x-show="activeSlide === index"
-                     x-transition:enter="transition ease-out duration-1000 delay-300"
-                     x-transition:enter-start="opacity-0 translate-y-8"
-                     x-transition:enter-end="opacity-100 translate-y-0"
-                     class="max-w-xl">
+            {{-- Content Wrapper --}}
+            <div class="absolute inset-0 flex items-center justify-start p-6 sm:p-10 md:p-16 lg:p-24">
+                <div class="max-w-2xl text-left"
+                     x-show="activeSlide === index"
+                     x-transition:enter="transition ease-out duration-700 delay-300"
+                     x-transition:enter-start="opacity-0 translate-y-4"
+                     x-transition:enter-end="opacity-100 translate-y-0">
                     
-                    {{-- ✅ Heading: Mobile (text-xl) → Tablet (text-2xl) → Desktop (text-4xl) → Large (text-5xl) --}}
-                    <h2 class="mb-4 text-3xl font-bold tracking-tight text-white sm:text-4xl" 
+                    {{-- Heading: Ukuran font responsif --}}
+                    <h2 class="mb-3 text-2xl font-extrabold tracking-tight text-white sm:text-2xl md:text-3xl lg:text-4xl drop-shadow-md" 
                         x-text="slide.title">
                     </h2>
                     
-                    {{-- ✅ Subtitle: Responsive sizes + line clamp untuk mobile --}}
-                    <p class="mb-4 sm:mb-6 md:mb-8 text-xs sm:text-sm md:text-base lg:text-lg text-gray-300 line-clamp-2 sm:line-clamp-3" 
+                    {{-- Subtitle: Ukuran font dan line-clamp responsif --}}
+                    <p class="mb-6 text-sm font-medium text-gray-200 sm:text-base md:text-lg lg:text-lg line-clamp-3 sm:line-clamp-2 drop-shadow-sm max-w-xl" 
                        x-text="slide.subtitle">
                     </p>
                     
-                    {{-- ✅ Button: Responsive text & icon sizes --}}
+                    {{-- Button --}}
                     <a :href="slide.link" 
-                       class="group inline-flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm md:text-base font-semibold text-white transition-colors duration-300 hover:text-indigo-400">
+                       class="inline-flex items-center gap-2 px-6 py-3 text-sm font-semibold text-white transition-all duration-200 bg-blue-600 rounded-xl hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 shadow-lg hover:shadow-blue-500/30">
                         <span x-text="slide.button_text || 'Selengkapnya'"></span>
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 sm:h-4 sm:w-4 md:h-5 md:w-5 transition-transform duration-300 group-hover:translate-x-1" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd" />
+                        {{-- Heroicon: Arrow Right --}}
+                        <svg class="w-4 h-4 transition-transform duration-200 group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
                         </svg>
                     </a>
                 </div>
@@ -105,26 +110,27 @@
         </div>
     </template>
 
-    {{-- Bottom Navigation - ✅ RESPONSIVE HEIGHT & FONT --}}
-    <div class="absolute bottom-0 left-0 right-0 h-16 sm:h-20 md:h-24 bg-gradient-to-t from-black/60 to-transparent">
-        <div class="absolute bottom-0 left-0 right-0 flex justify-center items-end space-x-2 sm:space-x-4 md:space-x-8 px-2 sm:px-4 pb-2 sm:pb-3 md:pb-4">
+    {{-- Bottom Navigation (Indicators) --}}
+    <div class="absolute bottom-0 left-0 right-0 z-20 w-full bg-gradient-to-t from-gray-900/80 to-transparent pt-12 pb-4">
+        <div class="flex justify-center items-end px-4 gap-2 sm:gap-4">
             <template x-for="(slide, index) in slides" :key="index">
                 <button 
                     @click="selectSlide(index)" 
-                    class="relative text-center py-1.5 sm:py-2 transition-colors duration-300 overflow-hidden group w-1/4 max-w-[120px] sm:max-w-[150px]"
-                    :class="{
-                        'text-white': activeSlide === index, 
-                        'text-gray-400 hover:text-white': activeSlide !== index
-                    }">
+                    class="group relative flex flex-col justify-end w-full max-w-[80px] sm:max-w-[120px] focus:outline-none"
+                    :aria-label="'Go to slide ' + (index + 1)">
                     
-                    {{-- ✅ Responsive font: 10px → 12px → 14px --}}
-                    <span class="text-[10px] sm:text-xs md:text-sm font-medium truncate block" x-text="slide.title"></span>
+                    {{-- Label Judul Kecil (Hidden on very small screens) --}}
+                    <span class="hidden sm:block mb-2 text-xs font-medium truncate transition-colors duration-300 text-center"
+                          :class="activeSlide === index ? 'text-white' : 'text-gray-400 group-hover:text-gray-300'"
+                          x-text="slide.title">
+                    </span>
                     
-                    <div class="absolute bottom-0 left-0 w-full h-0.5 bg-white/20"></div>
-                    
-                    <div 
-                        class="absolute bottom-0 left-0 h-0.5 bg-indigo-500"
-                        :style="`width: ${activeSlide === index ? progress : (activeSlide > index ? 100 : 0)}%`">
+                    {{-- Progress Bar Container --}}
+                    <div class="h-1 w-full rounded-full bg-gray-700/50 overflow-hidden backdrop-blur-sm">
+                        {{-- Active Progress --}}
+                        <div class="h-full bg-blue-500 rounded-full transition-all duration-100 ease-linear"
+                             :style="`width: ${activeSlide === index ? progress : (activeSlide > index ? 100 : 0)}%`">
+                        </div>
                     </div>
                 </button>
             </template>

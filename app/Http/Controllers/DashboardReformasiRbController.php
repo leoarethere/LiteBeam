@@ -66,37 +66,39 @@ class DashboardReformasiRbController extends Controller
     }
 
     public function update(Request $request, ReformasiRb $reformasiRb)
-    {
-        $validated = $request->validate([
-            'title'       => 'required|string|max:255',
-            'file_link'   => 'required|url',
-            'cover_image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
-            'description' => 'required|string',
-        ]);
+        {
+            $validated = $request->validate([
+                'title'       => 'required|string|max:255',
+                'file_link'   => 'required|url',
+                'cover_image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
+                'description' => 'required|string',
+            ]);
 
-        $data = $validated;
-        
-        // Update Slug jika judul berubah (opsional, tapi baik untuk SEO)
-        if ($request->title !== $reformasiRb->title) {
-            $data['slug'] = Str::slug($validated['title']) . '-' . Str::random(5);
-        }
+            $data = $validated;
+            
+            // [PERBAIKAN SEO] Slug dijaga tetap permanen
+            
+            $data['is_active'] = $request->has('is_active');
 
-        $data['is_active'] = $request->has('is_active');
-
-        // Handle Upload Cover Baru
-        if ($request->hasFile('cover_image')) {
-            // Hapus cover lama
-            if ($reformasiRb->cover_image && Storage::disk('public')->exists($reformasiRb->cover_image)) {
-                Storage::disk('public')->delete($reformasiRb->cover_image);
+            // [PERBAIKAN LOGIKA GAMBAR] Safe Image Update
+            if ($request->hasFile('cover_image')) {
+                // 1. Simpan gambar baru
+                $path = $request->file('cover_image')->store('reformasi-covers', 'public');
+                
+                // 2. Jika sukses, hapus gambar lama
+                if ($path) {
+                    if ($reformasiRb->cover_image && Storage::disk('public')->exists($reformasiRb->cover_image)) {
+                        Storage::disk('public')->delete($reformasiRb->cover_image);
+                    }
+                    $data['cover_image'] = $path;
+                }
             }
-            $data['cover_image'] = $request->file('cover_image')->store('reformasi-covers', 'public');
+
+            $reformasiRb->update($data);
+
+            return redirect()->route('dashboard.reformasi-rb.index')
+                ->with('success', 'Data Reformasi RB berhasil diperbarui!');
         }
-
-        $reformasiRb->update($data);
-
-        return redirect()->route('dashboard.reformasi-rb.index')
-            ->with('success', 'Data Reformasi RB berhasil diperbarui!');
-    }
 
     public function destroy(ReformasiRb $reformasiRb)
     {

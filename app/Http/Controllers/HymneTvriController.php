@@ -8,16 +8,11 @@ use Illuminate\Routing\Controller;
 
 class HymneTvriController extends Controller
 {
-    /**
-     * Menampilkan daftar himne untuk frontend publik.
-     */
     public function index()
     {
-        // Ambil data yang aktif, urutkan terbaru
-        $hymnes = HymneTvri::where('is_active', true)
-                           ->latest()
-                           ->paginate(5);
+        // HAPUS where('is_active', true)
+        $hymnes = HymneTvri::latest()->paginate(5);
 
         return view('frontend.tentang.hymne-tvri', compact('hymnes'));
     }
-}
+}   

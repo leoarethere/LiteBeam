@@ -29,12 +29,12 @@ class PostController extends Controller
             $title = 'Hasil Pencarian: "' . $request->search . '"';
         }
 
-        // ✅ PERBAIKAN: Menggunakan ScopeFilter dari Model
+        // Menggunakan ScopeFilter dari Model (Pastikan model Post sudah memiliki scopeFilter)
         $query = Post::latest()
                     ->where('status', 'published') // Hanya yang published
-                    ->filter(request(['search', 'category', 'author'])); // Panggil scopeFilter
+                    ->filter(request(['search', 'category', 'author'])); 
 
-        // Logika Sorting (Opsional, jika ingin ditambahkan di atas filter)
+        // Logika Sorting
         switch ($request->input('sort')) {
             case 'oldest': $query->orderBy('published_at', 'asc'); break;
             case 'popular': $query->orderBy('views', 'desc'); break;
@@ -53,10 +53,17 @@ class PostController extends Controller
 
     public function show(Post $post)
     {
-        // Perbaikan increment agar editor tidak merah
-        $post->update([
-            'views' => $post->views + 1
-        ]);
+        // [OPTIMASI VIEW COUNTER]
+        // Gunakan session untuk mencegah perhitungan berulang saat refresh (F5)
+        $sessionKey = 'post_viewed_' . $post->id;
+
+        if (!session()->has($sessionKey)) {
+            // increment() lebih efisien & atomik daripada update(['views' => ...])
+            $post->incrementViews();
+            
+            // Simpan penanda di session bahwa user ini sudah melihat post ini
+            session()->put($sessionKey, true);
+        }
 
         return view('frontend.postingan.detail', [
             'title' => $post->title,
@@ -64,8 +71,6 @@ class PostController extends Controller
         ]);
     }
     
-    // Method category() dan author() BISA DIHAPUS jika sudah menggunakan filter di index(),
-    // Tapi jika ingin dipertahankan untuk rute khusus, kodenya sudah aman.
     public function category(Category $category)
     {
         return redirect()->route('posts.index', ['category' => $category->slug]);

@@ -116,7 +116,7 @@
 
                 {{-- Footer --}}
                 <div class="mt-6 text-center text-xs text-gray-400 dark:text-gray-500">
-                    <p>&copy; {{ date('Y') }} TVRI D.I. Yogyakarta | All rights reserved.</p>
+                    <p>Copyright {{ date('Y') }} TVRI D.I. Yogyakarta | All rights reserved.</p>
                 </div>
             </div>
         </div>

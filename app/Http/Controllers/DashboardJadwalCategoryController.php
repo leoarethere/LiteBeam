@@ -14,6 +14,7 @@ class DashboardJadwalCategoryController extends Controller
             'name' => 'required|string|max:255',
             'slug' => 'required|string|max:255|unique:jadwal_categories,slug',
             'color' => 'required|string',
+            'order' => 'required|integer', // [BARU] Validasi order
         ]);
 
         JadwalCategory::create($validated);
@@ -26,6 +27,7 @@ class DashboardJadwalCategoryController extends Controller
             'name' => 'required|string|max:255',
             'slug' => 'required|string|max:255|unique:jadwal_categories,slug,' . $jadwalCategory->id,
             'color' => 'required|string',
+            'order' => 'required|integer', // [BARU] Validasi order
         ]);
 
         $jadwalCategory->update($validated);

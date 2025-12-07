@@ -81,6 +81,8 @@ class DashboardPostController extends Controller
                 'excerpt' => 'nullable|string|max:300',
                 'published_at' => 'nullable|date',
                 'action' => 'required|in:draft,publish',
+                'meta_title' => 'nullable|string|max:255',       // [TAMBAHAN]
+                'meta_description' => 'nullable|string|max:160', // [TAMBAHAN] SEO standard max 160 chars
             ]);
         } catch (\Illuminate\Validation\ValidationException $e) {
             // Redirect kembali dengan error validation
@@ -196,6 +198,8 @@ class DashboardPostController extends Controller
                 'excerpt' => 'nullable|string|max:300',
                 'published_at' => 'nullable|date',
                 'action' => 'required|in:draft,publish',
+                'meta_title' => 'nullable|string|max:255',       // [TAMBAHAN]
+                'meta_description' => 'nullable|string|max:160', // [TAMBAHAN] SEO standard max 160 chars
             ]);
         } catch (\Illuminate\Validation\ValidationException $e) {
             return back()->withErrors($e->validator)->withInput();

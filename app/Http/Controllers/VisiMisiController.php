@@ -7,18 +7,18 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Storage;
 
-// [PERUBAHAN] Nama Class Diubah dari PageController ke VisiMisiController
 class VisiMisiController extends Controller
 {
     public function visiMisi()
     {
         $title = 'Visi dan Misi';
 
-        // Ambil Visi (Biasanya cuma 1 yang utama, ambil yang urutan pertama)
-        $visi = VisiMisi::where('type', 'visi')
+        // [PERBAIKAN] Mengambil data sebagai Collection (get), bukan single object (first)
+        // dan menamakannya $visis (jamak)
+        $visis = VisiMisi::where('type', 'visi')
                         ->where('is_active', true)
                         ->orderBy('order', 'asc')
-                        ->first();
+                        ->get();
 
         // Ambil semua Misi
         $misis = VisiMisi::where('type', 'misi')
@@ -26,6 +26,7 @@ class VisiMisiController extends Controller
                          ->orderBy('order', 'asc')
                          ->get();
 
-        return view('frontend.tentang.visi-misi', compact('title', 'visi', 'misis'));
+        // Kirim $visis dan $misis ke view
+        return view('frontend.tentang.visi-misi', compact('title', 'visis', 'misis'));
     }
 }

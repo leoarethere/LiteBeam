@@ -101,14 +101,10 @@ class BannerController extends Controller
             'is_active' => 'required|boolean',
         ]);
 
-        // ✅ PROSES KOMPRESI GAMBAR BARU
+        // [REFACTOR SAFE UPDATE]
         if ($request->hasFile('image')) {
-            // Hapus gambar lama
-            if ($banner->image_path && Storage::disk('public')->exists($banner->image_path)) {
-                Storage::disk('public')->delete($banner->image_path);
-            }
-            
             try {
+                // 1. Proses Gambar Baru
                 $file = $request->file('image');
                 $filename = 'banners/' . Str::random(40) . '.jpg';
 
@@ -119,15 +115,21 @@ class BannerController extends Controller
                 $image->scale(width: 1920);
                 $encoded = $image->toJpeg(quality: 80);
 
+                // 2. Simpan Gambar Baru
                 Storage::disk('public')->put($filename, (string) $encoded);
                 
+                // 3. Jika Sukses, Hapus Gambar Lama
+                if ($banner->image_path && Storage::disk('public')->exists($banner->image_path)) {
+                    Storage::disk('public')->delete($banner->image_path);
+                }
+
+                // 4. Update data array
                 $validated['image_path'] = $filename;
 
             } catch (\Exception $e) {
                 return back()->withErrors(['image' => 'Gagal memproses gambar: ' . $e->getMessage()])->withInput();
             }
         } else {
-            // Hapus field image dari array validasi jika tidak ada upload baru
             unset($validated['image']);
         }
 

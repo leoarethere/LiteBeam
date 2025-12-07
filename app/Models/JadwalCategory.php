@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 
 class JadwalCategory extends Model
 {
-    protected $fillable = ['name', 'slug', 'color'];
+    protected $fillable = ['name', 'slug', 'color', 'order'];
 
     public function jadwalAcaras()
     {

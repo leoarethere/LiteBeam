@@ -14,10 +14,32 @@ use Intervention\Image\Drivers\Gd\Driver;
 
 class DashboardPrestasiController extends Controller
 {
-    public function index(): View
+    public function index(Request $request): View
     {
-        // Urutkan dari tahun terbaru
-        $prestasis = Prestasi::orderBy('year', 'desc')->latest()->paginate(10);
+        // [PERBAIKAN LOGIKA] Menambahkan fitur Search & Filter
+        $query = Prestasi::query();
+
+        // 1. Logika Pencarian (Search)
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('title', 'like', '%' . $search . '%')
+                  ->orWhere('award_name', 'like', '%' . $search . '%');
+            });
+        }
+
+        // 2. Logika Filter Kategori
+        if ($request->filled('category')) {
+            $query->where('category', $request->category);
+        }
+
+        // 3. Sorting Default (Tahun Terbaru)
+        // Kita gunakan withQueryString() agar parameter search/category tidak hilang saat pindah halaman
+        $prestasis = $query->orderBy('year', 'desc')
+                           ->latest()
+                           ->paginate(10)
+                           ->withQueryString();
+
         return view('backend.prestasi.index', compact('prestasis'));
     }
 
@@ -35,11 +57,11 @@ class DashboardPrestasiController extends Controller
             'category'    => 'required|string|max:100',
             'year'        => 'required|digits:4|integer|min:1900|max:' . (date('Y') + 1),
             'description' => 'nullable|string',
-            'image'       => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120', // Max 5MB
-            'is_active'   => 'nullable|boolean',
+            'image'       => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
+            // 'is_active' tidak perlu divalidasi disini karena diambil manual
         ]);
 
-        // Handle Image Upload dengan Kompresi
+        // Proses Upload Gambar
         if ($request->hasFile('image')) {
             try {
                 $file = $request->file('image');
@@ -47,7 +69,7 @@ class DashboardPrestasiController extends Controller
 
                 $manager = new ImageManager(new Driver());
                 $image = $manager->read($file);
-                $image->scale(width: 800); // Resize lebar max 800px
+                $image->scale(width: 800);
                 $encoded = $image->toJpeg(quality: 80);
 
                 Storage::disk('public')->put($filename, (string) $encoded);
@@ -58,6 +80,7 @@ class DashboardPrestasiController extends Controller
             }
         }
 
+        // Logika Checkbox: Jika dicentang return true (1), jika tidak ada return false (0)
         $validated['is_active'] = $request->has('is_active');
 
         Prestasi::create($validated);
@@ -81,18 +104,15 @@ class DashboardPrestasiController extends Controller
             'year'        => 'required|digits:4|integer|min:1900|max:' . (date('Y') + 1),
             'description' => 'nullable|string',
             'image'       => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
-            'is_active'   => 'nullable|boolean',
         ]);
 
+        // [PERBAIKAN LOGIKA] Ambil status aktif
         $validated['is_active'] = $request->has('is_active');
 
-        // Handle Update Image
+        // [PERBAIKAN LOGIKA] Handle Update Image Lebih Aman
+        // Kita proses upload dulu, baru hapus yang lama jika upload sukses.
+        // Sebelumnya: Hapus dulu -> Upload (Kalau upload gagal, gambar lama hilang tapi DB masih nyatat nama file lama)
         if ($request->hasFile('image')) {
-            // Hapus gambar lama
-            if ($prestasi->image && Storage::disk('public')->exists($prestasi->image)) {
-                Storage::disk('public')->delete($prestasi->image);
-            }
-
             try {
                 $file = $request->file('image');
                 $filename = 'prestasi/' . Str::random(40) . '.jpg';
@@ -102,7 +122,15 @@ class DashboardPrestasiController extends Controller
                 $image->scale(width: 800);
                 $encoded = $image->toJpeg(quality: 80);
 
+                // 1. Simpan gambar baru
                 Storage::disk('public')->put($filename, (string) $encoded);
+                
+                // 2. Hapus gambar lama (Hanya jika upload baru sukses)
+                if ($prestasi->image && Storage::disk('public')->exists($prestasi->image)) {
+                    Storage::disk('public')->delete($prestasi->image);
+                }
+
+                // 3. Masukkan nama file baru ke data validasi
                 $validated['image'] = $filename;
 
             } catch (\Exception $e) {

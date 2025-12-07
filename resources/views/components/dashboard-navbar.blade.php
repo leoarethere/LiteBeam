@@ -1,5 +1,5 @@
-{{-- ✅ IMPROVISASI: Menyamakan efek transparan untuk mode terang dan gelap seperti frontend --}}
-<nav class="bg-white dark:bg-gray-800 fixed w-full top-0 z-50 border-b border-gray-200 dark:border-gray-700 transition-colors duration-300 shadow-lg"
+{{-- resources/views/components/dashboard-navbar.blade.php --}}
+<nav class="bg-white dark:bg-gray-800 fixed w-full top-0 z-50 border-b border-gray-200 dark:border-gray-700 transition-colors duration-300 shadow-sm"
      x-data="{
          isMobileMenuOpen: false,
          openDropdown: null,
@@ -11,118 +11,128 @@
          closeMenu() {
              this.timeoutId = setTimeout(() => {
                  this.openDropdown = null;
-             }, 300); // ⏱ Delay 300ms sebelum menutup
+             }, 300);
          }
      }">
     
-    {{-- ✅ PERBAIKAN: Layout container dengan padding yang sama seperti frontend --}}
-    <div class="px-4 sm:px-4 lg:px-4">
-        <div class="relative flex h-[72px] items-center justify-between">
+    <div class="px-4 sm:px-6 lg:px-8">
+        <div class="relative flex h-16 sm:h-[72px] items-center justify-between">
             
-            {{-- Bagian Kiri: Logo & Toggle Sidebar --}}
-            <div class="flex items-center space-x-0">
-                {{-- Toggle Sidebar untuk Mobile --}}
+            {{-- BAGIAN KIRI: Toggle Sidebar & Logo --}}
+            <div class="flex items-center gap-1">
+                {{-- Toggle Sidebar (Mobile Only) --}}
                 <button 
                     @click="isSidebarOpen = !isSidebarOpen"
-                    class="md:hidden p-2 text-gray-600 dark:text-gray-400 rounded-lg cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white focus:outline-none focus:ring-2 focus:ring-gray-100 dark:focus:ring-gray-700 transition-colors duration-200">
-                    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                        <path fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"></path>
+                    type="button"
+                    class="md:hidden -ml-2 p-2 text-gray-600 dark:text-gray-400 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white focus:outline-none focus:ring-2 focus:ring-gray-200 dark:focus:ring-gray-700 transition-colors">
+                    <span class="sr-only">Toggle Sidebar</span>
+                    {{-- Heroicon: Bars 3 --}}
+                    <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
                     </svg>
                 </button>
 
-                {{-- Logo & Brand --}}
-                <a href="{{ url('/') }}" class="flex items-center gap-2">
-                    {{-- 1. Logo Gelap (Tampil di Light Mode, Hilang di Dark Mode) --}}
+                {{-- Logo Link --}}
+                <a href="{{ url('/') }}" class="flex items-center gap-1">
+                    {{-- Logo Image: Ukuran responsif --}}
                     <img src="{{ asset('img/logolight.png') }}" 
-                        class="h-9 md:h-12 w-auto block dark:hidden" 
-                        alt="LiteBeam Logo Dark" />
-
-                    {{-- 2. Logo Terang (Hilang di Light Mode, Tampil di Dark Mode) --}}
+                        class="h-8 sm:h-9 md:h-10 w-auto block dark:hidden" 
+                        alt="Logo Light" />
+                    
                     <img src="{{ asset('img/logodark.png') }}" 
-                        class="h-9 md:h-12 w-auto hidden dark:block" 
-                        alt="LiteBeam Logo Light" />
+                        class="h-8 sm:h-9 md:h-10 w-auto hidden dark:block" 
+                        alt="Logo Dark" />
 
-                    <span class="text-gray-900 dark:text-white font-bold text-xl sm:text-2xl whitespace-nowrap">
+                    {{-- Logo Text: Ukuran responsif --}}
+                    <span class="text-gray-900 dark:text-white font-bold text-lg sm:text-xl md:text-2xl whitespace-nowrap">
                         Yogyakarta
                     </span>
                 </a>
             </div>
 
-            {{-- Bagian Kanan: Menu Desktop & User Controls --}}
-            <div class="hidden lg:flex items-center space-x-4">
-                {{-- Quick Actions --}}
-                <div class="flex items-center space-x-1">
-                    {{-- Theme Toggle untuk Desktop --}}
-                    <div>
-                        <x-theme-toggle />
-                    </div>
+            {{-- BAGIAN KANAN (DESKTOP): Menu & User Dropdown --}}
+            <div class="hidden lg:flex items-center gap-4">
+                {{-- Theme Toggle --}}
+                <div class="flex items-center">
+                    <x-theme-toggle />
                 </div>
 
                 {{-- User Dropdown --}}
                 <div class="relative" @mouseenter="openMenu('user')" @mouseleave="closeMenu()">
                     <button 
                         @click="openDropdown = openDropdown === 'user' ? null : 'user'" 
-                        class="group flex items-center gap-2 rounded-lg px-4 py-3 text-base font-medium transition-all duration-200 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white">
-                        <img class="w-8 h-8 rounded-full" 
+                        class="flex items-center gap-3 rounded-full bg-gray-50 dark:bg-gray-700/50 hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-600 pl-1 pr-4 py-1 transition-all duration-200 group">
+                        
+                        <img class="w-8 h-8 rounded-full ring-2 ring-white dark:ring-gray-600" 
                              src="https://ui-avatars.com/api/?name={{ urlencode(auth()->user()->name) }}&background=random&color=fff" 
                              alt="{{ auth()->user()->name }}" />
-                        <span class="hidden sm:block">{{ auth()->user()->name }}</span>
-                        <svg class="w-4 h-4 transition-transform duration-200" :class="{ 'rotate-180': openDropdown === 'user' }" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        
+                        <div class="text-left hidden xl:block">
+                            <p class="text-sm font-semibold text-gray-700 dark:text-gray-200 group-hover:text-gray-900 dark:group-hover:text-white leading-none">
+                                {{ Str::limit(auth()->user()->name, 15) }}
+                            </p>
+                        </div>
+
+                        <svg class="w-4 h-4 text-gray-400 group-hover:text-gray-600 dark:text-gray-400 dark:group-hover:text-white transition-transform duration-200" 
+                             :class="{ 'rotate-180': openDropdown === 'user' }" 
+                             fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
                         </svg>
                     </button>
                     
-                    {{-- Dropdown Menu --}}
+                    {{-- Dropdown Content --}}
                     <div x-show="openDropdown === 'user'"
                          x-transition:enter="transition ease-out duration-200"
-                         x-transition:enter-start="opacity-0 translate-y-1"
+                         x-transition:enter-start="opacity-0 translate-y-2"
                          x-transition:enter-end="opacity-100 translate-y-0"
                          x-transition:leave="transition ease-in duration-150"
                          x-transition:leave-start="opacity-100 translate-y-0"
-                         x-transition:leave-end="opacity-0 translate-y-1"
-                         class="absolute right-0 mt-2 w-56 bg-white dark:bg-gray-800 rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 z-20 py-1" style="display: none;">
+                         x-transition:leave-end="opacity-0 translate-y-2"
+                         class="absolute right-0 mt-2 w-56 bg-white dark:bg-gray-800 rounded-xl shadow-lg ring-1 ring-black ring-opacity-5 z-20 py-2 border border-gray-100 dark:border-gray-700" 
+                         style="display: none;">
                         
-                        {{-- User Info --}}
-                        <div class="py-3 px-4 border-b border-gray-100 dark:border-gray-600">
-                            <span class="block text-sm font-semibold text-gray-900 dark:text-white">{{ auth()->user()->name }}</span>
-                            <span class="block text-sm text-gray-500 truncate dark:text-gray-400">{{ auth()->user()->email }}</span>
+                        <div class="px-4 py-3 border-b border-gray-100 dark:border-gray-700 mb-1">
+                            <p class="text-sm font-semibold text-gray-900 dark:text-white">{{ auth()->user()->name }}</p>
+                            <p class="text-xs text-gray-500 dark:text-gray-400 truncate">{{ auth()->user()->email }}</p>
                         </div>
 
-                        {{-- Logout --}}
-                        <ul class="py-1 border-t border-gray-100 dark:border-gray-600">
-                            <li>
-                                <form action="{{ route('logout') }}" method="POST">
-                                    @csrf
-                                    {{-- ✅ PERBAIKAN KONSISTENSI: Menggunakan flex dan gap-2 (sebelumnya inline mr-2) --}}
-                                    <button type="submit" 
-                                        class="w-full text-left flex items-center gap-2 px-4 py-2 text-sm transition-colors duration-200 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                                        </svg>
-                                        Sign out
-                                    </button>
-                                </form>
-                            </li>
-                        </ul>
+                        <div class="px-1">
+                            <form action="{{ route('logout') }}" method="POST">
+                                @csrf
+                                <button type="submit" 
+                                    class="w-full flex items-center gap-3 px-3 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors">
+                                    {{-- Heroicon: Arrow Right On Rectangle --}}
+                                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l3 3m0 0l-3 3m3-3H9" />
+                                    </svg>
+                                    Sign out
+                                </button>
+                            </form>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            {{-- Bagian Kanan: Menu Mobile --}}
-            <div class="flex items-center lg:hidden space-x-2">
-                {{-- Theme Toggle untuk Mobile --}}
-                <div class="ml-2 border-l border-gray-200 dark:border-gray-700 pl-2">
-                    <x-theme-toggle />
-                </div>
-                {{-- Mobile Menu Toggle --}}
+            {{-- BAGIAN KANAN (MOBILE): Theme & User Toggle --}}
+            <div class="flex items-center gap-2 lg:hidden">
+                {{-- Theme Toggle Mobile --}}
+                <x-theme-toggle />
+
+                {{-- Mobile Menu Button --}}
                 <button @click="isMobileMenuOpen = !isMobileMenuOpen" 
                         type="button" 
-                        class="inline-flex items-center justify-center rounded-lg p-2.5 text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500 transition-colors duration-200">
-                    <span class="sr-only">Toggle menu</span>
-                    <svg class="h-6 w-6" :class="{ 'hidden': isMobileMenuOpen, 'block': !isMobileMenuOpen }" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
-                    </svg>
-                    <svg class="h-6 w-6" :class="{ 'block': isMobileMenuOpen, 'hidden': !isMobileMenuOpen }" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                        class="inline-flex items-center justify-center p-2 rounded-lg text-gray-500 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500 transition-colors">
+                    <span class="sr-only">Open main menu</span>
+                    
+                    {{-- Avatar saat menu tertutup --}}
+                    <img class="h-8 w-8 rounded-full ring-2 ring-gray-100 dark:ring-gray-700" 
+                         src="https://ui-avatars.com/api/?name={{ urlencode(auth()->user()->name) }}&background=random&color=fff" 
+                         alt="{{ auth()->user()->name }}" 
+                         :class="{ 'hidden': isMobileMenuOpen, 'block': !isMobileMenuOpen }"/>
+                    
+                    {{-- Icon Close saat menu terbuka --}}
+                    {{-- Heroicon: X Mark --}}
+                    <svg class="h-6 w-6" :class="{ 'block': isMobileMenuOpen, 'hidden': !isMobileMenuOpen }" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
                     </svg>
                 </button>
@@ -130,40 +140,40 @@
         </div>
     </div>
 
-    {{-- Menu Mobile --}}
-    {{-- ✅ IMPROVISASI: Menyamakan efek transparan untuk menu mobile --}}
+    {{-- MOBILE MENU DROPDOWN --}}
     <div x-show="isMobileMenuOpen" 
          x-transition:enter="transition ease-out duration-200"
-         x-transition:enter-start="opacity-0 -translate-y-1"
+         x-transition:enter-start="opacity-0 -translate-y-2"
          x-transition:enter-end="opacity-100 translate-y-0"
          x-transition:leave="transition ease-in duration-150"
          x-transition:leave-start="opacity-100 translate-y-0"
-         x-transition:leave-end="opacity-0 -translate-y-1"
-         class="lg:hidden border-t border-gray-200 dark:border-gray-700/50 bg-white/75 dark:bg-gray-800/55 backdrop-blur-lg"
+         x-transition:leave-end="opacity-0 translate-y-2"
+         class="lg:hidden border-t border-gray-200 dark:border-gray-700 bg-white/95 dark:bg-gray-800/95 backdrop-blur-sm shadow-xl"
          style="display: none;">
-        <div class="px-4 pt-4 pb-3">
+        
+        <div class="px-4 pt-4 pb-6 space-y-4">
+            
             {{-- User Info Mobile --}}
-            <div class="flex items-center space-x-3 mb-4 pb-4 border-b border-gray-200 dark:border-gray-600">
-                <img class="w-10 h-10 rounded-full" 
+            <div class="flex items-center gap-4 px-2">
+                <img class="w-12 h-12 rounded-full ring-2 ring-blue-500/30" 
                      src="https://ui-avatars.com/api/?name={{ urlencode(auth()->user()->name) }}&background=random&color=fff" 
                      alt="{{ auth()->user()->name }}" />
-                <div>
-                    <span class="block text-sm font-semibold text-gray-900 dark:text-white">{{ auth()->user()->name }}</span>
-                    <span class="block text-sm text-gray-500 dark:text-gray-400">{{ auth()->user()->email }}</span>
+                <div class="flex-1 min-w-0">
+                    <p class="text-base font-bold text-gray-900 dark:text-white truncate">{{ auth()->user()->name }}</p>
+                    <p class="text-sm text-gray-500 dark:text-gray-400 truncate">{{ auth()->user()->email }}</p>
                 </div>
             </div>
 
-            {{-- Mobile Menu Items --}}
-            <div class="flex flex-col space-y-2">
+            <div class="border-t border-gray-100 dark:border-gray-700 pt-2">
                 <form action="{{ route('logout') }}" method="POST">
                     @csrf
-                    {{-- ✅ PERBAIKAN KONSISTENSI: Menggunakan gap-3 (sebelumnya mr-3) --}}
                     <button type="submit" 
-                        class="w-full flex items-center gap-3 rounded-lg px-4 py-3 text-base font-medium transition-all duration-200 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white">
-                        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                        class="w-full flex items-center gap-3 px-4 py-3 text-base font-medium text-red-600 bg-red-50 hover:bg-red-100 dark:bg-red-900/10 dark:text-red-400 dark:hover:bg-red-900/20 rounded-xl transition-all duration-200">
+                        {{-- Heroicon: Arrow Right On Rectangle --}}
+                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l3 3m0 0l-3 3m3-3H9" />
                         </svg>
-                        Sign out
+                        Keluar Aplikasi
                     </button>
                 </form>
             </div>

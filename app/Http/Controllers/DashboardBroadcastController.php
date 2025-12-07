@@ -147,17 +147,12 @@ class DashboardBroadcastController extends Controller
             'is_active' => 'required|boolean',
         ]);
 
-        // PERBAIKAN: Cast boolean ditaruh diluar logika gambar
-        // agar status tetap terupdate meskipun tidak ganti gambar
         $validated['is_active'] = $request->boolean('is_active');
 
-        // Update Poster
+        // [REFACTOR SAFE UPDATE]
         if ($request->hasFile('poster')) {
             try {
-                if ($broadcast->poster && Storage::disk('public')->exists($broadcast->poster)) {
-                    Storage::disk('public')->delete($broadcast->poster);
-                }
-
+                // 1. Proses Gambar Baru
                 $file = $request->file('poster');
                 $filename = Str::random(40) . '.jpg';
                 $path = 'broadcast-posters/' . $filename;
@@ -167,7 +162,14 @@ class DashboardBroadcastController extends Controller
                 $image->scale(width: 800);
                 $encodedImage = $image->toJpeg(quality: 75);
                 
+                // 2. Simpan
                 Storage::disk('public')->put($path, (string) $encodedImage);
+                
+                // 3. Hapus Lama jika Simpan Sukses
+                if ($broadcast->poster && Storage::disk('public')->exists($broadcast->poster)) {
+                    Storage::disk('public')->delete($broadcast->poster);
+                }
+
                 $validated['poster'] = $path; 
 
             } catch (\Exception $e) {
@@ -177,10 +179,9 @@ class DashboardBroadcastController extends Controller
             }
         }
 
-        // Update Status Draft/Publish
+        // ... (Logika status publish tetap sama) ...
         if ($request->input('action') === 'publish') {
             $validated['status'] = 'published';
-            // Gunakan input tanggal jika ada, jika tidak pakai yang lama, jika tidak ada pakai now()
             $validated['published_at'] = $request->filled('published_at') 
                 ? $request->published_at 
                 : ($broadcast->published_at ?? now());

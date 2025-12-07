@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\View; // <--- Import Schema
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider; // <--- Import Model SocialMedia
 
+
 class AppServiceProvider extends ServiceProvider
 {
     /**
@@ -22,14 +23,15 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        // Mengatur panjang string default database (opsional tapi disarankan)
-        Schema::defaultStringLength(191);
+        // 1. Bagikan data SocialMedia ke SEMUA view
+        // Menggunakan closure agar query hanya dijalankan saat view dirender
+        View::composer('*', function ($view) {
+            // Cache sederhana bisa ditambahkan di sini jika perlu
+            $socialMedia = SocialMedia::first() ?? new SocialMedia();
+            $view->with('socialMedia', $socialMedia);
+        });
 
-        // Share data SocialMedia ke semua views jika tabelnya ada
-        if (Schema::hasTable('social_medias')) {
-            $socialMedia = SocialMedia::first();
-            // Jika belum ada data, buat objek kosong agar tidak error di view
-            View::share('socialMedia', $socialMedia ?? new SocialMedia());
-        }
+        // 2. (Opsional) Jika pakai Pagination Custom (misal Tailwind)
+        // Paginator::useTailwind(); 
     }
 }

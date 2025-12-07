@@ -27,25 +27,25 @@ class DashboardJadwalAcaraController extends Controller
             });
         });
 
-        // Default sort: Berdasarkan Jam Tayang (Pagi ke Malam)
-        $jadwalAcaras = $query->orderBy('start_time', 'asc')
-                              ->paginate(10)
-                              ->withQueryString();
+        // Default sort: Berdasarkan Hari lalu Jam Tayang
+        $jadwalAcaras = $query->select('jadwal_acaras.*')
+                            ->join('jadwal_categories', 'jadwal_acaras.jadwal_category_id', '=', 'jadwal_categories.id')
+                            ->orderBy('jadwal_categories.order', 'asc')
+                            ->orderBy('jadwal_acaras.start_time', 'asc')
+                            ->paginate(10)
+                            ->withQueryString();
 
         $categories = BroadcastCategory::orderBy('name')->get();
         $jadwalCategories = JadwalCategory::orderBy('id')->get();
 
-        // PERBAIKAN: Tambahkan 'jadwalCategories' ke dalam compact
         return view('backend.jadwal-acara.index', compact('jadwalAcaras', 'categories', 'jadwalCategories'));
     }
 
     public function create()
     {
         $categories = BroadcastCategory::orderBy('name')->get();
-        // PERBAIKAN: Ambil data kategori hari
         $jadwalCategories = JadwalCategory::orderBy('id')->get();
         
-        // PERBAIKAN: Kirim 'jadwalCategories' ke view
         return view('backend.jadwal-acara.create', compact('categories', 'jadwalCategories'));
     }
 
@@ -55,8 +55,8 @@ class DashboardJadwalAcaraController extends Controller
             'title' => 'required|string|max:255',
             'slug' => 'required|string|max:255|unique:jadwal_acaras,slug',
             'start_time' => 'required',
+            'end_time' => 'required', // ✅ TAMBAHAN: Validasi Waktu Selesai
             'broadcast_category_id' => 'required|exists:broadcast_categories,id',
-            // Pastikan validasi untuk jadwal_category_id ada
             'jadwal_category_id' => 'required|exists:jadwal_categories,id',
             'is_active' => 'required|boolean',
         ]);
@@ -72,7 +72,6 @@ class DashboardJadwalAcaraController extends Controller
         $jadwalCategories = JadwalCategory::orderBy('id')->get();
         $categories = BroadcastCategory::orderBy('name')->get();
         
-        // PERBAIKAN: Tambahkan 'jadwalCategories' ke dalam compact
         return view('backend.jadwal-acara.edit', compact('jadwalAcara', 'categories', 'jadwalCategories'));
     }
 
@@ -82,6 +81,7 @@ class DashboardJadwalAcaraController extends Controller
             'title' => 'required|string|max:255',
             'slug' => ['required', 'string', 'max:255', Rule::unique('jadwal_acaras')->ignore($jadwalAcara->id)],
             'start_time' => 'required',
+            'end_time' => 'required', // ✅ TAMBAHAN: Validasi Waktu Selesai
             'broadcast_category_id' => 'required|exists:broadcast_categories,id',
             'jadwal_category_id' => 'required|exists:jadwal_categories,id',
             'is_active' => 'required|boolean',

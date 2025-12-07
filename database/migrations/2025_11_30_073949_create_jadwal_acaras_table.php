@@ -10,11 +10,18 @@ return new class extends Migration
     {
         Schema::create('jadwal_acaras', function (Blueprint $table) {
             $table->id();
-            $table->string('title'); // Nama Acara
+            $table->string('title');
             $table->string('slug')->unique();
-            $table->time('start_time'); // Pukul Penayangan
-            // Relasi ke kategori penyiaran (agar jenis acaranya sama)
-            $table->foreignId('broadcast_category_id')->constrained('broadcast_categories')->onDelete('cascade'); 
+            $table->time('start_time');
+            
+            // SEBELUM:
+            // $table->foreignId('broadcast_category_id')->constrained('broadcast_categories')->onDelete('cascade'); 
+            
+            // SESUDAH:
+            $table->foreignId('broadcast_category_id')
+                ->constrained('broadcast_categories')
+                ->onDelete('restrict'); // Ubah ke restrict
+
             $table->boolean('is_active')->default(true);
             $table->timestamps();
         });

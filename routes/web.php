@@ -66,7 +66,8 @@ Route::get('/tugas-fungsi', [TugasFungsiController::class, 'index'])->name('tuga
 Route::get('/sejarah', [HistoryController::class, 'index'])->name('sejarah');
 Route::get('/prestasi', [PrestasiController::class, 'index'])->name('prestasi.index');
 
-Route::get('/jadwal-acara', [JadwalController::class, 'index'])->name('jadwal.index');
+Route::get('/jadwal-acara', [JadwalController::class, 'index'])->name('publikasi.jadwal');
+Route::get('/publikasi/jadwal', [JadwalController::class, 'index'])->name('publikasi.jadwal');
 Route::get('/ppid', [PpidController::class, 'index'])->name('ppid.index');
 Route::get('/himne-tvri', [HymneTvriController::class, 'index'])->name('himne-tvri.index');
 Route::get('/info-rb', [ReformasiRbController::class, 'index'])->name('info-rb.index');
@@ -130,3 +131,12 @@ Route::middleware('auth')->prefix('dashboard')->group(function () {
 // ================= UTILITAS =================
 Route::get('/theme/toggle', [ThemeController::class, 'toggle'])->name('theme.toggle');
 Route::get('/cek-php', fn() => phpinfo());
+
+Route::get('/symlink', function () {
+    try {
+        \Illuminate\Support\Facades\Artisan::call('storage:link');
+        return 'Symlink berhasil dibuat! Silakan cek folder public/storage.';
+    } catch (\Exception $e) {
+        return 'Gagal membuat symlink: ' . $e->getMessage();
+    }
+});

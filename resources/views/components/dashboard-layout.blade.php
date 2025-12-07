@@ -27,19 +27,17 @@
 </head>
 <body class="bg-gray-50 dark:bg-gray-900">
 
+    {{-- TAMBAHKAN @show-notification.window DI SINI --}}
+    {{-- Ini menjamin listener aktif tepat saat komponen dibuat --}}
     <div x-data="dashboardState()" 
          x-init="init()"
+         @show-notification.window="showNotification($event.detail.message, $event.detail.type)"
+         @show-modal.window="showModal($event.detail.title, $event.detail.message, $event.detail.type)"
          class="antialiased">
 
-        {{-- 1. WADAH UNTUK TURBO STREAM --}}
         <div id="flash-container"></div>
-
-        {{-- 2. KOMPONEN MODAL PINTAR --}}
         <x-status-modal />
-
-        {{-- 3. TRIGGER UNTUK NOTIFIKASI TOAST --}}
         <x-notification-trigger />
-
         <x-dashboard-navbar />
         <x-sidebar />
 
@@ -122,56 +120,46 @@
     <script>
         function dashboardState() {
             return {
-                // --- STATE SIDEBAR ---
                 isSidebarOpen: window.innerWidth >= 768,
-                
-                // --- STATE TOAST NOTIFICATION ---
                 notificationOpen: false,
                 notificationMessage: '',
                 notificationType: 'success',
-
-                // --- STATE MODAL POPUP ---
                 modalOpen: false,
                 modalType: 'success',
                 modalTitle: '',
                 modalMessage: '',
 
                 init() {
-                    console.log('🏠 Dashboard Alpine component initialized');
+                    console.log('🏠 Dashboard Alpine initialized');
                     this.setupResizeHandler();
                     
-                    // ✅ FIX: Listen untuk custom events dari app.js
-                    window.addEventListener('show-notification', (e) => {
-                        console.log('📨 Received show-notification event:', e.detail);
-                        this.showNotification(e.detail.message, e.detail.type);
-                    });
+                    // ✅ HAPUS window.addEventListener manual di sini
+                    // Kita sudah menggantinya dengan @show-notification.window di HTML di atas
+                    // yang jauh lebih stabil untuk Turbo.
 
-                    window.addEventListener('show-modal', (e) => {
-                        console.log('📨 Received show-modal event:', e.detail);
-                        this.showModal(e.detail.title, e.detail.message, e.detail.type);
-                    });
-                    
-                    // Cek pesan saat init (fallback)
+                    // Cek pesan Flash (dari PHP Session)
+                    // Gunakan $nextTick untuk memastikan DOM sudah siap sepenuhnya
                     this.$nextTick(() => {
                         this.checkForFlashMessages();
                     });
                 },
 
                 checkForFlashMessages() {
-                    // Toast Notification
+                    // Logika ini BENAR. Biarkan komponen ini yang mengambil pesan,
+                    // karena dia yang bertanggung jawab menampilkannya.
                     const toastTrigger = document.getElementById('notification-trigger');
                     if (toastTrigger) {
                         const message = toastTrigger.getAttribute('data-message');
                         const type = toastTrigger.getAttribute('data-type');
                         
                         if (message) {
-                            console.log('📢 Toast trigger found in Alpine init');
+                            console.log('📢 Alpine menemukan pesan flash:', message);
                             this.showNotification(message, type);
-                            toastTrigger.remove();
+                            toastTrigger.remove(); // Hapus agar tidak muncul 2x
                         }
                     }
 
-                    // Modal Popup
+                    // Cek Modal (sama seperti sebelumnya)
                     const modalTrigger = document.getElementById('modal-trigger');
                     if (modalTrigger) {
                         const title = modalTrigger.getAttribute('data-title');
@@ -179,16 +167,15 @@
                         const type = modalTrigger.getAttribute('data-type');
                         
                         if (message) {
-                            console.log('🔔 Modal trigger found in Alpine init');
                             this.showModal(title, message, type);
                             modalTrigger.remove();
                         }
                     }
                 },
 
-                // Fungsi Menampilkan Toast
                 showNotification(message, type) {
-                    console.log('✅ Showing notification:', { message, type });
+                    // ... (logika sama seperti sebelumnya) ...
+                    console.log('✅ Showing notification:', message);
                     this.notificationMessage = message;
                     this.notificationType = type;
                     this.notificationOpen = true;
@@ -198,25 +185,17 @@
                     }, 4000);
                 },
 
-                // Fungsi Menampilkan Modal
                 showModal(title, message, type = 'success') {
-                    console.log('✅ Showing modal:', { title, message, type });
+                    // ... (logika sama seperti sebelumnya) ...
                     this.modalTitle = title;
                     this.modalMessage = message;
                     this.modalType = type;
                     this.modalOpen = true;
                 },
 
-                isMobile() { 
-                    return window.innerWidth < 768; 
-                },
-                
-                closeSidebar() { 
-                    if (this.isMobile()) { 
-                        this.isSidebarOpen = false; 
-                    } 
-                },
-                
+                // ... (sisa fungsi helper isMobile, closeSidebar, dll tetap sama) ...
+                isMobile() { return window.innerWidth < 768; },
+                closeSidebar() { if (this.isMobile()) { this.isSidebarOpen = false; } },
                 setupResizeHandler() {
                     let resizeTimeout;
                     window.addEventListener('resize', () => {

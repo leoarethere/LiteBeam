@@ -3,7 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $title ?? config('yogyakarta.tvri.go.id', 'Beranda TVRI Yogyakarta') }}</title>
+    
+    {{-- [PERBAIKAN] Tambahkan Meta Description Dinamis --}}
+    <meta name="description" content="{{ $meta_description ?? 'Portal Resmi TVRI Stasiun D.I. Yogyakarta - Media Pemersatu Bangsa' }}">
+    
+    {{-- Tambahan Open Graph (Agar cantik saat share di WA/FB) --}}
+    <meta property="og:title" content="{{ $title ?? 'TVRI Yogyakarta' }}" />
+    <meta property="og:description" content="{{ $meta_description ?? 'Lembaga Penyiaran Publik TVRI Stasiun D.I. Yogyakarta.' }}" />
+    
+    <title>{{ $title ?? config('app.name', 'TVRI Yogyakarta') }}</title>
     <style>
         html, body {
             overscroll-behavior: none;

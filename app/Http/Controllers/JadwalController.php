@@ -5,43 +5,37 @@ namespace App\Http\Controllers;
 use App\Models\JadwalAcara;
 use Illuminate\Http\Request;
 use App\Models\JadwalCategory;
-use Illuminate\Routing\Controller; // Import Model Hari
+use Illuminate\Routing\Controller;
 
 class JadwalController extends Controller
 {
-    /**
-     * Menampilkan jadwal acara untuk publik.
-     */
     public function index(Request $request)
     {
-        // Eager load relasi hari dan jenis acara
-        $query = JadwalAcara::with(['jadwalCategory', 'broadcastCategory'])
-                            ->where('is_active', true);
+        // 1. Join dengan tabel kategori agar bisa sort berdasarkan 'jadwal_categories.order'
+        $query = JadwalAcara::select('jadwal_acaras.*') // Pastikan hanya ambil kolom jadwal_acara agar ID tidak tertimpa
+                            ->join('jadwal_categories', 'jadwal_acaras.jadwal_category_id', '=', 'jadwal_categories.id')
+                            ->with(['jadwalCategory', 'broadcastCategory'])
+                            ->where('jadwal_acaras.is_active', true);
 
-        // 1. Filter Pencarian (Judul)
+        // 2. Filter Pencarian
         if ($request->filled('search')) {
-            $query->where('title', 'like', '%' . $request->search . '%');
+            $query->where('jadwal_acaras.title', 'like', '%' . $request->search . '%');
         }
 
-        // 2. Filter Hari (JadwalCategory) - INI YANG BARU
+        // 3. Filter Hari
         if ($request->filled('day')) {
-            $query->whereHas('jadwalCategory', function ($q) use ($request) {
-                $q->where('slug', $request->day);
-            });
+            $query->where('jadwal_categories.slug', $request->day);
         }
 
-        // 3. Sorting: Urutkan berdasarkan Hari (ID) lalu Jam Tayang
-        // Asumsi: ID 1=Senin, 2=Selasa, dst. (Sesuai urutan input)
-        $jadwalAcaras = $query->orderBy('jadwal_category_id', 'asc')
-                              ->orderBy('start_time', 'asc')
-                              ->paginate(12) // 12 item per halaman
-                              ->withQueryString();
+        // 4. Sorting: Berdasarkan Order Kategori (1,2,3...), lalu Jam Tayang
+        $jadwals = $query->orderBy('jadwal_categories.order', 'asc') // [PERBAIKAN UTAMA]
+                        ->orderBy('jadwal_acaras.start_time', 'asc')
+                        ->paginate(12)
+                        ->withQueryString();
 
-        // Ambil daftar hari yang memiliki jadwal aktif untuk dropdown
-        $days = JadwalCategory::whereHas('jadwalAcaras', function($q) {
-            $q->where('is_active', true);
-        })->orderBy('id')->get();
+        // Ambil daftar hari, urutkan berdasarkan order juga
+        $days = JadwalCategory::orderBy('order', 'asc')->get();
 
-        return view('frontend.publikasi.jadwal', compact('jadwalAcaras', 'days'));
+        return view('frontend.publikasi.jadwal', compact('jadwals', 'days'));
     }
 }

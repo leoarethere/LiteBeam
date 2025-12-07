@@ -6,122 +6,127 @@
         @endif
     </x-slot:title>
 
-    {{-- KONTAINER UTAMA --}}
-    <div class="px-4 sm:px-6 lg:px-8">
+    {{-- LOGIKA PHP --}}
+    @php
+        $dataJadwal = $jadwals ?? $jadwalAcaras ?? collect([]);
+        $groupedJadwal = $dataJadwal->groupBy(function($item) {
+            return $item->jadwalCategory->name ?? 'Lainnya';
+        });
+        $listHari = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu'];
+    @endphp
 
-        {{-- HERO SECTION (Disamakan dengan Siaran.blade.php) --}}
+    {{-- KONTAINER UTAMA --}}
+    <div class="px-4 sm:px-6 lg:px-8 py-8">
+
+        {{-- HERO SECTION --}}
         <div class="relative rounded-3xl overflow-hidden mb-8 bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 dark:from-blue-900 dark:via-blue-950 dark:to-indigo-950 shadow-xl">
+            <div class="absolute inset-0 bg-grid-white/[0.05] bg-[size:24px_24px]"></div>
+            <div class="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
             
-            {{-- Pattern Grid Background --}}
-            <div class="absolute inset-0 bg-grid-white/[0.03] bg-[size:24px_24px] [mask-image:radial-gradient(ellipse_at_center,black_40%,transparent_100%)]"></div>
-            
-            <div class="relative px-6 py-12 lg:px-12 lg:py-16 text-center">
-                <div class="max-w-4xl mx-auto">
-                    <h1 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4 drop-shadow-md">
+            <div class="relative px-6 py-12 lg:px-12 lg:py-20 text-center z-10">
+                <div class="max-w-3xl mx-auto">
+                    <h1 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mb-4 drop-shadow-sm">
                         Jadwal Acara TVRI
                     </h1>
-                    <p class="text-blue-100 text-lg max-w-2xl mx-auto mb-8">
+                    <p class="text-blue-100 text-base sm:text-lg max-w-2xl mx-auto leading-relaxed">
                         Simak jadwal tayangan edukatif, informatif, dan menghibur pilihan kami hari ini dan hari-hari mendatang.
                     </p>
-
-                    {{-- FILTER & SEARCH SECTION (Diintegrasikan ke dalam Hero agar rapi) --}}
-                    <div class="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-6 shadow-lg">
-                        <div class="flex flex-col lg:flex-row justify-between items-center gap-6">
-                            
-                            {{-- Filter Hari (Scrollable Horizontal) --}}
-                            <div class="w-full flex justify-center items-center pb-2 lg:pb-0 scrollbar-hide">
-                                <div class="flex gap-2">
-                                    <a href="{{ route('jadwal.index') }}" 
-                                    class="px-5 py-2.5 rounded-lg text-sm font-medium transition-all duration-300 whitespace-nowrap 
-                                    {{ !request('day') ? 'bg-white text-blue-700 shadow-md scale-105' : 'bg-blue-800/40 text-blue-100 hover:bg-blue-700/50 hover:text-white' }}">
-                                        Hari Ini
-                                    </a>
-                                    @foreach(['senin', 'selasa', 'rabu', 'kamis', 'jumat', 'sabtu', 'minggu'] as $day)
-                                        <a href="{{ route('jadwal.index', ['day' => $day]) }}" 
-                                        class="px-5 py-2.5 rounded-lg text-sm font-medium transition-all duration-300 whitespace-nowrap capitalize
-                                        {{ request('day') == $day ? 'bg-white text-blue-700 shadow-md scale-105' : 'bg-blue-800/40 text-blue-100 hover:bg-blue-700/50 hover:text-white' }}">
-                                            {{ $day }}
-                                        </a>
-                                    @endforeach
-                                </div>
-                            </div>
-
-                        </div>
-                    </div>
-                    {{-- END FILTER --}}
-
                 </div>
             </div>
         </div>
 
-        {{-- KONTEN JADWAL --}}
-        <div class="mx-auto">
-            @if($jadwalAcaras->count() > 0)
-                <div class="space-y-8">
-                    @php
-                        // Grouping berdasarkan hari agar tampilan lebih terstruktur
-                        $groupedJadwal = $jadwalAcaras->groupBy('day');
-                    @endphp
+        {{-- BAGIAN FILTER HARI --}}
+        <div class="mb-10">
+            <div class="relative group">
+                {{-- Fade effect mobile --}}
+                <div class="absolute -center-4 top-0 bottom-0 w-12 bg-gradient-to-r from-gray-50 dark:from-gray-900 to-transparent z-10 pointer-events-none md:hidden"></div>
+                
+                    <div class="overflow-x-auto scrollbar-hide -mx-4 px-4 lg:mx-0 lg:px-0">
+                        <nav class="flex justify-center gap-2 lg:gap-3 pb-2" style="min-width: min-content;">
+                        
+                        <a href="{{ route('publikasi.jadwal') }}"
+                           class="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-medium rounded-full transition-all duration-200 whitespace-nowrap border shadow-sm
+                           {{ !request('day') 
+                               ? 'bg-blue-600 border-blue-600 text-white hover:bg-blue-700' 
+                               : 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700' }}">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                            Semua Hari
+                        </a>
 
-                    @foreach($groupedJadwal as $day => $schedules)
+                        @foreach($listHari as $hari)
+                            @php $slug = strtolower($hari); @endphp
+                            <a href="{{ route('publikasi.jadwal', ['day' => $slug]) }}"
+                               class="inline-flex items-center px-5 py-2.5 text-sm font-medium rounded-full transition-all duration-200 whitespace-nowrap border shadow-sm
+                               {{ request('day') == $slug 
+                                   ? 'bg-blue-600 border-blue-600 text-white hover:bg-blue-700' 
+                                   : 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700' }}">
+                                {{ $hari }}
+                            </a>
+                        @endforeach
+                    </nav>
+                </div>
+                <div class="absolute -right-4 top-0 bottom-0 w-12 bg-gradient-to-l from-gray-50 dark:from-gray-900 to-transparent z-10 pointer-events-none md:hidden"></div>
+            </div>
+        </div>
+
+        {{-- LIST JADWAL --}}
+        <div class="pb-8">
+            @if($dataJadwal->count() > 0)
+                <div class="space-y-8">
+                    @foreach($groupedJadwal as $dayName => $schedules)
+                        
                         <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
                             
                             {{-- Header Hari --}}
-                            <div class="bg-gray-50 dark:bg-gray-700/50 px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex items-center gap-3">
-                                <div class="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg text-blue-600 dark:text-blue-400">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                                </div>
-                                <h2 class="text-xl font-bold text-gray-900 dark:text-white capitalize">
-                                    {{ $day }}
-                                </h2>
+                            <div class="bg-gray-50 dark:bg-gray-700/30 px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex items-center gap-3">
+                                <span class="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                                </span>
+                                <h3 class="text-xl font-bold text-gray-900 dark:text-white capitalize">
+                                    {{ $dayName }}
+                                </h3>
                             </div>
 
-                            {{-- List Jadwal --}}
-                            <div class="divide-y divide-gray-100 dark:divide-gray-700">
+                            {{-- List Item Jadwal --}}
+                            <div class="divide-y divide-gray-100 dark:divide-gray-700/50">
                                 @foreach($schedules as $schedule)
-                                    <div class="group p-6 hover:bg-blue-50/50 dark:hover:bg-gray-700/50 transition-colors duration-200 flex flex-col sm:flex-row gap-6 items-start">
+                                    <div class="group p-5 hover:bg-blue-50/50 dark:hover:bg-blue-900/10 transition-colors duration-200 flex flex-col md:flex-row gap-4 md:items-center">
                                         
-                                        {{-- Kolom Waktu --}}
-                                        <div class="sm:w-32 flex-shrink-0">
-                                            <div class="inline-flex flex-col items-center justify-center px-4 py-2 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-xl font-mono text-sm font-bold border border-blue-200 dark:border-blue-800">
+                                        {{-- Waktu --}}
+                                        <div class="flex-shrink-0 md:w-48">
+                                            <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800/30 text-blue-700 dark:text-blue-300 font-mono text-sm font-bold">
+                                                <svg class="w-4 h-4 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                                                 <span>{{ \Carbon\Carbon::parse($schedule->start_time)->format('H:i') }}</span>
-                                                <span class="text-xs font-normal text-blue-500 dark:text-blue-400 my-0.5">s/d</span>
-                                                <span>{{ \Carbon\Carbon::parse($schedule->end_time)->format('H:i') }}</span>
-                                            </div>
-                                            <div class="mt-2 text-center">
-                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
-                                                    {{ $schedule->status == 'live' ? 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300 animate-pulse' : 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400' }}">
-                                                    {{ $schedule->status == 'live' ? '● LIVE' : 'Recorded' }}
-                                                </span>
+                                                <span class="opacity-50">-</span>
+                                                <span>{{ $schedule->end_time ? \Carbon\Carbon::parse($schedule->end_time)->format('H:i') : 'Selesai' }}</span>
                                             </div>
                                         </div>
 
-                                        {{-- Kolom Info Program --}}
+                                        {{-- Info Program --}}
                                         <div class="flex-1 min-w-0">
-                                            <div class="flex items-start justify-between gap-4">
-                                                <div>
-                                                    <h3 class="text-lg font-bold text-gray-900 dark:text-white group-hover:text-blue-700 dark:group-hover:text-blue-400 transition-colors mb-1">
-                                                        {{ $schedule->program_name }}
-                                                    </h3>
-                                                    <div class="text-sm text-gray-500 dark:text-gray-400 line-clamp-2 mb-3">
-                                                        {{ $schedule->description ?? 'Tidak ada deskripsi untuk program ini.' }}
-                                                    </div>
-                                                </div>
+                                            <div class="flex flex-wrap items-center gap-2 mb-1">
+                                                <h4 class="text-lg font-bold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                                                    {{ $schedule->title }}
+                                                </h4>
+                                                
+                                                {{-- Kategori Badge --}}
+                                                @if($schedule->broadcastCategory)
+                                                    <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide {{ $schedule->broadcastCategory->color_classes }} border border-transparent/10">
+                                                        {{ $schedule->broadcastCategory->name }}
+                                                    </span>
+                                                @endif
                                             </div>
                                             
-                                            {{-- Footer Item (Kategori & Durasi) --}}
-                                            <div class="flex items-center gap-4 text-xs text-gray-500 dark:text-gray-400">
-                                                <div class="flex items-center gap-1.5">
-                                                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7A2 2 0 0121 12v5a2 2 0 01-2 2H7a2 2 0 01-2-2V5a2 2 0 012-2h3m0 0l-3 3m0 0l3 3m-3-3h5"></path></svg>
-                                                    <span>Program Hiburan</span> {{-- Bisa diganti dinamis jika ada kolom kategori --}}
-                                                </div>
-                                                <div class="flex items-center gap-1.5">
-                                                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                                                    <span>
-                                                        {{ \Carbon\Carbon::parse($schedule->start_time)->diffInMinutes(\Carbon\Carbon::parse($schedule->end_time)) }} Menit
-                                                    </span>
-                                                </div>
-                                            </div>
+                                            <p class="text-sm text-gray-500 dark:text-gray-400 line-clamp-1">
+                                                Saksikan tayangan {{ strtolower($schedule->broadcastCategory->name ?? 'menarik') }} hanya di TVRI Yogyakarta.
+                                            </p>
+                                        </div>
+
+                                        {{-- Action (Desktop) --}}
+                                        <div class="hidden md:block">
+                                            <span class="text-gray-300 dark:text-gray-600">
+                                                <svg class="w-5 h-5 group-hover:text-blue-500 transition-colors transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                                            </span>
                                         </div>
 
                                     </div>
@@ -130,30 +135,23 @@
                         </div>
                     @endforeach
                 </div>
-
             @else
-                {{-- EMPTY STATE (Disamakan dengan Siaran.blade.php) --}}
-                <div class="text-center py-16 bg-gray-50 dark:bg-gray-800/50 rounded-xl border-2 border-dashed border-gray-300 dark:border-gray-700">
-                    <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-100 dark:bg-gray-700 mb-4">
-                        <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                        </svg>
+                {{-- EMPTY STATE --}}
+                <div class="text-center py-16 bg-white dark:bg-gray-800 rounded-3xl border border-dashed border-gray-200 dark:border-gray-700">
+                    <div class="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gray-50 dark:bg-gray-700/50 mb-6 text-gray-400 dark:text-gray-500">
+                        <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                     </div>
-                    <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">Jadwal Tidak Ditemukan</h3>
+                    <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">Jadwal Tidak Ditemukan</h3>
                     <p class="text-gray-500 dark:text-gray-400 max-w-md mx-auto mb-8">
-                        @if(request('day'))
-                            Tidak ada jadwal acara untuk hari <strong>{{ ucwords(str_replace('-', ' ', request('day'))) }}</strong>.
-                        @elseif(request('search'))
-                            Tidak ada program yang cocok dengan kata kunci "<strong>{{ request('search') }}</strong>".
-                        @else
-                            Belum ada jadwal acara yang tersedia saat ini.
+                        @if(request('day')) 
+                            Tidak ada jadwal acara untuk hari <strong>{{ ucwords(request('day')) }}</strong> saat ini. 
+                        @else 
+                            Belum ada jadwal acara yang tersedia. 
                         @endif
                     </p>
-                    
-                    @if(request('search') || request('day'))
-                        <a href="{{ route('jadwal.index') }}" class="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white text-sm font-semibold rounded-lg hover:bg-blue-700 transition-all duration-200 shadow-md hover:shadow-lg">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
-                            Tampilkan Semua Jadwal
+                    @if(request('day'))
+                        <a href="{{ route('publikasi.jadwal') }}" class="inline-flex items-center px-6 py-2.5 text-sm font-medium text-white bg-blue-600 rounded-xl hover:bg-blue-700 transition-colors shadow-sm">
+                            Tampilkan Semua Hari
                         </a>
                     @endif
                 </div>
@@ -161,18 +159,16 @@
         </div>
 
         {{-- PAGINATION --}}
-        @if ($jadwalAcaras->hasPages())
-            <div class="my-12">
-                {{ $jadwalAcaras->links('vendor.pagination.tailwind') }}
+        @if($dataJadwal->hasPages())
+            <div class="mb-8 flex justify-center">
+                {{ $dataJadwal->withQueryString()->links('vendor.pagination.tailwind') }}
             </div>
         @endif
 
     </div>
 
-    {{-- Custom Styles --}}
     <style>
         .scrollbar-hide::-webkit-scrollbar { display: none; }
         .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
-        .bg-grid-white { background-image: linear-gradient(to right, rgba(255, 255, 255, 0.1) 1px, transparent 1px), linear-gradient(to bottom, rgba(255, 255, 255, 0.1) 1px, transparent 1px); }
     </style>
 </x-layout>

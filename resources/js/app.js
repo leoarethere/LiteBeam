@@ -1,4 +1,4 @@
-// FILE: resources/js/app.js (FIXED - Turbo + Alpine Conflict Resolution)
+// FILE: resources/js/app.js
 
 import * as Turbo from '@hotwired/turbo';
 import Alpine from 'alpinejs';
@@ -23,7 +23,7 @@ window.appInitialized = false;
 window.alpineStarted = false;
 
 // ============================================
-// ✅ FIX: INISIALISASI ALPINE SEBELUM TURBO
+// INISIALISASI ALPINE
 // ============================================
 console.log('🔧 Starting Alpine.js immediately...');
 Alpine.start();
@@ -34,15 +34,16 @@ console.log('✅ Alpine.js started');
 // TURBO EVENT HANDLERS
 // ============================================
 
-// ✅ FIX: Gunakan turbo:render (lebih lambat tapi lebih stabil)
 document.addEventListener('turbo:render', function() {
     console.log('🎨 Turbo render complete');
     
-    // Tunggu sebentar agar Alpine component ter-mount
     setTimeout(() => {
-        checkForFlashMessages();
+        // ❌ PERBAIKAN DI SINI:
+        // Wajib dikomentari agar tidak berebut dengan Dashboard Layout
+        // checkForFlashMessages(); 
+        
         initializeFlowbite();
-    }, 100); // Delay 100ms
+    }, 100); 
 });
 
 // Fallback untuk first load
@@ -52,9 +53,12 @@ document.addEventListener('DOMContentLoaded', function() {
     console.log('🚀 DOMContentLoaded - First page load');
     
     setTimeout(() => {
-        checkForFlashMessages();
+        // ❌ PERBAIKAN DI SINI JUGA:
+        // Wajib dikomentari
+        // checkForFlashMessages();
+        
         initializeFlowbite();
-    }, 150); // Delay lebih lama untuk first load
+    }, 150); 
     
     window.appInitialized = true;
 });
@@ -83,15 +87,14 @@ document.addEventListener('turbo:fetch-request-error', function(event) {
 });
 
 // ============================================
-// ✅ FIX: FUNGSI FLASH MESSAGE YANG DIPERBAIKI
+// FUNGSI FLASH MESSAGE (UTILITY)
 // ============================================
-function checkForFlashMessages() {
-    console.log('🔍 Checking for flash messages...');
+// Biarkan fungsi ini tetap ada sebagai utility, 
+// tapi jangan dipanggil otomatis di event listener di atas.
+window.checkForFlashMessages = function() {
+    console.log('🔍 Manual check for flash messages...');
     
-    // Cek apakah Alpine component sudah ready
     if (!window.Alpine || !window.Alpine.store) {
-        console.warn('⚠️ Alpine not ready, retrying in 100ms...');
-        setTimeout(checkForFlashMessages, 100);
         return;
     }
     
@@ -101,10 +104,7 @@ function checkForFlashMessages() {
         const message = toastTrigger.getAttribute('data-message');
         const type = toastTrigger.getAttribute('data-type');
         
-        console.log('📢 Toast found:', { message, type });
-        
         if (message) {
-            // Trigger Alpine event
             window.dispatchEvent(new CustomEvent('show-notification', {
                 detail: { message, type }
             }));
@@ -119,10 +119,7 @@ function checkForFlashMessages() {
         const message = modalTrigger.getAttribute('data-message');
         const type = modalTrigger.getAttribute('data-type');
         
-        console.log('🔔 Modal found:', { title, message, type });
-        
         if (message) {
-            // Trigger Alpine event
             window.dispatchEvent(new CustomEvent('show-modal', {
                 detail: { title, message, type }
             }));
