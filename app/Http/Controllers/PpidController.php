@@ -10,16 +10,35 @@ class PpidController extends Controller
 {
     public function index(Request $request)
     {
+        // Query dasar: hanya yang aktif
         $query = Ppid::where('is_active', true);
 
-        // Filter Pencarian
+        // 1. Filter Pencarian
         if ($request->filled('search')) {
             $query->where('title', 'like', '%' . $request->search . '%');
         }
 
-        $ppids = $query->latest()->paginate(10);
+        // 2. Logika Sorting (Perbaikan disini)
+        // Mengambil value 'sort' dari request (dropdown di view)
+        switch ($request->input('sort')) {
+            case 'oldest':
+                $query->orderBy('created_at', 'asc'); // Terlama
+                break;
+            case 'title_asc':
+                $query->orderBy('title', 'asc'); // Judul A-Z
+                break;
+            case 'title_desc':
+                $query->orderBy('title', 'desc'); // Judul Z-A
+                break;
+            default:
+                $query->latest(); // Default: Terbaru (created_at desc)
+                break;
+        }
 
-        // PERUBAHAN DI SINI: Arahkan ke view 'frontend.ppid.ppid'
+        // 3. Eksekusi Pagination
+        // withQueryString() penting agar saat pindah halaman (page 2), filter search & sort tidak hilang
+        $ppids = $query->paginate(10)->withQueryString();
+
         return view('frontend.ppid.ppid', compact('ppids'));
     }
 }

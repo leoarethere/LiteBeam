@@ -16,13 +16,29 @@ class InfoMagangController extends Controller
         // Ambil data yang aktif saja
         $query = InfoMagang::where('is_active', true);
 
-        // Filter Pencarian
+        // 1. Filter Pencarian
         if ($request->filled('search')) {
             $query->where('title', 'like', '%' . $request->search . '%');
         }
 
-        // Urutkan dari yang terbaru
-        $items = $query->latest()->paginate(10);
+        // 2. Logika Sorting (Perbaikan disini)
+        switch ($request->input('sort')) {
+            case 'oldest':
+                $query->orderBy('created_at', 'asc');
+                break;
+            case 'title_asc':
+                $query->orderBy('title', 'asc');
+                break;
+            case 'title_desc':
+                $query->orderBy('title', 'desc');
+                break;
+            default:
+                $query->latest();
+                break;
+        }
+
+        // 3. Eksekusi Pagination
+        $items = $query->paginate(10)->withQueryString();
 
         return view('frontend.info-magang.index', compact('items'));
     }

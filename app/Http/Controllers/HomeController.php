@@ -112,7 +112,7 @@ class HomeController extends Controller
         
         // Menggabungkan semua data untuk dikirim ke View
         return view('frontend.beranda.index', array_merge([
-            'title'      => 'Beranda - TVRI Yogyakarta',
+            'title'      => 'Beranda - TVRI D.I. Yogyakarta',
             'heroSlides' => $heroSlides,
         ], $data));
     }

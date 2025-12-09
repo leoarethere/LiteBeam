@@ -23,7 +23,7 @@
 
         {{-- BAGIAN FILTER & SORTING (Sesuai Desain Preferensi) --}}
         <div class="mb-10">
-            <form method="GET" action="{{ route('ppid.index') }}" class="max-w-7xl mx-auto">
+            <form method="GET" action="{{ route('ppid.index') }}" class="mx-auto">
                 <div class="flex flex-col md:flex-row justify-between items-center gap-4 p-4 bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700">
                     
                     {{-- Judul Seksi --}}
@@ -73,7 +73,7 @@
 
             {{-- Info Hasil Pencarian / Filter Aktif --}}
             @if(request()->hasAny(['search', 'sort']))
-                <div class="max-w-7xl mx-auto mt-4 flex flex-wrap items-center justify-between gap-4 px-2">
+                <div class="mx-auto mt-4 flex flex-wrap items-center justify-between gap-4 px-2">
                     <div class="text-sm text-gray-600 dark:text-gray-400">
                         Menampilkan <strong>{{ $ppids->total() }}</strong> dokumen
                         @if(request('search'))
@@ -90,7 +90,7 @@
         </div>
 
         {{-- CONTENT GRID --}}
-        <div class="max-w-7xl mx-auto mb-12">
+        <div class="mx-auto mb-12">
             @if($ppids->count() > 0)
                 {{-- Grid: 1 kolom di mobile, 2 kolom di large screen agar card horizontal terlihat proporsional --}}
                 <div class="grid gap-6 grid-cols-1 lg:grid-cols-2">

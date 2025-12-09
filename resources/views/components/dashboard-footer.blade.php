@@ -10,12 +10,12 @@
                     {{-- Logo Gelap (Light Mode) --}}
                     <img src="{{ asset('img/logolight.png') }}" 
                         class="h-8 sm:h-9 md:h-10 w-auto block dark:hidden" 
-                        alt="Logo TVRI Yogyakarta" />
+                        alt="Logo TVRI D.I. Yogyakarta" />
 
                     {{-- Logo Terang (Dark Mode) --}}
                     <img src="{{ asset('img/logodark.png') }}" 
                         class="h-8 sm:h-9 md:h-10 w-auto hidden dark:block" 
-                        alt="Logo TVRI Yogyakarta" />
+                        alt="Logo TVRI D.I. Yogyakarta" />
                     
                     <span class="self-center text-xl font-bold text-gray-900 dark:text-white whitespace-nowrap">
                         Media Pemersatu Bangsa
@@ -137,8 +137,8 @@
                                 </a>
                             </li>
                             <li>
-                                <a href="{{ route('contact') }}" class="text-base text-gray-500 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400 transition-colors">
-                                    Hubungi Kami
+                                <a href="{{ route('tugas-fungsi') }}" class="text-base text-gray-500 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400 transition-colors">
+                                    Tugas & Fungsi
                                 </a>
                             </li>
                         </ul>
@@ -149,7 +149,18 @@
         
         <div class="mt-12 border-t border-gray-200 dark:border-gray-800 pt-8">
             <p class="text-base text-gray-400 dark:text-gray-500 text-center">
-                Copyright {{ date('Y') }} TVRI Stasiun D.I. Yogyakarta. All rights reserved.
+                Copyright {{ date('Y') }} TVRI Stasiun D.I. Yogyakarta | All rights reserved.
+            </p>
+            <p class="text-base text-gray-400 dark:text-gray-500 text-center">
+                <span>&lt;/&gt;</span>
+                Didesain & Dikembangkan oleh :
+                <a href="https://www.instagram.com/leoarethere/" target="_blank" class="underline hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+                    Leonardo Putra Susanto
+                </a>
+                &amp;
+                <a href="https://www.instagram.com/destywahyu01/" target="_blank" class="underline hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+                    Desty Wahyu Anjani
+                </a>
             </p>
         </div>
     </div>

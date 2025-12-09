@@ -59,7 +59,7 @@
                             @if($tugas->isNotEmpty() && $tugas->first()->image)
                                 <img class="w-full h-full object-cover transition-transform duration-700" 
                                      src="{{ Storage::url($tugas->first()->image) }}" 
-                                     alt="Tugas TVRI Yogyakarta">
+                                     alt="Tugas TVRI D.I. Yogyakarta">
                             @else
                                 {{-- Placeholder Icon --}}
                                 <div class="aspect-[4/3] flex items-center justify-center bg-gray-100 dark:bg-gray-800 text-gray-300 dark:text-gray-600">
@@ -72,13 +72,6 @@
                             {{-- Inner Overlay --}}
                             <div class="absolute inset-0 ring-1 ring-inset ring-black/5 dark:ring-white/10 rounded-xl pointer-events-none"></div>
                         </div>
-                    </div>
-
-                    {{-- Badge --}}
-                    <div class="absolute bottom-6 left-6 md:bottom-auto md:top-8 md:left-8 z-20">
-                        <span class="px-4 py-2 bg-blue-600 text-white text-sm font-bold rounded-lg shadow-lg tracking-wider">
-                            TUGAS
-                        </span>
                     </div>
                 </div>
 
@@ -125,7 +118,7 @@
                             @if($fungsi->isNotEmpty() && $fungsi->first()->image)
                                 <img class="w-full h-full object-cover transition-transform duration-700" 
                                      src="{{ Storage::url($fungsi->first()->image) }}" 
-                                     alt="Fungsi TVRI Yogyakarta">
+                                     alt="Fungsi TVRI D.I. Yogyakarta">
                             @else
                                 {{-- Placeholder Icon --}}
                                 <div class="aspect-[4/3] flex items-center justify-center bg-gray-100 dark:bg-gray-800 text-gray-300 dark:text-gray-600">
@@ -137,13 +130,6 @@
                             {{-- Inner Overlay --}}
                             <div class="absolute inset-0 ring-1 ring-inset ring-black/5 dark:ring-white/10 rounded-xl pointer-events-none"></div>
                         </div>
-                    </div>
-
-                    {{-- Badge --}}
-                    <div class="absolute bottom-6 left-6 md:bottom-auto md:top-8 md:right-8 z-20">
-                        <span class="px-4 py-2 bg-green-600 text-white text-sm font-bold rounded-lg shadow-lg tracking-wider">
-                            FUNGSI
-                        </span>
                     </div>
                 </div>
 

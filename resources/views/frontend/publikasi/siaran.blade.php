@@ -26,9 +26,9 @@
                     </h1>
                     <p class="text-blue-100 text-base sm:text-lg max-w-2xl mx-auto leading-relaxed">
                         @if(isset($activeCategory))
-                            Jelajahi program unggulan TVRI Yogyakarta dalam kategori {{ $activeCategory->name }}.
+                            Jelajahi program unggulan TVRI D.I. Yogyakarta dalam kategori {{ $activeCategory->name }}.
                         @else
-                            Jelajahi berbagai program unggulan TVRI Yogyakarta yang menghadirkan informasi, hiburan, dan edukasi berkualitas.
+                            Jelajahi berbagai program unggulan TVRI D.I. Yogyakarta yang menghadirkan informasi, hiburan, dan edukasi berkualitas.
                         @endif
                     </p>
                 </div>

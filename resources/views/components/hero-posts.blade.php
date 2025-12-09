@@ -50,11 +50,11 @@
             
             {{-- Heading --}}
             <div class="space-y-2">
-                <h2 class="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight text-white drop-shadow-sm">
+                <h2 class="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight text-white drop-shadow-lg">
                     Apa yang kamu cari?
                 </h2>
-                <p class="text-base sm:text-lg md:text-lg text-gray-200 font-medium max-w-3xl mx-auto drop-shadow-sm">
-                    Jelajahi berita terbaru, artikel menarik, dan ragam informasi publik TVRI Yogyakarta.
+                <p class="text-base sm:text-lg md:text-lg text-gray-200 font-medium max-w-3xl mx-auto drop-shadow-lg">
+                    Jelajahi berita terbaru, artikel menarik, dan ragam informasi publik TVRI D.I. Yogyakarta.
                 </p>
             </div>
             

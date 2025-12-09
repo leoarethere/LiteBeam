@@ -38,7 +38,7 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         
                         {{-- Email Resmi --}}
-                        <div class="md:col-span-2">
+                        <div>
                             <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Email Resmi</label>
                             <div class="relative">
                                 <div class="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none">
@@ -52,6 +52,23 @@
                                     placeholder="kontak@instansi.go.id">
                             </div>
                             @error('email') <p class="mt-2 text-sm text-red-600 dark:text-red-500">{{ $message }}</p> @enderror
+                        </div>
+
+                        {{-- [BARU] Kontak Kami (Telepon) --}}
+                        <div>
+                            <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Kontak Kami (Telepon)</label>
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none">
+                                    {{-- Ikon Telepon --}}
+                                    <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" fill="currentColor" viewBox="0 0 24 24">
+                                        <path fill-rule="evenodd" d="M1.5 4.5a3 3 0 013-3h1.372c.86 0 1.61.586 1.819 1.42l1.105 4.423a1.875 1.875 0 01-.694 1.955l-1.293.97c-.135.101-.164.249-.126.352a11.285 11.285 0 006.697 6.697c.103.038.25.009.352-.126l.97-1.293a1.875 1.875 0 011.955-.694l4.423 1.105c.834.209 1.42.959 1.42 1.82V19.5a3 3 0 01-3 3h-2.25C8.552 22.5 1.5 15.448 1.5 4.5V4.5z" clip-rule="evenodd" />
+                                    </svg>
+                                </div>
+                                <input type="text" name="phone" value="{{ old('phone', $socialMedia->phone) }}" 
+                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" 
+                                    placeholder="(0274) 514402">
+                            </div>
+                            @error('phone') <p class="mt-2 text-sm text-red-600 dark:text-red-500">{{ $message }}</p> @enderror
                         </div>
 
                         {{-- Instagram --}}

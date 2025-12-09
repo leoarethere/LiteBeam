@@ -14,6 +14,7 @@ use App\Http\Controllers\VisiMisiController;
 use App\Http\Controllers\BroadcastController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\HymneTvriController;
+use App\Http\Controllers\StreamingController;
 use App\Http\Controllers\InfoMagangController;
 use App\Http\Controllers\ReformasiRbController;
 use App\Http\Controllers\TugasFungsiController;
@@ -74,6 +75,8 @@ Route::get('/info-rb', [ReformasiRbController::class, 'index'])->name('info-rb.i
 
 Route::get('/info-magang', [InfoMagangController::class, 'index'])->name('info-magang.index');
 Route::get('/info-kunjungan', [InfoKunjunganController::class, 'index'])->name('info-kunjungan.index');
+
+Route::get('/streaming', [StreamingController::class, 'index'])->name('streaming');
 
 // ================= AUTENTIKASI =================
 Route::middleware('guest')->group(function () {

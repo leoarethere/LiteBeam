@@ -13,6 +13,7 @@ class SocialMedia extends Model
 
     protected $fillable = [
         'email',
+        'phone', // Pastikan kolom ini ada di database (migration)
         'instagram',
         'twitter',
         'facebook',

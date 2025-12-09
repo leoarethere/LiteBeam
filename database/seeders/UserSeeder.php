@@ -15,15 +15,19 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
-        User::create([
-            'name' => 'Leo',
-            'username' => 'leo',
-            'email' => 'leonardounofficialz@gmail.com',
-            'email_verified_at' => now(),
-            'password' => Hash::make('12345678'),
-            'remember_token' => Str::random(10)
-        ]);
+        // Menggunakan firstOrCreate untuk mencegah error jika user 'leo' sudah ada
+        User::firstOrCreate(
+            ['username' => 'leo'], // Kriteria pencarian unik
+            [
+                'name' => 'Leo',
+                'email' => 'leonardounofficialz@gmail.com',
+                'email_verified_at' => now(),
+                'password' => Hash::make('12345678'),
+                'remember_token' => Str::random(10)
+            ]
+        );
         
+        // Buat 5 user dummy lainnya
         User::factory(5)->create();
     }
 }

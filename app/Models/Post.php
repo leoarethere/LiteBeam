@@ -35,33 +35,38 @@ class Post extends Model
         return $this->belongsTo(Category::class);
     }
     
-    // ✅ PERBAIKAN LOGIKA PENCARIAN (SCOPE)
+    // ✅ TAMBAHKAN FUNGSI INI UNTUK MEMPERBAIKI ERROR
+    public function incrementViews()
+    {
+        // increment() adalah fungsi bawaan Eloquent untuk menambah nilai kolom angka secara otomatis (+1)
+        $this->increment('views');
+    }
+
+    // ... (kode scopeFilter tetap sama seperti sebelumnya) ...
     public function scopeFilter(Builder $query, array $filters): void
     {
-        // 1. Logika Search (Judul, Body, Penulis, Kategori)
+        // 1. Logika Search
         $query->when($filters['search'] ?? false, function ($query, $search) {
             $query->where(function($q) use ($search) {
                 $q->where('title', 'like', '%' . $search . '%')
                   ->orWhere('body', 'like', '%' . $search . '%')
-                  // Cari berdasarkan nama Penulis
                   ->orWhereHas('user', function($userQuery) use ($search) {
                       $userQuery->where('name', 'like', '%' . $search . '%');
                   })
-                  // Cari berdasarkan nama Kategori
                   ->orWhereHas('category', function($catQuery) use ($search) {
                       $catQuery->where('name', 'like', '%' . $search . '%');
                   });
             });
         });
 
-        // 2. Logika Filter Kategori (Dropdown/Link)
+        // 2. Filter Kategori
         $query->when($filters['category'] ?? false, function ($query, $category) {
             $query->whereHas('category', function($q) use ($category) {
                 $q->where('slug', $category);
             });
         });
 
-        // 3. Logika Filter Author (Dropdown/Link)
+        // 3. Filter Author
         $query->when($filters['author'] ?? false, function ($query, $author) {
             $query->whereHas('user', function($q) use ($author) {
                 $q->where('username', $author);

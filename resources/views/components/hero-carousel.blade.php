@@ -87,12 +87,12 @@
                      x-transition:enter-end="opacity-100 translate-y-0">
                     
                     {{-- Heading: Ukuran font responsif --}}
-                    <h2 class="mb-3 text-2xl font-extrabold tracking-tight text-white sm:text-2xl md:text-3xl lg:text-4xl drop-shadow-md" 
+                    <h2 class="mb-3 text-2xl font-extrabold tracking-tight text-white sm:text-2xl md:text-3xl lg:text-4xl drop-shadow-lg" 
                         x-text="slide.title">
                     </h2>
                     
                     {{-- Subtitle: Ukuran font dan line-clamp responsif --}}
-                    <p class="mb-6 text-sm font-medium text-gray-200 sm:text-base md:text-lg lg:text-lg line-clamp-3 sm:line-clamp-2 drop-shadow-sm max-w-xl" 
+                    <p class="mb-6 text-sm font-medium text-gray-200 sm:text-base md:text-lg lg:text-lg line-clamp-3 sm:line-clamp-2 drop-shadow-lg max-w-xl" 
                        x-text="slide.subtitle">
                     </p>
                     

@@ -2,22 +2,22 @@
 
 namespace Database\Seeders;
 
-use App\Models\Category;
 use Illuminate\Support\Str;
 use Illuminate\Database\Seeder;
+use App\Models\BroadcastCategory;
 
-class CategorySeeder extends Seeder
+class BroadcastCategorySeeder extends Seeder
 {
     public function run(): void
     {
-        $categories = ['Berita Nasional', 'Olahraga', 'Budaya', 'Ekonomi', 'Hiburan'];
+        $categories = ['Berita TVRI', 'Dokumenter', 'Talkshow', 'Anak-anak', 'Agama'];
         
         foreach ($categories as $cat) {
-            Category::firstOrCreate(
+            BroadcastCategory::firstOrCreate(
                 ['slug' => Str::slug($cat)],
                 [
                     'name' => $cat,
-                    'color' => 'blue' // Bisa di-random jika mau
+                    'color' => 'red'
                 ]
             );
         }

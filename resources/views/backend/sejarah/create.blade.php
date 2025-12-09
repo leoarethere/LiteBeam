@@ -24,7 +24,7 @@
                     Tambah Data Sejarah
                 </h1>
                 <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                    Tambahkan peristiwa bersejarah TVRI Yogyakarta
+                    Tambahkan peristiwa bersejarah TVRI D.I. Yogyakarta
                 </p>
             </div>
         </div>

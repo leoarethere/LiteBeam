@@ -24,7 +24,7 @@
                     Edit Data Sejarah
                 </h1>
                 <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                    Perbarui informasi peristiwa bersejarah TVRI Yogyakarta.
+                    Perbarui informasi peristiwa bersejarah TVRI D.I. Yogyakarta.
                 </p>
             </div>
         </div>

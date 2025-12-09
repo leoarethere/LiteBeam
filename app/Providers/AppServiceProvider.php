@@ -21,17 +21,15 @@ class AppServiceProvider extends ServiceProvider
     /**
      * Bootstrap any application services.
      */
-    public function boot(): void
+    public function boot()
     {
-        // 1. Bagikan data SocialMedia ke SEMUA view
-        // Menggunakan closure agar query hanya dijalankan saat view dirender
-        View::composer('*', function ($view) {
-            // Cache sederhana bisa ditambahkan di sini jika perlu
-            $socialMedia = SocialMedia::first() ?? new SocialMedia();
+        // Mengirim data social media ke semua view (Navbar & Footer butuh ini)
+        \Illuminate\Support\Facades\View::composer('*', function ($view) {
+            $socialMedia = \Illuminate\Support\Facades\Cache::remember('global_social_media', 3600, function () {
+                return \App\Models\SocialMedia::first() ?? new \App\Models\SocialMedia();
+            });
+            
             $view->with('socialMedia', $socialMedia);
         });
-
-        // 2. (Opsional) Jika pakai Pagination Custom (misal Tailwind)
-        // Paginator::useTailwind(); 
     }
 }

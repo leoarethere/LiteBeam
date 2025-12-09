@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $title ?? 'Login' }} - TVRI Yogyakarta</title>
+    <title>{{ $title ?? 'Login' }} - TVRI D.I. Yogyakarta</title>
     
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     
@@ -184,7 +184,7 @@
         {{-- BAGIAN 1: Banner Image (Tampil Full di Desktop, Sembunyi di Mobile) --}}
         <div class="login-banner relative h-full w-full bg-gray-100 dark:bg-gray-800">
             <img src="{{ asset('img/loginbanner.jpeg') }}" 
-                 alt="TVRI Yogyakarta Login Banner" 
+                 alt="TVRI D.I. Yogyakarta Login Banner" 
                  class="absolute inset-0 h-full w-full object-cover" />
             
             {{-- Overlay Gradient --}}
@@ -200,12 +200,12 @@
                         {{-- Logo Light Mode --}}
                         <img src="{{ asset('img/logolight.png') }}" 
                             class="login-logo block dark:hidden" 
-                            alt="TVRI Yogyakarta Logo" />
+                            alt="TVRI D.I. Yogyakarta Logo" />
 
                         {{-- Logo Dark Mode --}}
                         <img src="{{ asset('img/logodark.png') }}" 
                             class="login-logo hidden dark:block" 
-                            alt="TVRI Yogyakarta Logo" />
+                            alt="TVRI D.I. Yogyakarta Logo" />
 
                         <span class="text-gray-900 dark:text-white font-bold text-xl sm:text-2xl whitespace-nowrap">
                             Yogyakarta

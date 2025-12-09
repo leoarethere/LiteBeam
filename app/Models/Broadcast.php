@@ -20,18 +20,18 @@ class Broadcast extends Model
         'slug',
         'synopsis',
         'poster',
-        'youtube_link',
+        'youtube_link', // Kolom database tempat user menaruh link
         'status',
-        'is_active', // <--- Tambahkan ini
+        'is_active',
         'published_at',
     ];
 
+    // Eager load relasi agar query lebih efisien
     protected $with = ['user', 'broadcastCategory'];
 
     protected $casts = [
         'published_at' => 'datetime',
         'is_active' => 'boolean',
-        'published_at' => 'datetime',
     ];
 
     public function user(): BelongsTo
@@ -45,37 +45,35 @@ class Broadcast extends Model
     }
 
     /**
-     * Accessor untuk mengubah link YouTube biasa menjadi link embed.
+     * Accessor: youtube_embed_url
+     * Dipanggil di blade dengan: $broadcast->youtube_embed_url
+     * Mengubah berbagai format link YouTube menjadi link Embed yang valid.
      */
     protected function youtubeEmbedUrl(): Attribute
     {
         return Attribute::make(
-            get: function () {
-                $url = $this->youtube_link;
+            get: function ($value, $attributes) {
+                // Ambil value langsung dari kolom 'youtube_link' di database
+                $url = $attributes['youtube_link'] ?? null;
+
                 if (!$url) {
                     return null;
                 }
 
-                $videoId = null;
-                // Cek jika formatnya 'watch?v='
-                if (str_contains($url, 'watch?v=')) {
-                    // ▼▼▼ [PERBAIKAN] Tambahkan '\' di depan PHP_URL_QUERY ▼▼▼
-                    parse_str(parse_url($url, \PHP_URL_QUERY), $query);
-                    $videoId = $query['v'] ?? null;
-                } 
-                // Cek jika formatnya 'youtu.be/'
-                elseif (str_contains($url, 'youtu.be/')) {
-                    // ▼▼▼ [PERBAIKAN] Tambahkan '\' di depan PHP_URL_PATH ▼▼▼
-                    $videoId = ltrim(parse_url($url, \PHP_URL_PATH), '/');
+                // REGEX: Pola untuk mengambil Video ID (11 karakter) dari berbagai jenis link YouTube
+                // Support: 
+                // - https://www.youtube.com/watch?v=dQw4w9WgXcQ
+                // - https://youtu.be/dQw4w9WgXcQ
+                // - https://www.youtube.com/embed/dQw4w9WgXcQ
+                $pattern = '/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/i';
+
+                if (preg_match($pattern, $url, $matches)) {
+                    // $matches[1] berisi Video ID (contoh: dQw4w9WgXcQ)
+                    return 'https://www.youtube.com/embed/' . $matches[1];
                 }
 
-                if ($videoId) {
-                    // Hapus parameter tambahan (seperti &list=... atau &t=...)
-                    $videoId = explode('&', $videoId)[0]; 
-                    return 'https://www.youtube.com/embed/' . $videoId;
-                }
-                
-                return null; // Kembalikan null jika URL tidak valid
+                // Jika format tidak dikenali, kembalikan null agar tampilan fallback ke Poster
+                return null; 
             },
         );
     }

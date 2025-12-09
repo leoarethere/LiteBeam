@@ -2,23 +2,14 @@
     <x-slot:title>{{ $title ?? 'Berita & Artikel' }}</x-slot:title>
 
     {{-- KONTAINER UTAMA --}}
-    <div class="px-4 sm:px-6 lg:px-8">
-
-        {{-- 
-            BAGIAN HERO 
-            Kita gunakan komponen yang sudah ada, dibungkus div agar margin konsisten 
-        --}}
+    <div class="py-2 px-4 sm:px-6 lg:px-8">
         <div class="mb-10">
             <x-hero-posts />
         </div>
         
         {{-- BAGIAN FILTER & SORTING --}}
         <div class="mb-10">
-            <form method="GET" action="{{ route('posts.index') }}" class="max-w-7xl mx-auto">
-                {{-- 
-                    PENTING: Hidden Input untuk menjaga state pencarian saat filter berubah.
-                    Jika user mencari "Banjir" lalu mengganti sort, kata kunci "Banjir" tetap ada.
-                --}}
+            <form method="GET" action="{{ route('posts.index') }}" class="mx-auto">
                 @if(request('search'))
                     <input type="hidden" name="search" value="{{ request('search') }}">
                 @endif
@@ -73,7 +64,7 @@
 
             {{-- Info Hasil Pencarian / Filter Aktif --}}
             @if(request()->hasAny(['search', 'category', 'sort', 'author']))
-                <div class="max-w-7xl mx-auto mt-4 flex flex-wrap items-center justify-between gap-4 px-2">
+                <div class="mx-auto mt-4 flex flex-wrap items-center justify-between gap-4 px-2">
                     <div class="text-sm text-gray-600 dark:text-gray-400">
                         Menampilkan <strong>{{ $posts->total() }}</strong> artikel
                         @if(request('search'))

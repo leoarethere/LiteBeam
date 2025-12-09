@@ -5,21 +5,21 @@
 
     {{-- Header Halaman --}}
     <div class="mb-6 pt-2">
-        <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">Dashboard</h1>
+        <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">Dashboard Overview</h1>
         <p class="mt-1 text-sm sm:text-base text-gray-500 dark:text-gray-400">
-            Selamat datang kembali, {{ auth()->user()->name }}!
+            Selamat datang kembali, {{ auth()->user()->name }}! Berikut ringkasan data website Anda.
         </p>
     </div>
 
-    {{-- BARIS 1: KARTU STATISTIK --}}
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8">
+    {{-- GRID KARTU DETAIL DATA WEBSITE --}}
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8">
         
-        {{-- Card 1: Total Postingan --}}
-        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-5 flex items-center justify-between transition-all hover:shadow-md">
+        {{-- 1. Total Postingan --}}
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-5 flex items-center justify-between transition-all hover:shadow-md border-l-4 border-l-indigo-500">
             <div class="flex-1 min-w-0">
-                <p class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">Total Postingan</p>
+                <p class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">Postingan</p>
                 <p class="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mt-1">{{ $totalPosts }}</p>
-                <p class="text-xs text-gray-400 dark:text-gray-500 mt-1 truncate">Semua artikel terbit</p>
+                <p class="text-xs text-green-600 mt-1 font-medium">+{{ $todayPosts }} hari ini</p>
             </div>
             <div class="flex-shrink-0 p-3 bg-indigo-50 text-indigo-600 dark:bg-indigo-900/20 dark:text-indigo-400 rounded-lg">
                 <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -28,189 +28,136 @@
             </div>
         </div>
 
-        {{-- Card 2: Total Pengguna --}}
-        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-5 flex items-center justify-between transition-all hover:shadow-md">
+        {{-- 2. Total Penyiaran (Broadcast) --}}
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-5 flex items-center justify-between transition-all hover:shadow-md border-l-4 border-l-red-500">
+            <div class="flex-1 min-w-0">
+                <p class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">Program Siaran</p>
+                <p class="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mt-1">{{ $totalBroadcasts }}</p>
+                <p class="text-xs text-gray-400 dark:text-gray-500 mt-1">Video & Live</p>
+            </div>
+            <div class="flex-shrink-0 p-3 bg-red-50 text-red-600 dark:bg-red-900/20 dark:text-red-400 rounded-lg">
+                <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                </svg>
+            </div>
+        </div>
+
+        {{-- 3. Jadwal Acara --}}
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-5 flex items-center justify-between transition-all hover:shadow-md border-l-4 border-l-yellow-500">
+            <div class="flex-1 min-w-0">
+                <p class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">Jadwal Acara</p>
+                <p class="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mt-1">{{ $totalJadwal }}</p>
+                <p class="text-xs text-gray-400 dark:text-gray-500 mt-1">Agenda Tayang</p>
+            </div>
+            <div class="flex-shrink-0 p-3 bg-yellow-50 text-yellow-600 dark:bg-yellow-900/20 dark:text-yellow-400 rounded-lg">
+                <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+            </div>
+        </div>
+
+        {{-- 4. Info Magang --}}
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-5 flex items-center justify-between transition-all hover:shadow-md border-l-4 border-l-blue-500">
+            <div class="flex-1 min-w-0">
+                <p class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">Info Magang</p>
+                <p class="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mt-1">{{ $totalMagang }}</p>
+                <p class="text-xs text-gray-400 dark:text-gray-500 mt-1">Lowongan aktif</p>
+            </div>
+            <div class="flex-shrink-0 p-3 bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400 rounded-lg">
+                <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                </svg>
+            </div>
+        </div>
+
+        {{-- 5. Info Kunjungan --}}
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-5 flex items-center justify-between transition-all hover:shadow-md border-l-4 border-l-teal-500">
+            <div class="flex-1 min-w-0">
+                <p class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">Info Kunjungan</p>
+                <p class="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mt-1">{{ $totalKunjungan }}</p>
+                <p class="text-xs text-gray-400 dark:text-gray-500 mt-1">Data tamu</p>
+            </div>
+            <div class="flex-shrink-0 p-3 bg-teal-50 text-teal-600 dark:bg-teal-900/20 dark:text-teal-400 rounded-lg">
+                <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                </svg>
+            </div>
+        </div>
+
+        {{-- 6. Banner Aktif --}}
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-5 flex items-center justify-between transition-all hover:shadow-md border-l-4 border-l-pink-500">
+            <div class="flex-1 min-w-0">
+                <p class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">Banner Slider</p>
+                <p class="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mt-1">{{ $totalBanners }}</p>
+                <p class="text-xs text-gray-400 dark:text-gray-500 mt-1">Gambar beranda</p>
+            </div>
+            <div class="flex-shrink-0 p-3 bg-pink-50 text-pink-600 dark:bg-pink-900/20 dark:text-pink-400 rounded-lg">
+                <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+            </div>
+        </div>
+
+        {{-- 7. Total Pengguna (Digeser ke sini) --}}
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-5 flex items-center justify-between transition-all hover:shadow-md border-l-4 border-l-gray-500">
             <div class="flex-1 min-w-0">
                 <p class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">Total Pengguna</p>
                 <p class="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mt-1">{{ $totalUsers }}</p>
-                <p class="text-xs text-gray-400 dark:text-gray-500 mt-1 truncate">Akun terdaftar</p>
+                <p class="text-xs text-gray-400 dark:text-gray-500 mt-1">Akun admin</p>
             </div>
-            <div class="flex-shrink-0 p-3 bg-green-50 text-green-600 dark:bg-green-900/20 dark:text-green-400 rounded-lg">
+            <div class="flex-shrink-0 p-3 bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300 rounded-lg">
                 <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
                 </svg>
             </div>
         </div>
-
-        {{-- Card 3: Postingan Hari Ini --}}
-        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-5 flex items-center justify-between transition-all hover:shadow-md">
-            <div class="flex-1 min-w-0">
-                <p class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">Hari Ini</p>
-                <p class="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mt-1">{{ $todayPosts ?? 0 }}</p>
-                <p class="text-xs text-gray-400 dark:text-gray-500 mt-1 truncate">Postingan baru</p>
-            </div>
-            <div class="flex-shrink-0 p-3 bg-purple-50 text-purple-600 dark:bg-purple-900/20 dark:text-purple-400 rounded-lg">
-                <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                </svg>
-            </div>
-        </div>
-
-        {{-- Card 4: Pengguna Baru Bulan Ini --}}
-        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-5 flex items-center justify-between transition-all hover:shadow-md">
-            <div class="flex-1 min-w-0">
-                <p class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">Bulan Ini</p>
-                <p class="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mt-1">{{ $monthlyUsers ?? 0 }}</p>
-                <p class="text-xs text-gray-400 dark:text-gray-500 mt-1 truncate">Pengguna baru</p>
-            </div>
-            <div class="flex-shrink-0 p-3 bg-orange-50 text-orange-600 dark:bg-orange-900/20 dark:text-orange-400 rounded-lg">
-                <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path>
-                </svg>
-            </div>
-        </div>
-    </div>
-
-    {{-- BARIS 2: GRAFIK & AKTIVITAS --}}
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
         
-        {{-- Grafik Statistik --}}
-        <div class="lg:col-span-2 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm p-5 sm:p-6">
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4">
-                <h4 class="text-lg font-bold text-gray-900 dark:text-white">Statistik Kunjungan</h4>
-                <span class="px-3 py-1 text-xs font-medium text-gray-600 bg-gray-100 dark:bg-gray-700 dark:text-gray-300 rounded-full self-start sm:self-auto">
-                    9 Bulan Terakhir
-                </span>
-            </div>
-            
-            {{-- Container Chart Responsif --}}
-            <div class="relative w-full h-[300px] sm:h-[350px]">
-                <div id="visitors-chart" class="w-full h-full"></div>
-            </div>
-        </div>
-
-        {{-- Aktivitas Terbaru --}}
-        <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm p-5 sm:p-6 flex flex-col h-full">
-            <div class="flex items-center justify-between mb-4">
-                <h4 class="text-lg font-bold text-gray-900 dark:text-white">Pengguna Baru</h4>
-                <a href="{{ route('dashboard.users.index') }}" class="text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 font-medium">
-                    Lihat Semua
-                </a>
-            </div>
-            
-            <div class="flex-1 overflow-y-auto pr-1 space-y-4 max-h-[350px] scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600">
-                @forelse ($recentActivities as $activity)
-                    <div class="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
-                        <img class="w-10 h-10 rounded-full object-cover ring-2 ring-gray-100 dark:ring-gray-700 flex-shrink-0" 
-                             src="https://ui-avatars.com/api/?name={{ urlencode($activity->name) }}&background=random&color=fff&size=128" 
-                             alt="{{ $activity->name }}">
-                        
-                        <div class="flex-1 min-w-0">
-                            <p class="text-sm font-semibold text-gray-900 dark:text-white truncate">
-                                {{ $activity->name }}
-                            </p>
-                            <p class="text-xs text-gray-500 dark:text-gray-400 truncate">
-                                {{ $activity->email }}
-                            </p>
-                        </div>
-                        
-                        <div class="text-right flex-shrink-0">
-                            <span class="text-xs text-gray-400 dark:text-gray-500 whitespace-nowrap">
-                                {{ $activity->created_at->diffForHumans(null, true) }}
-                            </span>
-                        </div>
-                    </div>
-                @empty
-                    <div class="flex flex-col items-center justify-center h-full py-8 text-center text-gray-500 dark:text-gray-400">
-                        <svg class="w-12 h-12 mb-3 text-gray-300 dark:text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
-                        </svg>
-                        <p class="text-sm">Belum ada pengguna baru.</p>
-                    </div>
-                @endforelse
-            </div>
-        </div>
     </div>
 
-    {{-- SCRIPT GRAFIK --}}
-    @push('scripts')
-    <script type="module">
-        document.addEventListener('DOMContentLoaded', function() {
-            const chartElement = document.querySelector("#visitors-chart");
-            
-            if (chartElement && typeof ApexCharts !== 'undefined') {
-                // Data Dummy (Bisa diganti dengan data dari controller)
-                const chartData = [30, 40, 35, 50, 49, 60, 70, 91, 125]; 
-                const chartCategories = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep'];
-
-                const isDarkMode = document.documentElement.classList.contains('dark');
-                
-                const options = {
-                    series: [{
-                        name: "Kunjungan",
-                        data: chartData 
-                    }],
-                    chart: {
-                        type: 'area',
-                        height: '100%', 
-                        width: '100%',
-                        fontFamily: 'Inter, sans-serif',
-                        background: 'transparent',
-                        toolbar: { show: false },
-                        zoom: { enabled: false }
-                    },
-                    colors: ['#3B82F6'], // Blue-500
-                    fill: {
-                        type: "gradient",
-                        gradient: {
-                            shadeIntensity: 1,
-                            opacityFrom: 0.45,
-                            opacityTo: 0.05,
-                            stops: [0, 100]
-                        }
-                    },
-                    dataLabels: { enabled: false },
-                    stroke: {
-                        curve: 'smooth',
-                        width: 3
-                    },
-                    xaxis: {
-                        categories: chartCategories,
-                        labels: {
-                            style: {
-                                colors: isDarkMode ? '#9CA3AF' : '#6B7280',
-                                fontSize: '12px'
-                            }
-                        },
-                        axisBorder: { show: false },
-                        axisTicks: { show: false }
-                    },
-                    yaxis: {
-                        labels: {
-                            style: {
-                                colors: isDarkMode ? '#9CA3AF' : '#6B7280',
-                                fontSize: '12px'
-                            }
-                        }
-                    },
-                    grid: {
-                        show: true,
-                        borderColor: isDarkMode ? '#374151' : '#E5E7EB',
-                        strokeDashArray: 4,
-                        padding: { top: 0, right: 0, bottom: 0, left: 10 }
-                    },
-                    tooltip: {
-                        theme: isDarkMode ? 'dark' : 'light',
-                    }
-                };
-
-                const chart = new ApexCharts(chartElement, options);
-                chart.render();
-                
-                // Update chart on resize & theme toggle logic could be added here
-            }
-        });
-    </script>
-    @endpush
+    {{-- BARIS 2: AKTIVITAS TERBARU (Full Width karena chart dihapus) --}}
+    <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm p-5 sm:p-6">
+        <div class="flex items-center justify-between mb-4">
+            <h4 class="text-lg font-bold text-gray-900 dark:text-white">Pengguna Baru / Aktivitas</h4>
+            <a href="{{ route('dashboard.users.index') }}" class="text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 font-medium">
+                Kelola Pengguna &rarr;
+            </a>
+        </div>
+        
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+                <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                    <tr>
+                        <th scope="col" class="px-4 py-3">Nama</th>
+                        <th scope="col" class="px-4 py-3">Email</th>
+                        <th scope="col" class="px-4 py-3">Bergabung</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse ($recentActivities as $activity)
+                        <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                            <td class="px-4 py-3 font-medium text-gray-900 dark:text-white flex items-center gap-3">
+                                <img class="w-8 h-8 rounded-full" 
+                                     src="https://ui-avatars.com/api/?name={{ urlencode($activity->name) }}&background=random&color=fff" 
+                                     alt="{{ $activity->name }}">
+                                {{ $activity->name }}
+                            </td>
+                            <td class="px-4 py-3">
+                                {{ $activity->email }}
+                            </td>
+                            <td class="px-4 py-3">
+                                {{ $activity->created_at->diffForHumans() }}
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="3" class="px-4 py-8 text-center text-gray-500">
+                                Belum ada data pengguna.
+                            </td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+    </div>
 
 </x-dashboard-layout>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lupa Kata Sandi - TVRI Yogyakarta</title>
+    <title>Lupa Kata Sandi - TVRI D.I. Yogyakarta</title>
     
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     
@@ -24,7 +24,7 @@
         {{-- Banner Image --}}
         <div class="relative hidden lg:block h-full w-full bg-gray-100 dark:bg-gray-800">
             <img src="{{ asset('img/loginbanner.jpeg') }}" 
-                 alt="TVRI Yogyakarta Banner" 
+                 alt="TVRI D.I. Yogyakarta Banner" 
                  class="absolute inset-0 h-full w-full object-cover" />
             <div class="absolute inset-0 bg-gradient-to-br from-blue-900/40 via-indigo-900/30 to-transparent"></div>
         </div>
@@ -38,10 +38,10 @@
                     <a href="/" class="flex items-center gap-2">
                         <img src="{{ asset('img/logolight.png') }}" 
                             class="h-9 md:h-12 w-auto block dark:hidden" 
-                            alt="TVRI Yogyakarta Logo" />
+                            alt="TVRI D.I. Yogyakarta Logo" />
                         <img src="{{ asset('img/logodark.png') }}" 
                             class="h-9 md:h-12 w-auto hidden dark:block" 
-                            alt="TVRI Yogyakarta Logo" />
+                            alt="TVRI D.I. Yogyakarta Logo" />
                         <span class="text-gray-900 dark:text-white font-bold text-xl sm:text-2xl whitespace-nowrap">
                             Yogyakarta
                         </span>

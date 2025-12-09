@@ -19,7 +19,7 @@ class HistoryController extends Controller
 
         // Pointing ke resources/views/frontend/tentang/sejarah.blade.php
         return view('frontend.tentang.sejarah', [
-            'title'     => 'Sejarah TVRI Yogyakarta',
+            'title'     => 'Sejarah TVRI D.I. Yogyakarta',
             'histories' => $histories
         ]);
     }

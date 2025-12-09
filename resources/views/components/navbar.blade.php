@@ -27,12 +27,11 @@
                     {{ \Carbon\Carbon::now()->locale('id')->isoFormat('dddd, D MMMM Y') }}
                 </span>
                 <span class="opacity-50">|</span>
-                <a href="{{ route('broadcasts.index') }}" class="flex items-center gap-2 hover:text-blue-200 transition-colors">
-                    {{-- Heroicon: Computer Desktop / TV --}}
+                <a href="{{ route('streaming') }}" class="flex items-center gap-2 hover:text-blue-200 transition-colors">
                     <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                     </svg>
-                    <span>Live Streaming TVRI</span>
+                    <span>Live Streaming</span>
                 </a>
             </div>
 
@@ -40,8 +39,13 @@
             <div class="flex items-center gap-3 ml-auto">
                 <span class="hidden md:inline text-blue-100">Kontak:</span>
                 <div class="flex gap-3 items-center">
-                    <span class="hidden md:inline text-white hover:text-blue-200 transition-colors">(0274) 514402</span>
-                    <span class="hidden md:inline opacity-50">|</span>
+                    {{-- [DINAMIS] Nomor Telepon --}}
+                    @if($socialMedia->phone)
+                        <span class="hidden md:inline text-white hover:text-blue-200 transition-colors">
+                            {{ $socialMedia->phone }}
+                        </span>
+                        <span class="hidden md:inline opacity-50">|</span>
+                    @endif
                     <span class="hidden sm:inline text-blue-100">Ikuti Kami:</span>
                     
                     {{-- ✅ IKON SOSIAL MEDIA DINAMIS (Heroicons) --}}

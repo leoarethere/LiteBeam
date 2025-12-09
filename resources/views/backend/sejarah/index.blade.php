@@ -30,7 +30,7 @@
                     Sejarah TVRI
                 </h1>
                 <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                    Kelola timeline dan peristiwa bersejarah TVRI Yogyakarta.
+                    Kelola timeline dan peristiwa bersejarah TVRI D.I. Yogyakarta.
                 </p>
             </div>
             

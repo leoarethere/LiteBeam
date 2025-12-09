@@ -57,7 +57,7 @@
                             @if($visis->isNotEmpty() && $visis->first()->image)
                                 <img class="w-full h-full object-cover transition-transform duration-700" 
                                      src="{{ Storage::url($visis->first()->image) }}" 
-                                     alt="Visi TVRI Yogyakarta">
+                                     alt="Visi TVRI D.I. Yogyakarta">
                             @else
                                 {{-- Placeholder Icon --}}
                                 <div class="aspect-[4/3] flex items-center justify-center bg-gray-100 dark:bg-gray-800 text-gray-300 dark:text-gray-600">
@@ -115,7 +115,7 @@
                             @if($misis->isNotEmpty() && $misis->first()->image)
                                 <img class="w-full h-full object-cover transition-transform duration-700" 
                                      src="{{ Storage::url($misis->first()->image) }}" 
-                                     alt="Misi TVRI Yogyakarta">
+                                     alt="Misi TVRI D.I. Yogyakarta">
                             @else
                                 <div class="aspect-[4/3] flex items-center justify-center bg-gray-100 dark:bg-gray-800 text-gray-300 dark:text-gray-600">
                                     <svg class="w-20 h-20" fill="currentColor" viewBox="0 0 20 20">

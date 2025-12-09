@@ -29,7 +29,7 @@
                         Jadwal Acara TVRI
                     </h1>
                     <p class="text-blue-100 text-base sm:text-lg max-w-2xl mx-auto leading-relaxed">
-                        Simak jadwal tayangan edukatif, informatif, dan menghibur pilihan kami hari ini dan hari-hari mendatang.
+                        Simak Jadwal Acaraan edukatif, informatif, dan menghibur pilihan kami hari ini dan hari-hari mendatang.
                     </p>
                 </div>
             </div>
@@ -118,7 +118,7 @@
                                             </div>
                                             
                                             <p class="text-sm text-gray-500 dark:text-gray-400 line-clamp-1">
-                                                Saksikan tayangan {{ strtolower($schedule->broadcastCategory->name ?? 'menarik') }} hanya di TVRI Yogyakarta.
+                                                Saksikan tayangan {{ strtolower($schedule->broadcastCategory->name ?? 'menarik') }} hanya di TVRI D.I. Yogyakarta.
                                             </p>
                                         </div>
 

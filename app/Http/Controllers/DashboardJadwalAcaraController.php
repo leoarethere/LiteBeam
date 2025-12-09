@@ -20,23 +20,26 @@ class DashboardJadwalAcaraController extends Controller
             $q->where('title', 'like', '%' . $request->search . '%');
         });
 
-        // Filter Kategori
+        // Filter Kategori (Jenis Acara)
         $query->when($request->filled('category'), function ($q) use ($request) {
             $q->whereHas('broadcastCategory', function ($subQuery) use ($request) {
                 $subQuery->where('slug', $request->category);
             });
         });
 
-        // Default sort: Berdasarkan Hari lalu Jam Tayang
+        // Sorting: Berdasarkan Hari (Order) -> Jam Tayang
+        // Kita join manual agar bisa sort berdasarkan 'jadwal_categories.order'
         $jadwalAcaras = $query->select('jadwal_acaras.*')
-                            ->join('jadwal_categories', 'jadwal_acaras.jadwal_category_id', '=', 'jadwal_categories.id')
-                            ->orderBy('jadwal_categories.order', 'asc')
-                            ->orderBy('jadwal_acaras.start_time', 'asc')
+                            ->leftJoin('jadwal_categories', 'jadwal_acaras.jadwal_category_id', '=', 'jadwal_categories.id')
+                            ->orderBy('jadwal_categories.order', 'asc') // Urutkan Senin, Selasa, dst
+                            ->orderBy('jadwal_acaras.start_time', 'asc') // Urutkan Jam
                             ->paginate(10)
                             ->withQueryString();
 
         $categories = BroadcastCategory::orderBy('name')->get();
-        $jadwalCategories = JadwalCategory::orderBy('id')->get();
+        
+        // Urutkan dropdown hari berdasarkan 'order' bukan 'id'
+        $jadwalCategories = JadwalCategory::orderBy('order', 'asc')->get();
 
         return view('backend.jadwal-acara.index', compact('jadwalAcaras', 'categories', 'jadwalCategories'));
     }
@@ -44,7 +47,8 @@ class DashboardJadwalAcaraController extends Controller
     public function create()
     {
         $categories = BroadcastCategory::orderBy('name')->get();
-        $jadwalCategories = JadwalCategory::orderBy('id')->get();
+        // Urutkan dropdown hari berdasarkan 'order'
+        $jadwalCategories = JadwalCategory::orderBy('order', 'asc')->get();
         
         return view('backend.jadwal-acara.create', compact('categories', 'jadwalCategories'));
     }
@@ -55,9 +59,12 @@ class DashboardJadwalAcaraController extends Controller
             'title' => 'required|string|max:255',
             'slug' => 'required|string|max:255|unique:jadwal_acaras,slug',
             'start_time' => 'required',
-            'end_time' => 'required', // ✅ TAMBAHAN: Validasi Waktu Selesai
+            // 'end_time' => 'nullable', // Opsional jika nanti ada inputnya
             'broadcast_category_id' => 'required|exists:broadcast_categories,id',
-            'jadwal_category_id' => 'required|exists:jadwal_categories,id',
+            
+            // ✅ PERBAIKAN: Validasi Hari Wajib Ada
+            'jadwal_category_id' => 'required|exists:jadwal_categories,id', 
+            
             'is_active' => 'required|boolean',
         ]);
 
@@ -69,9 +76,10 @@ class DashboardJadwalAcaraController extends Controller
 
     public function edit(JadwalAcara $jadwalAcara)
     {
-        $jadwalCategories = JadwalCategory::orderBy('id')->get();
+        $jadwalCategories = JadwalCategory::orderBy('order', 'asc')->get();
         $categories = BroadcastCategory::orderBy('name')->get();
         
+        // ✅ PERBAIKAN: Kirim $jadwalCategories ke view edit
         return view('backend.jadwal-acara.edit', compact('jadwalAcara', 'categories', 'jadwalCategories'));
     }
 
@@ -81,9 +89,11 @@ class DashboardJadwalAcaraController extends Controller
             'title' => 'required|string|max:255',
             'slug' => ['required', 'string', 'max:255', Rule::unique('jadwal_acaras')->ignore($jadwalAcara->id)],
             'start_time' => 'required',
-            'end_time' => 'required', // ✅ TAMBAHAN: Validasi Waktu Selesai
             'broadcast_category_id' => 'required|exists:broadcast_categories,id',
+            
+            // ✅ PERBAIKAN: Validasi Hari Wajib Ada saat Update
             'jadwal_category_id' => 'required|exists:jadwal_categories,id',
+            
             'is_active' => 'required|boolean',
         ]);
 

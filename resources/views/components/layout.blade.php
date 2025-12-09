@@ -8,10 +8,11 @@
     <meta name="description" content="{{ $meta_description ?? 'Portal Resmi TVRI Stasiun D.I. Yogyakarta - Media Pemersatu Bangsa' }}">
     
     {{-- Tambahan Open Graph (Agar cantik saat share di WA/FB) --}}
-    <meta property="og:title" content="{{ $title ?? 'TVRI Yogyakarta' }}" />
+    <meta property="og:title" content="{{ $title ?? 'TVRI D.I. Yogyakarta' }}" />
     <meta property="og:description" content="{{ $meta_description ?? 'Lembaga Penyiaran Publik TVRI Stasiun D.I. Yogyakarta.' }}" />
+    @stack('styles')
     
-    <title>{{ $title ?? config('app.name', 'TVRI Yogyakarta') }}</title>
+    <title>{{ $title ?? config('app.name', 'TVRI D.I. Yogyakarta') }}</title>
     <style>
         html, body {
             overscroll-behavior: none;
@@ -64,5 +65,6 @@
         </main>
         <x-footer/>
     </div>
+    @stack('scripts')
 </body>
 </html>
