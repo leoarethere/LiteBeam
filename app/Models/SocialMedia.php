@@ -12,8 +12,8 @@ class SocialMedia extends Model
     protected $table = 'social_medias';
 
     protected $fillable = [
-        'email',
-        'phone', // Pastikan kolom ini ada di database (migration)
+        // 'email',  <-- HAPUS
+        // 'phone',  <-- HAPUS
         'instagram',
         'twitter',
         'facebook',
