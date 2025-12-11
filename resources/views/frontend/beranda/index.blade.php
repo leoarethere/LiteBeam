@@ -17,8 +17,10 @@
     {{-- 2. PROGRAM ACARA (SLIDER)                  --}}
     {{-- ========================================== --}}
     @if(isset($featuredBroadcasts) && $featuredBroadcasts->isNotEmpty())
-        <section class="py-8 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800">
-            <div class="mx-auto px-4 sm:px-6 lg:px-8">
+    <section class="py-8 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800">
+        <div class="mx-auto px-4 sm:px-6 lg:px-8">
+                
+                {{-- Header Section --}}
                 <div class="flex items-end justify-between mb-8">
                     <div>
                         <span class="text-blue-600 dark:text-blue-400 font-bold tracking-wider uppercase text-sm">Hiburan & Edukasi</span>
@@ -32,34 +34,73 @@
 
                 {{-- Slider Container --}}
                 <div class="relative group">
-                    <div class="flex overflow-x-auto gap-6 pb-8 snap-x snap-mandatory scrollbar-hide -mx-4 px-4 sm:mx-0 sm:px-0">
+                    {{-- Scroll Container --}}
+                    <div class="flex overflow-x-auto gap-4 sm:gap-6 pb-8 snap-x snap-mandatory scrollbar-hide -mx-4 px-4 sm:mx-0 sm:px-0">
                         @foreach($featuredBroadcasts as $program)
-                            {{-- PERBAIKAN DI SINI: --}}
-                            {{-- 1. Menambahkan 'rounded-lg' --}}
-                            {{-- 2. Menghapus 'hover:-translate-y-2' --}}
-                            <a href="{{ route('broadcasts.show', $program->slug) }}" 
-                            class="snap-center shrink-0 w-[200px] sm:w-[240px] flex-none relative overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 group/card ring-1 ring-gray-200 dark:ring-gray-700 rounded-lg">
+                            <a href="{{ route('broadcasts.show', $program) }}" 
+                            class="snap-center shrink-0 w-[180px] sm:w-[220px] group/card block bg-white dark:bg-gray-800 rounded-2xl overflow-hidden border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-xl transition-all duration-300 hover:border-blue-300 dark:hover:border-blue-700 hover:ring-2 hover:ring-blue-500/20">
                                 
-                                {{-- Poster --}}
-                                <div class="bg-gray-200 dark:bg-gray-800 relative overflow-hidden rounded-lg">
+                                {{-- Poster Container (Aspect Ratio 3:4) --}}
+                                <div class="relative overflow-hidden bg-gray-100 dark:bg-gray-900">
                                     @if($program->poster)
-                                        <img src="{{ Storage::url($program->poster) }}" alt="{{ $program->title }}" class="w-full h-full object-cover transition-transform duration-500 group-hover/card:scale-110" loading="lazy">
+                                        <img src="{{ Storage::url($program->poster) }}" 
+                                            alt="{{ $program->title }}" 
+                                            class="w-full h-full object-cover transition-transform duration-700 ease-out group-hover/card:scale-105" 
+                                            loading="lazy">
+                                        
+                                        {{-- Overlay Hover (Lihat Detail) --}}
+                                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover/card:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4">
+                                            <div class="transform translate-y-4 group-hover/card:translate-y-0 transition-transform duration-300">
+                                                <span class="inline-flex items-center gap-2 text-white text-xs font-bold uppercase tracking-wider">
+                                                    <span>Lihat Detail</span>
+                                                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                                                    </svg>
+                                                </span>
+                                            </div>
+                                        </div>
                                     @else
-                                        <div class="w-full h-full flex items-center justify-center text-gray-400">
-                                            <svg class="w-12 h-12" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                        {{-- Placeholder Image --}}
+                                        <div class="w-full h-full flex flex-col items-center justify-center text-gray-400 dark:text-gray-600 bg-gray-50 dark:bg-gray-800">
+                                            <svg class="w-12 h-12 mb-2 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                                            <span class="text-[10px] font-bold uppercase tracking-wider opacity-70">No Poster</span>
                                         </div>
                                     @endif
-                                    <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent opacity-60 group-hover/card:opacity-90 transition-opacity"></div>
-                                    <div class="absolute top-3 left-3">
-                                        <span class="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-white bg-blue-600/90 backdrop-blur-sm rounded-md shadow-sm">
-                                            {{ $program->broadcastCategory->name ?? 'Program' }}
-                                        </span>
-                                    </div>
+
+                                    {{-- Badge Kategori --}}
+                                    {{-- @if($program->broadcastCategory)
+                                        <div class="absolute top-3 left-3 z-10">
+                                            <span class="inline-flex items-center px-2 py-1 rounded-md text-[10px] font-bold shadow-sm uppercase tracking-wide text-white bg-black/50 backdrop-blur-md border border-white/10">
+                                                {{ $program->broadcastCategory->name }}
+                                            </span>
+                                        </div>
+                                    @endif --}}
+
+                                    {{-- Badge Status On Air --}}
+                                    {{-- <div class="absolute top-3 right-3 z-10">
+                                        @if($program->is_active)
+                                            <span class="inline-flex items-center gap-1.5 px-2 py-1 rounded-md text-[10px] font-bold bg-green-500/90 text-white shadow-sm backdrop-blur-sm border border-green-400/50 uppercase tracking-wide">
+                                                <span class="relative flex h-1.5 w-1.5">
+                                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
+                                                <span class="relative inline-flex rounded-full h-1.5 w-1.5 bg-white"></span>
+                                                </span>
+                                                On Air
+                                            </span>
+                                        @endif
+                                    </div> --}}
                                 </div>
-                                {{-- Content --}}
-                                <div class="absolute bottom-0 left-0 right-0 p-4 text-white transform translate-y-2 group-hover/card:translate-y-0 transition-transform">
-                                    <h3 class="font-bold text-lg leading-tight mb-1 line-clamp-2">{{ $program->title }}</h3>
-                                    <p class="text-xs text-gray-300 line-clamp-1 opacity-0 group-hover/card:opacity-100 transition-opacity">Klik untuk detail</p>
+
+                                {{-- Content (Info di Bawah Gambar) --}}
+                                <div class="p-4">
+                                    <h3 class="text-sm font-bold text-gray-900 dark:text-white line-clamp-2 leading-snug group-hover/card:text-blue-600 dark:group-hover/card:text-blue-400 transition-colors h-10">
+                                        {{ $program->title }}
+                                    </h3>
+                                    @if($program->published_at)
+                                        <div class="flex items-center gap-1.5 mt-3 text-xs text-gray-500 dark:text-gray-400">
+                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                                            <span class="font-medium">{{ $program->published_at->format('d M Y') }}</span>
+                                        </div>
+                                    @endif
                                 </div>
                             </a>
                         @endforeach

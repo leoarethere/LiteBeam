@@ -129,13 +129,13 @@
                                 @endif
                                 
                                 {{-- Badge Kategori --}}
-                                @if($broadcast->broadcastCategory)
+                                {{-- @if($broadcast->broadcastCategory)
                                 <div class="absolute top-2 left-2 z-10">
                                     <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold shadow-sm uppercase tracking-wide {{ $broadcast->broadcastCategory->color_classes }} backdrop-blur-sm bg-opacity-90">
                                         {{ $broadcast->broadcastCategory->name }}
                                     </span>
                                 </div>
-                                @endif
+                                @endif --}}
 
                                 {{-- Badge Status --}}
                                 <div class="absolute top-2 right-2 z-10">
