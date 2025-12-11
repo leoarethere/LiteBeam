@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\InfoMagang;
 use Illuminate\Http\Request;
+use App\Models\InfoMagangFaq;
 use Illuminate\Routing\Controller;
 
 class InfoMagangController extends Controller
@@ -40,6 +41,11 @@ class InfoMagangController extends Controller
         // 3. Eksekusi Pagination
         $items = $query->paginate(10)->withQueryString();
 
-        return view('frontend.info-magang.index', compact('items'));
+        // [BARU] Ambil Data FAQ (Urutkan sesuai order)
+        $faqs = InfoMagangFaq::where('is_active', true)
+                             ->orderBy('order', 'asc')
+                             ->get();
+
+        return view('frontend.info-magang.index', compact('items', 'faqs'));
     }
 }

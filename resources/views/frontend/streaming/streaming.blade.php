@@ -22,7 +22,7 @@
         </style>
     @endpush
 
-    <div class="px-4 sm:px-6 lg:px-8 py-8 lg:py-12 bg-gray-50 dark:bg-gray-900 min-h-screen">
+    <div class="min-h-screen px-4 sm:px-6 lg:px-8">
         <div class="mx-auto">
             
             {{-- Breadcrumb --}}

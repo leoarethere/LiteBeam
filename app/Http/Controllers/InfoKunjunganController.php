@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\InfoKunjungan;
+use App\Models\InfoKunjunganFaq;
 use Illuminate\Routing\Controller;
 
 class InfoKunjunganController extends Controller
@@ -40,6 +41,12 @@ class InfoKunjunganController extends Controller
         // 3. Eksekusi Pagination
         $items = $query->paginate(10)->withQueryString();
 
-        return view('frontend.info-kunjungan.index', compact('items'));
+        // [BARU] Ambil Data FAQ
+        $faqs = InfoKunjunganFaq::where('is_active', true)
+                                ->orderBy('order', 'asc')
+                                ->get();
+
+        // [UPDATE] Kirim $faqs ke view
+        return view('frontend.info-kunjungan.index', compact('items', 'faqs'));
     }
 }

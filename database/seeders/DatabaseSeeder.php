@@ -10,6 +10,7 @@ use Database\Seeders\CategorySeeder;
 use Database\Seeders\PageDataSeeder;
 use Database\Seeders\BroadcastSeeder;
 use Database\Seeders\FixedDataSeeder;
+use Database\Seeders\ContactInfoSeeder;
 use Database\Seeders\BroadcastCategorySeeder;
 
 class DatabaseSeeder extends Seeder
@@ -37,6 +38,7 @@ class DatabaseSeeder extends Seeder
             PostSeeder::class,              // Berita/Artikel
             BroadcastSeeder::class,         // Program Siaran
             PageDataSeeder::class,          // Data Halaman (History, Prestasi, Banner, dll)
+            ContactInfoSeeder::class,       // Informasi Kontak
         ]);
     }
 }

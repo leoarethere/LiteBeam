@@ -2,10 +2,10 @@
     <x-slot:title>Informasi Magang / PKL</x-slot:title>
 
     {{-- KONTAINER UTAMA --}}
-    <div class="px-4 sm:px-6 lg:px-8 py-8">
+    <div class="min-h-screen px-4 sm:px-6 lg:px-8">
 
         {{-- HERO SECTION --}}
-        <div class="relative rounded-3xl overflow-hidden mb-10 bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 dark:from-blue-900 dark:via-blue-950 dark:to-indigo-950 shadow-xl">
+        <div class="relative rounded-3xl overflow-hidden mb-6 bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 dark:from-blue-900 dark:via-blue-950 dark:to-indigo-950 shadow-xl">
             {{-- Background Pattern --}}
             <div class="absolute inset-0 bg-grid-white/[0.05] bg-[size:24px_24px]"></div>
             <div class="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
@@ -16,14 +16,14 @@
                         Informasi Magang / PKL
                     </h1>
                     <p class="text-blue-100 text-base sm:text-lg max-w-2xl mx-auto leading-relaxed">
-                        Temukan peluang pengembangan karir dan pengalaman kerja nyata bersama TVRI Stasiun D.I. Yogyakarta.
+                        Temukan peluang pengembangan karir dan pengalaman kerja nyata bersama TVRI Stasiun D.I. Yogyakarta. FAQ di bawah ini membantu menjawab pertanyaan seputar program magang kami.
                     </p>
                 </div>
             </div>
         </div>
 
         {{-- BAGIAN FILTER & SORTING --}}
-        <div class="mb-10">
+        <div class="mb-6">
             <form method="GET" action="{{ route('info-magang.index') }}" class="mx-auto">
                 <div class="flex flex-col md:flex-row justify-between items-center gap-4 p-4 bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700">
                     
@@ -31,7 +31,7 @@
                     <div class="w-full md:w-auto">
                         <h2 class="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
                             <svg class="w-5 h-5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
-                            Semua Lowongan
+                            Semua Informasi Magang / PKL
                         </h2>
                     </div>
 
@@ -158,10 +158,10 @@
                                 {{-- Action Buttons --}}
                                 <div class="pt-4 border-t border-gray-100 dark:border-gray-700 flex items-center gap-3">
                                     
-                                    {{-- Tombol Buka Info --}}
+                                    {{-- Tombol Lihat Informasi --}}
                                     <a href="{{ $item->source_link }}" target="_blank" 
                                        class="flex-1 inline-flex justify-center items-center gap-2 px-4 py-2 text-sm font-semibold text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 dark:focus:ring-blue-800 transition-all shadow-sm">
-                                        <span>Buka Info</span>
+                                        <span>Lihat Informasi</span>
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
                                     </a>
 
@@ -238,5 +238,54 @@
                 </div>
             @endif
         </div>
+        
+        {{-- ========================================== --}}
+        {{-- SECTION FAQ (PERTANYAAN UMUM)              --}}
+        {{-- ========================================== --}}
+        @if(isset($faqs) && $faqs->count() > 0)
+            <div class="mt-20 mb-12 mx-auto">
+                <div class="text-center mb-10">
+                    <span class="text-blue-600 dark:text-blue-400 font-bold tracking-wider uppercase text-sm">Bantuan</span>
+                    <h2 class="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mt-2">
+                        Pertanyaan yang Sering Diajukan (FAQ)
+                    </h2>
+                    <p class="text-gray-500 dark:text-gray-400 mt-2">
+                        Jawaban untuk pertanyaan umum seputar proses magang di TVRI Yogyakarta.
+                    </p>
+                </div>
+
+                <div class="space-y-4" x-data="{ activeAccordion: null }">
+                    @foreach($faqs as $faq)
+                        <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden transition-all duration-300 hover:shadow-md">
+                            <button 
+                                @click="activeAccordion = (activeAccordion === {{ $faq->id }} ? null : {{ $faq->id }})"
+                                class="flex items-center justify-between w-full p-5 text-left bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors focus:outline-none">
+                                
+                                <span class="text-lg font-semibold text-gray-900 dark:text-white pr-4">
+                                    {{ $faq->question }}
+                                </span>
+
+                                {{-- Icon Chevron Rotasi --}}
+                                <svg class="w-5 h-5 text-gray-500 transition-transform duration-300 transform"
+                                     :class="{ 'rotate-180': activeAccordion === {{ $faq->id }} }"
+                                     fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                </svg>
+                            </button>
+
+                            {{-- Konten Jawaban (Slide Down) --}}
+                            <div x-show="activeAccordion === {{ $faq->id }}" 
+                                 x-collapse
+                                 x-cloak
+                                 class="border-t border-gray-100 dark:border-gray-700 dark:bg-gray-900/30">
+                                <div class="p-5 text-gray-600 dark:text-gray-300 leading-relaxed prose dark:prose-invert max-w-none text-sm md:text-base">
+                                    {!! nl2br(e($faq->answer)) !!}
+                                </div>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+        @endif
     </div>
 </x-layout>

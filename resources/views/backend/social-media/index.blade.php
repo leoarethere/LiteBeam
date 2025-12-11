@@ -8,9 +8,18 @@
                     Sosial Media
                 </h1>
                 <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                    Atur tautan sosial media. <span class="text-red-500 font-semibold">Wajib gunakan awalan https://</span>
+                    Daftar tautan sosial media instansi.
                 </p>
             </div>
+
+            {{-- Tombol Edit Biru --}}
+            @if($socialMedia)
+                <a href="{{ route('dashboard.social-media.edit', $socialMedia->id) }}" 
+                   class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 transition-colors shadow-sm">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                    Edit Sosial Media
+                </a>
+            @endif
         </div>
 
         @if(session('success'))
@@ -19,75 +28,73 @@
             </div>
         @endif
 
-        @if ($errors->any())
-            <div class="mb-6 p-4 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-red-900/30 border border-red-200" role="alert">
-                <ul class="list-disc pl-5">
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        @endif
-
         <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md border border-gray-200 dark:border-gray-700 overflow-hidden">
-            <form action="{{ route('dashboard.social-media.update') }}" method="POST">
-                @csrf
-                @method('PUT')
-                
-                <div class="p-6 space-y-6">
-                    
-                    {{-- Grid Input Sosial Media --}}
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        
-                        {{-- Instagram --}}
-                        <div>
-                            <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Instagram URL</label>
-                            <input type="url" name="instagram" value="{{ old('instagram', $socialMedia->instagram) }}" 
-                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white" 
-                                placeholder="https://instagram.com/username">
-                        </div>
+            <div class="p-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {{-- Helper function untuk menampilkan link atau '-' jika kosong --}}
+                    @php
+                        function showLink($url) {
+                            return $url ? '<a href="'.$url.'" target="_blank" class="text-blue-600 hover:underline break-all">'.$url.'</a>' : '<span class="text-gray-400 italic">Tidak ada tautan</span>';
+                        }
+                    @endphp
 
-                        {{-- Facebook --}}
-                        <div>
-                            <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Facebook URL</label>
-                            <input type="url" name="facebook" value="{{ old('facebook', $socialMedia->facebook) }}" 
-                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white" 
-                                placeholder="https://facebook.com/username">
+                    {{-- Instagram --}}
+                    <div class="p-4 bg-gray-50 dark:bg-gray-700/30 rounded-lg border border-gray-100 dark:border-gray-700">
+                        <div class="flex items-center gap-3 mb-2">
+                            <i class="fab fa-instagram text-2xl text-pink-600"></i> {{-- Gunakan FontAwesome jika ada, atau SVG --}}
+                            <h3 class="font-semibold text-gray-900 dark:text-white">Instagram</h3>
                         </div>
-
-                        {{-- Twitter / X --}}
-                        <div>
-                            <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">X (Twitter) URL</label>
-                            <input type="url" name="twitter" value="{{ old('twitter', $socialMedia->twitter) }}" 
-                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white" 
-                                placeholder="https://x.com/username">
-                        </div>
-
-                        {{-- YouTube --}}
-                        <div>
-                            <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">YouTube URL</label>
-                            <input type="url" name="youtube" value="{{ old('youtube', $socialMedia->youtube) }}" 
-                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white" 
-                                placeholder="https://youtube.com/@channel">
-                        </div>
-
-                        {{-- TikTok --}}
-                        <div class="md:col-span-2">
-                            <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">TikTok URL</label>
-                            <input type="url" name="tiktok" value="{{ old('tiktok', $socialMedia->tiktok) }}" 
-                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white" 
-                                placeholder="https://tiktok.com/@username">
-                        </div>
-
+                        <p class="text-sm text-gray-600 dark:text-gray-300">
+                            {!! showLink($socialMedia->instagram) !!}
+                        </p>
                     </div>
-                </div>
 
-                <div class="flex items-center justify-end gap-3 p-6 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700/50">
-                    <button type="submit" class="px-5 py-2.5 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors">
-                        Simpan Perubahan
-                    </button>
+                    {{-- Facebook --}}
+                    <div class="p-4 bg-gray-50 dark:bg-gray-700/30 rounded-lg border border-gray-100 dark:border-gray-700">
+                        <div class="flex items-center gap-3 mb-2">
+                            <i class="fab fa-facebook text-2xl text-blue-600"></i>
+                            <h3 class="font-semibold text-gray-900 dark:text-white">Facebook</h3>
+                        </div>
+                        <p class="text-sm text-gray-600 dark:text-gray-300">
+                            {!! showLink($socialMedia->facebook) !!}
+                        </p>
+                    </div>
+
+                    {{-- Twitter / X --}}
+                    <div class="p-4 bg-gray-50 dark:bg-gray-700/30 rounded-lg border border-gray-100 dark:border-gray-700">
+                        <div class="flex items-center gap-3 mb-2">
+                            <span class="text-xl font-bold text-gray-900 dark:text-white">X</span>
+                            <h3 class="font-semibold text-gray-900 dark:text-white">Twitter / X</h3>
+                        </div>
+                        <p class="text-sm text-gray-600 dark:text-gray-300">
+                            {!! showLink($socialMedia->twitter) !!}
+                        </p>
+                    </div>
+
+                    {{-- YouTube --}}
+                    <div class="p-4 bg-gray-50 dark:bg-gray-700/30 rounded-lg border border-gray-100 dark:border-gray-700">
+                        <div class="flex items-center gap-3 mb-2">
+                            <i class="fab fa-youtube text-2xl text-red-600"></i>
+                            <h3 class="font-semibold text-gray-900 dark:text-white">YouTube</h3>
+                        </div>
+                        <p class="text-sm text-gray-600 dark:text-gray-300">
+                            {!! showLink($socialMedia->youtube) !!}
+                        </p>
+                    </div>
+
+                    {{-- TikTok --}}
+                    <div class="md:col-span-2 p-4 bg-gray-50 dark:bg-gray-700/30 rounded-lg border border-gray-100 dark:border-gray-700">
+                        <div class="flex items-center gap-3 mb-2">
+                            <i class="fab fa-tiktok text-2xl text-gray-900 dark:text-white"></i>
+                            <h3 class="font-semibold text-gray-900 dark:text-white">TikTok</h3>
+                        </div>
+                        <p class="text-sm text-gray-600 dark:text-gray-300">
+                            {!! showLink($socialMedia->tiktok) !!}
+                        </p>
+                    </div>
+
                 </div>
-            </form>
+            </div>
         </div>
     </div>
 </x-dashboard-layout>

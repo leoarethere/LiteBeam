@@ -1,28 +1,28 @@
 <x-layout>
-    <x-slot:title>Layanan Informasi Publik (PPID)</x-slot:title>
+    <x-slot:title>Informasi Pejabat Pengelola Informasi dan Dokumentasi (PPID)</x-slot:title>
 
     {{-- KONTAINER UTAMA --}}
-    <div class="px-4 sm:px-6 lg:px-8 py-8">
+    <div class="min-h-screen px-4 sm:px-6 lg:px-8">
 
         {{-- HERO SECTION --}}
-        <div class="relative rounded-3xl overflow-hidden mb-10 bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 dark:from-blue-900 dark:via-blue-950 dark:to-indigo-950 shadow-xl">
+        <div class="relative rounded-3xl overflow-hidden mb-6 bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 dark:from-blue-900 dark:via-blue-950 dark:to-indigo-950 shadow-xl">
             <div class="absolute inset-0 bg-grid-white/[0.05] bg-[size:24px_24px]"></div>
             <div class="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
             
             <div class="relative px-6 py-12 lg:px-12 lg:py-20 text-center z-10">
                 <div class="max-w-3xl mx-auto">
                     <h1 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mb-4 drop-shadow-sm">
-                        Layanan Informasi Publik
+                        Informasi PPID
                     </h1>
                     <p class="text-blue-100 text-base sm:text-lg max-w-2xl mx-auto leading-relaxed">
-                        Akses transparansi informasi dan dokumen publik resmi dari TVRI Stasiun D.I. Yogyakarta (PPID).
+                        Akses transparansi informasi dan dokumen Pejabat Pengelola Informasi dan Dokumentasi (PPID) di TVRI Stasiun D.I. Yogyakarta.
                     </p>
                 </div>
             </div>
         </div>
 
         {{-- BAGIAN FILTER & SORTING (Sesuai Desain Preferensi) --}}
-        <div class="mb-10">
+        <div class="mb-6">
             <form method="GET" action="{{ route('ppid.index') }}" class="mx-auto">
                 <div class="flex flex-col md:flex-row justify-between items-center gap-4 p-4 bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700">
                     
@@ -30,7 +30,7 @@
                     <div class="w-full md:w-auto">
                         <h2 class="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
                             <svg class="w-5 h-5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
-                            Semua Dokumen
+                            Semua Dokumen PPID
                         </h2>
                     </div>
 
@@ -158,10 +158,10 @@
                                 {{-- Action Buttons --}}
                                 <div class="pt-4 border-t border-gray-100 dark:border-gray-700 flex items-center gap-3">
                                     
-                                    {{-- Tombol Buka File --}}
+                                    {{-- Tombol Lihat File --}}
                                     <a href="{{ $item->source_link }}" target="_blank" 
                                        class="flex-1 inline-flex justify-center items-center gap-2 px-4 py-2 text-sm font-semibold text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 dark:focus:ring-blue-800 transition-all shadow-sm">
-                                        <span>Buka Dokumen</span>
+                                        <span>Lihat Dokumen</span>
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
                                     </a>
 

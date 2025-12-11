@@ -14,8 +14,8 @@ class StreamingController extends Controller
     public function index(): View
     {
         $stream = (object) [
-            'title' => 'Live Streaming TVRI Yogyakarta',
-            'description' => 'Saksikan siaran langsung program berita...',
+            'title' => 'Live Streaming TVRI D.I. Yogyakarta',
+            'description' => 'Saksikan siaran langsung berita, budaya, dan hiburan khas Jogja dengan kualitas HD.',
             'stream_url' => 'https://ott-balancer.tvri.go.id/live/eds/Jogjakarta/hls/Jogjakarta.m3u8',
             
             // UBAH BARIS INI:

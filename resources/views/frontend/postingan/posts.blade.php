@@ -2,13 +2,13 @@
     <x-slot:title>{{ $title ?? 'Berita & Artikel' }}</x-slot:title>
 
     {{-- KONTAINER UTAMA --}}
-    <div class="py-2 px-4 sm:px-6 lg:px-8">
-        <div class="mb-10">
+    <div class="min-h-screen px-4 sm:px-6 lg:px-8">
+        <div class="mb-6">
             <x-hero-posts />
         </div>
         
         {{-- BAGIAN FILTER & SORTING --}}
-        <div class="mb-10">
+        <div class="mb-6">
             <form method="GET" action="{{ route('posts.index') }}" class="mx-auto">
                 @if(request('search'))
                     <input type="hidden" name="search" value="{{ request('search') }}">
@@ -146,9 +146,8 @@
 
                                 {{-- Read More --}}
                                 <div class="pt-4 mt-auto border-t border-gray-100 dark:border-gray-700">
-                                    <a href="{{ route('posts.show', $post->slug) }}" class="inline-flex items-center text-sm font-semibold text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition-colors group/link">
-                                        Baca Selengkapnya
-                                        <svg class="w-4 h-4 ml-1 transform group-hover/link:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
+                                    <a href="{{ route('posts.show', $post->slug) }}" class="inline-flex items-center text-sm font-semibold text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition-colors underline group/link">
+                                        Lihat Selengkapnya
                                     </a>
                                 </div>
                             </div>

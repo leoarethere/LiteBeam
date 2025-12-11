@@ -24,7 +24,7 @@
     @endif
 
     {{-- WRAPPER UTAMA --}}
-    <div class="min-h-screen py-6 sm:py-8 lg:py-8 px-4 sm:px-6 lg:px-8">
+    <div class="min-h-screen px-4 sm:px-6 lg:px-8">
         
         <article class="mx-auto w-full bg-white dark:bg-gray-800 rounded-2xl sm:rounded-3xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden transition-colors duration-300">
             
@@ -103,11 +103,11 @@
 
             {{-- 3. FEATURED IMAGE --}}
             @if ($post->featured_image && Storage::exists($post->featured_image))
-                <div class="w-full bg-gray-100 dark:bg-gray-900">
-                    <figure class="relative w-full aspect-video sm:aspect-[21/9] overflow-hidden">
+                <div class="w-full px-5 sm:px-8 lg:px-10 pb-6 sm:pb-8 rounded-lg">
+                    <figure class="relative w-full overflow-hidden">
                         <img src="{{ Storage::url($post->featured_image) }}" 
                              alt="{{ $post->title }}" 
-                             class="w-full h-full object-cover transition-transform duration-700 hover:scale-105"
+                             class="w-full h-full object-cover transition-transform duration-700 hover:scale-105 rounded-lg shadow-lg"
                              loading="lazy">
                     </figure>
                 </div>
@@ -151,7 +151,7 @@
                 <a href="{{ route('posts.index') }}" 
                    class="w-full sm:w-auto inline-flex justify-center items-center gap-2 px-5 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-xl hover:bg-gray-50 hover:text-blue-600 hover:border-blue-300 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-700 transition-all shadow-sm">
                     <svg class="w-4 h-4 transition-transform group-hover:-translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
-                    Kembali ke Berita
+                    Semua Postingan
                 </a>
 
                 {{-- Social Share --}}

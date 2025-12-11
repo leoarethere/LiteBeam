@@ -37,16 +37,11 @@
 
             {{-- Kanan: Kontak & Sosial Media Dinamis --}}
             <div class="flex items-center gap-3 ml-auto">
-                <span class="hidden md:inline text-blue-100">Kontak:</span>
                 <div class="flex gap-3 items-center">
-                        <span class="hidden md:inline text-blue-200 transition-colors">
-                            (0274) 514402, 514403, 514909
-                        </span>
-                        <span class="hidden md:inline opacity-50">|</span>
-                    <span class="hidden sm:inline text-blue-100">Ikuti Kami:</span>
+                    <span class="hidden sm:inline">Ikuti kami di</span>
                     
                     {{-- ✅ IKON SOSIAL MEDIA DINAMIS (Heroicons) --}}
-                    <div class="flex gap-3 text-blue-200">
+                    <div class="flex gap-3">
                         
                         {{-- Facebook --}}
                         @if($socialMedia->facebook)

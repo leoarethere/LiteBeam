@@ -90,8 +90,8 @@
                                 Teks Tombol
                             </label>
                             <input type="text" name="button_text" id="button_text" value="{{ old('button_text', 'Selengkapnya') }}" 
-                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" 
-                                placeholder="Contoh: Baca Selengkapnya">
+                                class="bg-gray-50 underline border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" 
+                                placeholder="Contoh: Lihat Selengkapnya">
                             @error('button_text') <p class="mt-2 text-sm text-red-600 dark:text-red-500">{{ $message }}</p> @enderror
                         </div>
                     </div>
@@ -119,7 +119,7 @@
 
                         <input type="file" name="image" id="image" @change="handleFileSelect($event)" accept="image/jpeg,image/png,image/webp" 
                             class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400" required>
-                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Format: JPG, PNG, WebP (Maks. 5MB). Rasio disarankan 16:9.</p>
+                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Format: JPG, PNG, WebP (Maks. 5MB). Rasio disarankan 21:9.</p>
                         @error('image') <p class="mt-2 text-sm text-red-600 dark:text-red-500">{{ $message }}</p> @enderror
                     </div>
 

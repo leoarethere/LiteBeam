@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Models\Banner;
 use App\Models\Category;
 use App\Models\Broadcast;
+use App\Models\ContactInfo;
 use App\Models\JadwalAcara;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -98,6 +99,8 @@ class HomeController extends Controller
                 'programs' => Broadcast::where('status', 'published')->count(),
             ];
 
+            $contactInfo = ContactInfo::where('is_active', true)->first();
+
             return compact(
                 'heroPosts', 
                 'latestPosts', 
@@ -106,7 +109,8 @@ class HomeController extends Controller
                 'nextProgram', 
                 'featuredBroadcasts', 
                 'categories', 
-                'stats'
+                'stats',
+                'contactInfo'
             );
         });
         

@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Artisan;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\PpidController;
@@ -30,12 +31,14 @@ use App\Http\Controllers\DashboardVisiMisiController;
 use App\Http\Controllers\DashboardBroadcastController;
 use App\Http\Controllers\DashboardHymneTvriController;
 use App\Http\Controllers\DashboardInfoMagangController;
+use App\Http\Controllers\DashboardContactInfoController;
 use App\Http\Controllers\DashboardJadwalAcaraController;
 use App\Http\Controllers\DashboardReformasiRbController;
 use App\Http\Controllers\DashboardSocialMediaController;
 use App\Http\Controllers\DashboardTugasFungsiController;
 use App\Http\Controllers\DashboardPostCategoryController;
 use App\Http\Controllers\DashboardInfoKunjunganController;
+use App\Http\Controllers\DashboardJadwalCategoryController;
 use App\Http\Controllers\DashboardBroadcastCategoryController;
 
 /*
@@ -122,13 +125,21 @@ Route::middleware('auth')->prefix('dashboard')->group(function () {
     Route::resource('/users', DashboardUserController::class)->names('dashboard.users')->parameters(['users' => 'user']);
 
     // Social Media
-    Route::get('/social-media', [DashboardSocialMediaController::class, 'index'])->name('dashboard.social-media.index');
-    Route::put('/social-media', [DashboardSocialMediaController::class, 'update'])->name('dashboard.social-media.update');
+    Route::resource('social-media', DashboardSocialMediaController::class)->names('dashboard.social-media')->parameters(['social-media' => 'id'])->only(['index', 'edit', 'update']);
 
     // Kategori Jadwal
     Route::post('/jadwal-categories', [\App\Http\Controllers\DashboardJadwalCategoryController::class, 'store'])->name('dashboard.jadwal-categories.store');
     Route::put('/jadwal-categories/{jadwalCategory}', [\App\Http\Controllers\DashboardJadwalCategoryController::class, 'update'])->name('dashboard.jadwal-categories.update');
     Route::delete('/jadwal-categories/{jadwalCategory}', [\App\Http\Controllers\DashboardJadwalCategoryController::class, 'destroy'])->name('dashboard.jadwal-categories.destroy');
+
+    // Informasi Kontak
+    Route::resource('contact-info', DashboardContactInfoController::class)->names('dashboard.contact-info')->parameters(['contact-info' => 'id'])->only(['index', 'edit', 'update']);
+
+    // FAQ Info Magang
+    Route::resource('/info-magang-faq', \App\Http\Controllers\DashboardInfoMagangFaqController::class)->names('dashboard.info-magang-faq')->parameters(['info-magang-faq' => 'id']);
+
+    // FAQ Info Kunjungan
+    Route::resource('/info-kunjungan-faq', \App\Http\Controllers\DashboardInfoKunjunganFaqController::class)->names('dashboard.info-kunjungan-faq')->parameters(['info-kunjungan-faq' => 'id']);
 });
 
 // ================= UTILITAS =================

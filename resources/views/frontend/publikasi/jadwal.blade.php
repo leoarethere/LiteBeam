@@ -16,7 +16,7 @@
     @endphp
 
     {{-- KONTAINER UTAMA --}}
-    <div class="px-4 sm:px-6 lg:px-8 py-8">
+    <div class="min-h-screen px-4 sm:px-6 lg:px-8">
 
         {{-- HERO SECTION --}}
         <div class="relative rounded-3xl overflow-hidden mb-8 bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 dark:from-blue-900 dark:via-blue-950 dark:to-indigo-950 shadow-xl">
@@ -36,7 +36,7 @@
         </div>
 
         {{-- BAGIAN FILTER HARI --}}
-        <div class="mb-10">
+        <div class="mb-6">
             <div class="relative group">
                 {{-- Fade effect mobile --}}
                 <div class="absolute -center-4 top-0 bottom-0 w-12 bg-gradient-to-r from-gray-50 dark:from-gray-900 to-transparent z-10 pointer-events-none md:hidden"></div>
