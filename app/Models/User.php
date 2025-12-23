@@ -3,7 +3,8 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
-use App\Models\Post;
+use App\Models\News;
+use App\Models\Post; // <--- [1] JANGAN LUPA TAMBAHKAN INI
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -20,7 +21,7 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'name',
-        'username', // <-- TAMBAHKAN BARIS INI
+        'username',
         'email',
         'password',
     ];
@@ -50,7 +51,12 @@ class User extends Authenticatable
 
     public function posts(): HasMany
     {
-        // Argumen kedua ('author_id') adalah nama foreign key di tabel posts
         return $this->hasMany(Post::class);
+    }
+
+    // [2] TAMBAHKAN FUNGSI INI
+    public function news(): HasMany
+    {
+        return $this->hasMany(News::class);
     }
 }

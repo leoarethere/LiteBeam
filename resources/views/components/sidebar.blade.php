@@ -343,6 +343,16 @@
                     </ul>
                 </li>
 
+                {{-- Berita --}}
+                <x-sidebar-item href="{{ route('dashboard.news.index') }}" :active="request()->routeIs('dashboard.news*')">
+                    <x-slot:icon>
+                        <svg class="w-6 h-6 flex-shrink-0 transition-transform duration-300 group-hover:scale-110" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
+                        </svg>
+                    </x-slot:icon>
+                    Berita
+                </x-sidebar-item>
+
                 {{-- Postingan --}}
                 <x-sidebar-item href="{{ url('/dashboard/posts') }}" :active="request()->is('dashboard/posts*')">
                     <x-slot:icon>

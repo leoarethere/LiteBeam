@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Artisan;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\NewsController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\PpidController;
 use App\Http\Controllers\LoginController;
@@ -19,6 +20,7 @@ use App\Http\Controllers\StreamingController;
 use App\Http\Controllers\InfoMagangController;
 use App\Http\Controllers\ReformasiRbController;
 use App\Http\Controllers\TugasFungsiController;
+use App\Http\Controllers\DashboardNewsController;
 use App\Http\Controllers\DashboardPostController;
 use App\Http\Controllers\DashboardPpidController;
 use App\Http\Controllers\DashboardUserController;
@@ -36,6 +38,7 @@ use App\Http\Controllers\DashboardJadwalAcaraController;
 use App\Http\Controllers\DashboardReformasiRbController;
 use App\Http\Controllers\DashboardSocialMediaController;
 use App\Http\Controllers\DashboardTugasFungsiController;
+use App\Http\Controllers\DashboardNewsCategoryController;
 use App\Http\Controllers\DashboardPostCategoryController;
 use App\Http\Controllers\DashboardInfoKunjunganController;
 use App\Http\Controllers\DashboardJadwalCategoryController;
@@ -80,6 +83,14 @@ Route::get('/info-magang', [InfoMagangController::class, 'index'])->name('info-m
 Route::get('/info-kunjungan', [InfoKunjunganController::class, 'index'])->name('info-kunjungan.index');
 
 Route::get('/streaming', [StreamingController::class, 'index'])->name('streaming');
+
+// Route Berita (News)
+Route::get('/news', [NewsController::class, 'index'])->name('news.index');
+Route::get('/news/{news:slug}', [NewsController::class, 'show'])->name('news.show');
+
+// Route Filter Berita (Redirect ke Index dengan parameter)
+Route::get('/news/categories/{category:slug}', [NewsController::class, 'category'])->name('news.categories.show');
+Route::get('/news/authors/{user:username}', [NewsController::class, 'author'])->name('news.authors.show');
 
 // ================= AUTENTIKASI =================
 Route::middleware('guest')->group(function () {
@@ -140,6 +151,14 @@ Route::middleware('auth')->prefix('dashboard')->group(function () {
 
     // FAQ Info Kunjungan
     Route::resource('/info-kunjungan-faq', \App\Http\Controllers\DashboardInfoKunjunganFaqController::class)->names('dashboard.info-kunjungan-faq')->parameters(['info-kunjungan-faq' => 'id']);
+
+    // [BARU] Resource Berita
+    Route::resource('/news', DashboardNewsController::class)->names('dashboard.news');
+
+    // [BARU] Kategori Berita
+    Route::post('/news-categories', [DashboardNewsCategoryController::class, 'store'])->name('dashboard.news-categories.store');
+    Route::put('/news-categories/{newsCategory}', [DashboardNewsCategoryController::class, 'update'])->name('dashboard.news-categories.update');
+    Route::delete('/news-categories/{newsCategory}', [DashboardNewsCategoryController::class, 'destroy'])->name('dashboard.news-categories.destroy');
 });
 
 // ================= UTILITAS =================

@@ -112,8 +112,11 @@
             
             {{-- Pagination --}}
             @if($faqs->hasPages())
-                <div class="px-6 py-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
-                    {{ $faqs->links('vendor.pagination.tailwind') }}
+                <div class="mt-10 mb-12 px-2 sm:px-0">
+                    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 p-4">
+                        {{-- Hapus class 'flex justify-center' agar pagination bisa melebar (justify-between) --}}
+                        {{ $faqs->withQueryString()->links('vendor.pagination.tailwind') }}
+                    </div>
                 </div>
             @endif
         </div>

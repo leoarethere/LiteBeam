@@ -63,7 +63,7 @@
                     {{-- Twitter / X --}}
                     <div class="p-4 bg-gray-50 dark:bg-gray-700/30 rounded-lg border border-gray-100 dark:border-gray-700">
                         <div class="flex items-center gap-3 mb-2">
-                            <span class="text-xl font-bold text-gray-900 dark:text-white">X</span>
+                            <i class="fab fa-x-twitter text-2xl text-dark-600"></i>
                             <h3 class="font-semibold text-gray-900 dark:text-white">Twitter / X</h3>
                         </div>
                         <p class="text-sm text-gray-600 dark:text-gray-300">

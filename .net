@@ -1,0 +1,2 @@
+R1# copy running-config startup-config
+S1# copy running-config startup-config
