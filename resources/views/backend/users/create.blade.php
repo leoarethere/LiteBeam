@@ -43,7 +43,7 @@
                         </div>
 
                         {{-- Email --}}
-                        <div class="col-span-2">
+                        <div class="col-span-2 md:col-span-1">
                             <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
                                 Alamat Email <span class="text-red-500">*</span>
                             </label>
@@ -52,6 +52,22 @@
                                 placeholder="nama@email.com" required>
                             @error('email') <p class="mt-2 text-sm text-red-600 dark:text-red-500">{{ $message }}</p> @enderror
                         </div>
+
+                        {{-- Role (Hanya untuk Super Admin) --}}
+                        @if(auth()->user()->is_admin)
+                        <div class="col-span-2 md:col-span-1">
+                            <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                                Peran (Role) <span class="text-red-500">*</span>
+                            </label>
+                            <select name="is_admin" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" required>
+                                <option value="0" {{ old('is_admin') == '0' ? 'selected' : '' }}>Akun Secondary (Admin Biasa)</option>
+                                <option value="1" {{ old('is_admin') == '1' ? 'selected' : '' }}>Akun Utama (Super Admin)</option>
+                            </select>
+                            @error('is_admin') <p class="mt-2 text-sm text-red-600 dark:text-red-500">{{ $message }}</p> @enderror
+                        </div>
+                        @else
+                            <input type="hidden" name="is_admin" value="0">
+                        @endif
 
                         {{-- Password --}}
                         <div>

@@ -8,6 +8,8 @@ use App\Http\Controllers\PostController;
 use App\Http\Controllers\PpidController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\ThemeController;
+use App\Http\Controllers\PasswordResetLinkController;
+use App\Http\Controllers\NewPasswordController;
 use App\Http\Controllers\BannerController;
 use App\Http\Controllers\JadwalController;
 use App\Http\Controllers\HistoryController;
@@ -25,8 +27,6 @@ use App\Http\Controllers\DashboardPostController;
 use App\Http\Controllers\DashboardPpidController;
 use App\Http\Controllers\DashboardUserController;
 use App\Http\Controllers\InfoKunjunganController;
-use App\Http\Controllers\ResetPasswordController;
-use App\Http\Controllers\ForgotPasswordController;
 use App\Http\Controllers\DashboardHistoryController;
 use App\Http\Controllers\DashboardPrestasiController;
 use App\Http\Controllers\DashboardVisiMisiController;
@@ -74,7 +74,6 @@ Route::get('/sejarah', [HistoryController::class, 'index'])->name('sejarah');
 Route::get('/prestasi', [PrestasiController::class, 'index'])->name('prestasi.index');
 
 Route::get('/jadwal-acara', [JadwalController::class, 'index'])->name('publikasi.jadwal');
-Route::get('/publikasi/jadwal', [JadwalController::class, 'index'])->name('publikasi.jadwal');
 Route::get('/ppid', [PpidController::class, 'index'])->name('ppid.index');
 Route::get('/himne-tvri', [HymneTvriController::class, 'index'])->name('himne-tvri.index');
 Route::get('/info-rb', [ReformasiRbController::class, 'index'])->name('info-rb.index');
@@ -96,12 +95,12 @@ Route::get('/news/authors/{user:username}', [NewsController::class, 'author'])->
 Route::middleware('guest')->group(function () {
     Route::get('/login', [LoginController::class, 'index'])->name('login');
     Route::post('/login', [LoginController::class, 'store']);
-
-    // Lupa Password
-    Route::get('/forgot-password', [ForgotPasswordController::class, 'create'])->name('password.request');
-    Route::post('/forgot-password', [ForgotPasswordController::class, 'store'])->name('password.email');
-    Route::get('/reset-password/{token}', [ResetPasswordController::class, 'create'])->name('password.reset');
-    Route::post('/reset-password', [ResetPasswordController::class, 'store'])->name('password.update');
+    
+    // Lupa Password Routes
+    Route::get('/forgot-password', [PasswordResetLinkController::class, 'create'])->name('password.request');
+    Route::post('/forgot-password', [PasswordResetLinkController::class, 'store'])->name('password.email');
+    Route::get('/reset-password/{token}', [NewPasswordController::class, 'create'])->name('password.reset');
+    Route::post('/reset-password', [NewPasswordController::class, 'store'])->name('password.update');
 });
 
 // ================= DASHBOARD =================
@@ -163,13 +162,17 @@ Route::middleware('auth')->prefix('dashboard')->group(function () {
 
 // ================= UTILITAS =================
 Route::get('/theme/toggle', [ThemeController::class, 'toggle'])->name('theme.toggle');
-Route::get('/cek-php', fn() => phpinfo());
 
-Route::get('/symlink', function () {
-    try {
-        \Illuminate\Support\Facades\Artisan::call('storage:link');
-        return 'Symlink berhasil dibuat! Silakan cek folder public/storage.';
-    } catch (\Exception $e) {
-        return 'Gagal membuat symlink: ' . $e->getMessage();
-    }
+// Route utilitas (dilindungi auth agar tidak bisa diakses publik)
+Route::middleware('auth')->group(function () {
+    Route::get('/cek-php', fn() => phpinfo());
+
+    Route::get('/symlink', function () {
+        try {
+            \Illuminate\Support\Facades\Artisan::call('storage:link');
+            return 'Symlink berhasil dibuat! Silakan cek folder public/storage.';
+        } catch (\Exception $e) {
+            return 'Gagal membuat symlink: ' . $e->getMessage();
+        }
+    });
 });

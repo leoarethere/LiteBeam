@@ -10,6 +10,7 @@ use Illuminate\Routing\Controller;
 use Intervention\Image\ImageManager;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
 use Intervention\Image\Drivers\Gd\Driver;
 
 class DashboardHistoryController extends Controller
@@ -67,7 +68,7 @@ class DashboardHistoryController extends Controller
                 $validated['image'] = $path;
                 
             } catch (\Exception $e) {
-                \Log::error('History image processing error: ' . $e->getMessage());
+                Log::error('History image processing error: ' . $e->getMessage());
                 
                 return back()
                     ->withErrors(['image' => 'Gagal memproses gambar: ' . $e->getMessage()])
@@ -88,7 +89,7 @@ class DashboardHistoryController extends Controller
         try {
             History::create($validated);
         } catch (\Exception $e) {
-            \Log::error('History creation error: ' . $e->getMessage());
+            Log::error('History creation error: ' . $e->getMessage());
             
             return back()
                 ->withErrors(['error' => 'Gagal menyimpan data sejarah: ' . $e->getMessage()])
@@ -149,7 +150,7 @@ class DashboardHistoryController extends Controller
                 $validated['image'] = $path;
                 
             } catch (\Exception $e) {
-                \Log::error('History image processing error: ' . $e->getMessage());
+                Log::error('History image processing error: ' . $e->getMessage());
                 
                 return back()
                     ->withErrors(['image' => 'Gagal memproses gambar: ' . $e->getMessage()])
@@ -170,7 +171,7 @@ class DashboardHistoryController extends Controller
         try {
             $history->update($validated);
         } catch (\Exception $e) {
-            \Log::error('History update error: ' . $e->getMessage());
+            Log::error('History update error: ' . $e->getMessage());
             
             return back()
                 ->withErrors(['error' => 'Gagal memperbarui data sejarah: ' . $e->getMessage()])
@@ -202,7 +203,7 @@ class DashboardHistoryController extends Controller
                 ->with('success', 'Data sejarah berhasil dihapus!');
                 
         } catch (\Exception $e) {
-            \Log::error('History deletion error: ' . $e->getMessage());
+            Log::error('History deletion error: ' . $e->getMessage());
             
             return redirect()->route('dashboard.sejarah.index')
                 ->with('error', 'Gagal menghapus data sejarah: ' . $e->getMessage());

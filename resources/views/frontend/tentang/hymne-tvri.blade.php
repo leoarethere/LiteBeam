@@ -151,9 +151,9 @@
                                 {{ $hymne->title }}
                             </h2>
 
-                            {{-- Trix Content (Tanpa fungsi clean() sementara) --}}
+                            {{-- Trix Content (Menggunakan clean() untuk keamanan XSS) --}}
                             <div class="prose prose-base sm:prose-lg dark:prose-invert text-gray-600 dark:text-gray-400 max-w-none">
-                                {!! $hymne->synopsis !!}
+                                {!! clean($hymne->synopsis) !!}
                             </div>
 
                             @if($hymne->link && !$videoId && !str_ends_with($hymne->link, '.mp4') && !str_ends_with($hymne->link, '.m3u8'))

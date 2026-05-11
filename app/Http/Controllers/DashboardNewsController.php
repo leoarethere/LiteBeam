@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Auth;
 use Intervention\Image\ImageManager;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
 use Intervention\Image\Drivers\Gd\Driver;
 
 class DashboardNewsController extends Controller
@@ -105,7 +106,7 @@ class DashboardNewsController extends Controller
                 $validated['featured_image'] = $path;
                 
             } catch (\Exception $e) {
-                \Log::error('News image error: ' . $e->getMessage());
+                Log::error('News image error: ' . $e->getMessage());
                 return back()->withErrors(['featured_image' => 'Gagal memproses gambar.'])->withInput();
             }
         }

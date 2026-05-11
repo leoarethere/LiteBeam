@@ -3,124 +3,254 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reset Kata Sandi - TVRI D.I. Yogyakarta</title>
+    <title>{{ $title ?? 'Reset Password' }} - TVRI D.I. Yogyakarta</title>
     
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     
+    {{-- Google Sans Flex Font --}}
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Google+Sans+Flex:opsz,wght@6..144,1..1000&display=swap" rel="stylesheet">
     
+    {{-- Favicon --}}
     <link rel="icon" href="{{ asset('img/favicon.png') }}" type="image/png">
     
     <style>
-        body { font-family: "Google Sans Flex", sans-serif; }
+        body {
+            font-family: "Google Sans Flex", sans-serif;
+        }
+        
+        .login-container {
+            min-height: 100vh;
+            display: grid;
+            grid-template-columns: 1fr;
+        }
+        
+        @media (min-width: 1024px) {
+            .login-container {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+        
+        .login-banner {
+            display: none;
+        }
+        
+        @media (min-width: 1024px) {
+            .login-banner {
+                display: block;
+            }
+        }
+        
+        .login-form-section {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+        
+        @media (min-width: 640px) {
+            .login-form-section {
+                padding: 3rem;
+            }
+        }
+        
+        @media (min-width: 1024px) {
+            .login-form-section {
+                padding: 4rem;
+            }
+        }
+        
+        .login-form-container {
+            width: 100%;
+            max-width: 28rem;
+            margin: 0 auto;
+        }
+        
+        .login-logo {
+            height: 2.25rem;
+            width: auto;
+        }
+        
+        @media (min-width: 768px) {
+            .login-logo {
+                height: 3rem;
+            }
+        }
+        
+        .login-input {
+            background-color: rgb(249 250 251);
+            border: 1px solid rgb(209 213 219);
+            color: rgb(17 24 39);
+            font-size: 0.875rem;
+            border-radius: 0.5rem;
+            padding: 0.625rem;
+            width: 100%;
+        }
+        
+        .login-input:focus {
+            outline: none;
+            box-shadow: 0 0 0 2px rgb(37 99 235 / 20%);
+            border-color: rgb(37 99 235);
+        }
+        
+        .dark .login-input {
+            background-color: rgb(55 65 81);
+            border-color: rgb(75 85 99);
+            color: rgb(255 255 255);
+        }
+        
+        .dark .login-input:focus {
+            box-shadow: 0 0 0 2px rgb(59 130 246 / 20%);
+            border-color: rgb(59 130 246);
+        }
+        
+        .login-input-error {
+            border-color: rgb(239 68 68);
+        }
+        
+        .alert-container {
+            padding: 1rem;
+            font-size: 0.875rem;
+            border-radius: 0.5rem;
+            border: 1px solid;
+        }
+        
+        .alert-error {
+            color: rgb(153 27 27);
+            background-color: rgb(254 242 242);
+            border-color: rgb(254 202 202);
+        }
+        
+        .dark .alert-error {
+            color: rgb(254 202 202);
+            background-color: rgb(127 29 29);
+            border-color: rgb(153 27 27);
+        }
     </style>
 </head>
 <body class="h-full font-google-sans antialiased text-gray-900 dark:text-white">
 
-    <div class="w-full min-h-screen grid grid-cols-1 lg:grid-cols-2">
+    <div class="login-container">
         
-        <div class="relative hidden lg:block h-full w-full bg-gray-100 dark:bg-gray-800">
+        {{-- BAGIAN 1: Banner Image --}}
+        <div class="login-banner relative h-full w-full bg-gray-100 dark:bg-gray-800">
             <img src="{{ asset('img/loginbanner.jpeg') }}" 
-                 alt="TVRI D.I. Yogyakarta Banner" 
+                 alt="TVRI D.I. Yogyakarta Login Banner" 
                  class="absolute inset-0 h-full w-full object-cover" />
+            
+            {{-- Overlay Gradient --}}
             <div class="absolute inset-0 bg-gradient-to-br from-blue-900/40 via-indigo-900/30 to-transparent"></div>
         </div>
 
-        <div class="flex items-center justify-center p-8 sm:p-12 lg:p-16 bg-white dark:bg-gray-900">
-            <div class="w-full max-w-md space-y-8">
-                
+        {{-- BAGIAN 2: Form --}}
+        <div class="login-form-section bg-white dark:bg-gray-900">
+            <div class="login-form-container space-y-8">
                 {{-- Logo --}}
-                <div class="flex items-center justify-center">
+                <div class="items-center justify-center flex">
                     <a href="/" class="flex items-center gap-2">
+                        {{-- Logo Light Mode --}}
                         <img src="{{ asset('img/logolight.png') }}" 
-                            class="h-9 md:h-12 w-auto block dark:hidden" 
+                            class="login-logo block dark:hidden" 
                             alt="TVRI D.I. Yogyakarta Logo" />
+
+                        {{-- Logo Dark Mode --}}
                         <img src="{{ asset('img/logodark.png') }}" 
-                            class="h-9 md:h-12 w-auto hidden dark:block" 
+                            class="login-logo hidden dark:block" 
                             alt="TVRI D.I. Yogyakarta Logo" />
+
                         <span class="text-gray-900 dark:text-white font-bold text-xl sm:text-2xl whitespace-nowrap">
                             Yogyakarta
                         </span>
                     </a>
                 </div>
                 
-                {{-- Header --}}
+                {{-- Header Text --}}
                 <div class="text-center">
                     <h1 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">
                         Reset Kata Sandi
                     </h1>
                     <p class="text-sm text-gray-600 dark:text-gray-400">
-                        Masukkan password baru Anda.
+                        Silakan buat kata sandi baru untuk akun Anda.
                     </p>
                 </div>
 
-                {{-- Errors --}}
+                {{-- Notifikasi Error --}}
                 @if ($errors->any())
-                    <div class="p-4 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-red-900/20 dark:text-red-400 border border-red-200 dark:border-red-800">
+                    <div class="alert-container alert-error">
                         <div class="flex items-start">
                             <svg class="flex-shrink-0 w-5 h-5 mr-2 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
                                 <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
                             </svg>
-                            <ul class="flex-1 list-disc list-inside">
-                                @foreach ($errors->all() as $error)
-                                    <li>{{ $error }}</li>
-                                @endforeach
-                            </ul>
+                            <div class="flex-1">
+                                <span class="font-medium">Terjadi Kesalahan!</span>
+                                <ul class="mt-1 list-disc list-inside space-y-1">
+                                    @foreach ($errors->all() as $error)
+                                        <li>{{ $error }}</li>
+                                    @endforeach
+                                </ul>
+                            </div>
                         </div>
                     </div>
                 @endif
 
                 {{-- Form --}}
-                <form class="mt-8 space-y-6" action="{{ route('password.update') }}" method="POST">
+                <form class="mt-8 space-y-6" action="{{ route('password.update') }}" method="POST" novalidate>
                     @csrf
-                    <input type="hidden" name="token" value="{{ $token }}">
+                    
+                    {{-- Token (Hidden) --}}
+                    <input type="hidden" name="token" value="{{ $request->route('token') }}">
 
                     <div class="space-y-4">
                         {{-- Email --}}
                         <div>
                             <label for="email" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                                Email <span class="text-red-500">*</span>
+                                Alamat email <span class="text-red-500">*</span>
                             </label>
-                            <input type="email" name="email" id="email" value="{{ old('email', $email ?? '') }}"
-                                class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" 
+                            <input type="email" name="email" id="email" value="{{ old('email', $request->email) }}"
+                                class="login-input @error('email') login-input-error @enderror" 
                                 placeholder="nama@email.com" 
                                 required 
-                                autofocus>
+                                autofocus
+                                autocomplete="email">
                         </div>
 
                         {{-- Password Baru --}}
                         <div>
                             <label for="password" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                                Password Baru <span class="text-red-500">*</span>
+                                Kata Sandi Baru <span class="text-red-500">*</span>
                             </label>
                             <input type="password" name="password" id="password" 
                                 placeholder="••••••••" 
-                                class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" 
+                                class="login-input @error('password') login-input-error @enderror" 
                                 required>
                         </div>
-
-                        {{-- Konfirmasi Password --}}
+                        
+                        {{-- Konfirmasi Password Baru --}}
                         <div>
                             <label for="password_confirmation" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                                Konfirmasi Password <span class="text-red-500">*</span>
+                                Konfirmasi Kata Sandi Baru <span class="text-red-500">*</span>
                             </label>
                             <input type="password" name="password_confirmation" id="password_confirmation" 
                                 placeholder="••••••••" 
-                                class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" 
+                                class="login-input" 
                                 required>
                         </div>
                     </div>
 
-                    <button type="submit" 
-                        class="w-full text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center transition-colors duration-300">
-                        Reset Password
-                    </button>
+                    {{-- Submit Button --}}
+                    <div class="flex justify-center mt-6">
+                        <button type="submit" 
+                            class="w-full max-w-md px-8 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-500 dark:hover:bg-blue-600 dark:focus:ring-blue-800 transition-colors duration-300">
+                            Reset Kata Sandi
+                        </button>
+                    </div>
                 </form>
 
+                {{-- Footer --}}
                 <div class="mt-6 text-center text-xs text-gray-400 dark:text-gray-500">
-                    <p>Copyright {{ date('Y') }} TVRI D.I. Yogyakarta | All rights reserved.</p>
+                    <p>Copyright {{ date('Y') }} Lembaga Penyiaran Publik TVRI D.I. Yogyakarta</p>
+                    <p class="mt-1">All rights reserved.</p>
                 </div>
             </div>
         </div>

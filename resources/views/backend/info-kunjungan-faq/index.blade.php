@@ -20,12 +20,12 @@
             </a>
         </div>
 
-        {{-- Alert Sukses --}}
+        {{-- Alert Sukses
         @if(session('success'))
             <div class="mb-6 p-4 text-sm text-green-800 rounded-lg bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-800" role="alert">
                 <span class="font-medium">Sukses!</span> {{ session('success') }}
             </div>
-        @endif
+        @endif --}}
 
         {{-- Tabel Data --}}
         <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md border border-gray-200 dark:border-gray-700 overflow-hidden">

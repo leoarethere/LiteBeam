@@ -85,14 +85,9 @@ class DashboardVisiMisiController extends Controller
             'is_active' => 'required|in:0,1',
         ]);
 
-        // Logika Update Gambar
+        // Logika Update Gambar (Safe Order: simpan baru → hapus lama)
         if ($request->hasFile('image')) {
             try {
-                // Hapus gambar lama jika ada
-                if ($visiMisi->image && Storage::disk('public')->exists($visiMisi->image)) {
-                    Storage::disk('public')->delete($visiMisi->image);
-                }
-
                 $file = $request->file('image');
                 $filename = Str::random(40) . '.jpg';
                 $path = 'visi-misi-images/' . $filename;
@@ -102,7 +97,14 @@ class DashboardVisiMisiController extends Controller
                 $image->scale(width: 800);
                 $encodedImage = $image->toJpeg(quality: 70);
                 
+                // 1. Simpan gambar baru terlebih dahulu
                 Storage::disk('public')->put($path, (string) $encodedImage);
+
+                // 2. Jika sukses, baru hapus gambar lama
+                if ($visiMisi->image && Storage::disk('public')->exists($visiMisi->image)) {
+                    Storage::disk('public')->delete($visiMisi->image);
+                }
+
                 $validated['image'] = $path;
 
             } catch (\Exception $e) {
@@ -110,9 +112,6 @@ class DashboardVisiMisiController extends Controller
                     'image' => 'Gagal memproses gambar: ' . $e->getMessage()
                 ])->withInput();
             }
-        } else {
-            // [PERBAIKAN] Pertahankan gambar lama jika tidak ada upload baru
-            $validated['image'] = $visiMisi->image;
         }
 
         $visiMisi->update($validated);

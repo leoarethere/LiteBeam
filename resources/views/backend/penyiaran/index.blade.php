@@ -174,7 +174,7 @@
             </div>
         @endif
 
-        {{-- ALERT SUCCESS --}}
+        {{-- ALERT SUCCESS
         @if(session('success'))
             <div class="mb-6 p-4 text-sm text-green-800 rounded-lg bg-green-50 dark:bg-green-900/30 dark:text-green-400 border border-green-200 dark:border-green-800 transition-all duration-300" role="alert">
                 <div class="flex items-center">
@@ -186,7 +186,7 @@
                     </div>
                 </div>
             </div>
-        @endif
+        @endif --}}
 
         {{-- TABEL --}}
         <div class="bg-white dark:bg-gray-800 shadow-md sm:rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
@@ -195,11 +195,11 @@
                     <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-300">
                         <tr>
                             <th scope="col" class="px-4 py-3 text-center w-12">No</th>
-                            <th scope="col" class="px-4 py-3 text-left">Judul & Info</th>
-                            <th scope="col" class="px-4 py-3 text-center w-24">Poster</th>
-                            <th scope="col" class="px-4 py-3 text-left">Sinopsis</th>
+                            <th scope="col" class="px-4 py-3 text-left w-72">Program</th>
+                            <th scope="col" class="px-4 py-3 text-left w-40">Status</th>
+                            <th scope="col" class="px-4 py-3 text-left min-w-[200px]">Sinopsis</th>
                             <th scope="col" class="px-4 py-3 text-center w-24">Link</th>
-                            <th scope="col" class="px-4 py-3 text-center w-36">Aksi</th>
+                            <th scope="col" class="px-4 py-3 text-center w-32">Aksi</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
@@ -210,64 +210,64 @@
                                     {{ $loop->iteration + $broadcasts->firstItem() - 1 }}
                                 </td>
                                 
-                                {{-- Judul & Info Lengkap --}}
+                                {{-- Program (Poster + Judul + Kategori) --}}
                                 <td class="px-4 py-4 align-top">
-                                    <div class="space-y-2">
-                                        <div class="flex items-start justify-between gap-2">
-                                            <p class="font-semibold text-gray-900 dark:text-white line-clamp-2 leading-tight">
+                                    <div class="flex items-start gap-4">
+                                        {{-- Poster Thumbnail --}}
+                                        <div class="flex-shrink-0 w-16 h-20 bg-gray-100 dark:bg-gray-700 rounded-md ring-1 ring-gray-200 dark:ring-gray-700 overflow-hidden flex items-center justify-center">
+                                            @if ($broadcast->poster)
+                                                <img src="{{ Storage::url($broadcast->poster) }}" alt="Poster" class="w-full h-full object-cover">
+                                            @else
+                                                <svg class="w-6 h-6 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                                </svg>
+                                            @endif
+                                        </div>
+
+                                        {{-- Judul & Kategori --}}
+                                        <div class="flex flex-col">
+                                            <p class="font-bold text-gray-900 dark:text-white line-clamp-2 leading-tight mb-2" title="{{ $broadcast->title }}">
                                                 {{ $broadcast->title }}
                                             </p>
-                                        </div>
-                                        
-                                        <div class="flex flex-wrap gap-2 items-center">
-                                            {{-- Badge Kategori --}}
-                                            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium {{ $broadcast->broadcastCategory->color_classes ?? 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300' }}">
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium w-fit {{ $broadcast->broadcastCategory->color_classes ?? 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300' }}">
                                                 {{ $broadcast->broadcastCategory->name ?? 'N/A' }}
                                             </span>
-
-                                            {{-- Status Publikasi --}}
-                                            @if ($broadcast->status === 'published')
-                                                <span class="inline-flex items-center gap-1 text-xs text-blue-600 dark:text-blue-400" title="Dipublikasikan pada {{ $broadcast->published_at->format('d M Y H:i') }}">
-                                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                                                    {{ $broadcast->published_at->format('d M Y') }}
-                                                </span>
-                                            @else
-                                                <span class="inline-flex items-center gap-1 text-xs text-orange-600 dark:text-orange-400">
-                                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
-                                                    Draft
-                                                </span>
-                                            @endif
-
-                                            {{-- Status Produksi --}}
-                                            @if($broadcast->is_active)
-                                                <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-300 border border-green-200 dark:border-green-800">
-                                                    ON AIR
-                                                </span>
-                                            @else
-                                                <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400 border border-gray-200 dark:border-gray-600">
-                                                    SELESAI
-                                                </span>
-                                            @endif
                                         </div>
                                     </div>
                                 </td>
-                                
-                                {{-- Poster --}}
-                                <td class="px-4 py-4 align-top text-center">
-                                    @if ($broadcast->poster)
-                                        <img src="{{ Storage::url($broadcast->poster) }}" alt="Poster" class="w-16 h-20 object-cover rounded-md ring-1 ring-gray-200 dark:ring-gray-700 inline-block">
-                                    @else
-                                        <div class="w-16 h-20 inline-flex items-center justify-center bg-gray-100 dark:bg-gray-700 rounded-md ring-1 ring-gray-200 dark:ring-gray-700">
-                                            <svg class="w-6 h-6 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                                            </svg>
-                                        </div>
-                                    @endif
+
+                                {{-- Status (Produksi & Publikasi) --}}
+                                <td class="px-4 py-4 align-top">
+                                    <div class="flex flex-col gap-2">
+                                        {{-- Status Produksi --}}
+                                        @if($broadcast->is_active)
+                                            <span class="inline-flex items-center justify-center px-2 py-1 rounded text-[10px] font-bold tracking-wide bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-300 border border-green-200 dark:border-green-800 w-fit">
+                                                ON AIR
+                                            </span>
+                                        @else
+                                            <span class="inline-flex items-center justify-center px-2 py-1 rounded text-[10px] font-bold tracking-wide bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400 border border-gray-200 dark:border-gray-600 w-fit">
+                                                SELESAI
+                                            </span>
+                                        @endif
+
+                                        {{-- Status Publikasi --}}
+                                        @if ($broadcast->status === 'published')
+                                            <span class="inline-flex items-center gap-1 text-xs text-gray-600 dark:text-gray-400" title="Dipublikasikan pada {{ $broadcast->published_at->format('d M Y H:i') }}">
+                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                                                {{ $broadcast->published_at->format('d M Y') }}
+                                            </span>
+                                        @else
+                                            <span class="inline-flex items-center gap-1 text-xs text-orange-600 dark:text-orange-400 font-medium">
+                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                                                Draft
+                                            </span>
+                                        @endif
+                                    </div>
                                 </td>
 
                                 {{-- Sinopsis --}}
-                                <td class="px-4 py-4 align-top">
-                                    <p class="text-sm text-gray-600 dark:text-gray-400 line-clamp-3 leading-relaxed">
+                                <td class="px-4 py-4 align-top max-w-xs">
+                                    <p class="text-sm text-gray-600 dark:text-gray-400 line-clamp-3 leading-relaxed" title="{{ $broadcast->synopsis ?? '' }}">
                                         {{ $broadcast->synopsis ?? '-' }}
                                     </p>
                                 </td>

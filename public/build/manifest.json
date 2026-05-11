@@ -4,18 +4,22 @@
     "src": "node_modules/owl.carousel/dist/assets/owl.video.play.png"
   },
   "node_modules/owl.carousel/dist/owl.carousel.js": {
-    "file": "assets/owl.carousel-neFFRnqI.js",
+    "file": "assets/owl.carousel-B3ad9mzp.js",
     "name": "owl.carousel",
     "src": "node_modules/owl.carousel/dist/owl.carousel.js",
     "isDynamicEntry": true
   },
   "resources/css/app.css": {
-    "file": "assets/app-B3AgdYTJ.css",
+    "file": "assets/app-BzfQ-Mc4.css",
     "src": "resources/css/app.css",
-    "isEntry": true
+    "isEntry": true,
+    "name": "app",
+    "names": [
+      "app.css"
+    ]
   },
   "resources/js/app.js": {
-    "file": "assets/app-BjO5aS_q.js",
+    "file": "assets/app-BMWkwQrm.js",
     "name": "app",
     "src": "resources/js/app.js",
     "isEntry": true,
@@ -30,7 +34,7 @@
     ]
   },
   "resources/js/dashboard.js": {
-    "file": "assets/dashboard-BTwesdhz.js",
+    "file": "assets/dashboard-DKsE3wsq.js",
     "name": "dashboard",
     "src": "resources/js/dashboard.js",
     "isEntry": true

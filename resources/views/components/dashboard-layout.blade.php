@@ -54,7 +54,7 @@
             style="display: none;">
         </div>
         
-        {{-- UI NOTIFIKASI TOAST --}}
+{{-- UI NOTIFIKASI TOAST (Desain Blok Solid) --}}
         <div 
             x-show="notificationOpen"
             x-transition:enter="notification-banner transform ease-out duration-300 transition"
@@ -64,31 +64,32 @@
             x-transition:leave-start="opacity-100"
             x-transition:leave-end="opacity-0"
             x-cloak
-            class="fixed top-20 right-4 z-50 w-full max-w-sm p-4 rounded-lg shadow-lg border"
+            class="fixed top-20 right-4 z-50 w-full max-w-sm p-4 rounded-lg shadow-xl border-0"
             :class="{
-                'bg-green-100 border-green-300 text-green-700 dark:bg-green-900/20 dark:border-green-700 dark:text-green-300': notificationType === 'success',
-                'bg-red-100 border-red-300 text-red-700 dark:bg-red-900/20 dark:border-red-700 dark:text-red-300': notificationType === 'error'
+                'bg-green-600 text-white dark:bg-green-600': notificationType === 'success',
+                'bg-red-600 text-white dark:bg-red-600': notificationType === 'error'
             }"
             role="alert">
             <div class="flex items-start">
                 {{-- Ikon --}}
                 <div class="flex-shrink-0">
-                    <svg x-show="notificationType === 'success'" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                    <svg x-show="notificationType === 'success'" class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
                         <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
                     </svg>
-                    <svg x-show="notificationType === 'error'" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                    <svg x-show="notificationType === 'error'" class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
                         <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
                     </svg>
                 </div>
                 {{-- Pesan --}}
-                <div class="ml-3 text-sm font-medium" x-text="notificationMessage"></div>
+                <div class="ml-3 text-sm font-medium text-white shadow-sm" x-text="notificationMessage"></div>
+                
                 {{-- Tombol Tutup --}}
                 <button type="button" 
                     @click="notificationOpen = false" 
-                    class="ml-auto -mx-1.5 -my-1.5 rounded-lg p-1.5 inline-flex h-8 w-8 transition-colors duration-200"
+                    class="ml-auto -mx-1.5 -my-1.5 rounded-lg p-1.5 inline-flex h-8 w-8 transition-colors duration-200 focus:outline-none"
                     :class="{
-                        'bg-green-100 text-green-500 hover:bg-green-200 dark:bg-green-900/30 dark:text-green-400 dark:hover:bg-green-900/50': notificationType === 'success',
-                        'bg-red-100 text-red-500 hover:bg-red-200 dark:bg-red-900/30 dark:text-red-400 dark:hover:bg-red-900/50': notificationType === 'error'
+                        'text-green-100 hover:bg-green-700 hover:text-white': notificationType === 'success',
+                        'text-red-100 hover:bg-red-700 hover:text-white': notificationType === 'error'
                     }">
                     <span class="sr-only">Close</span>
                     <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
@@ -118,6 +119,35 @@
     </div>
 
     <script>
+        // ✅ PERBAIKAN: Nonaktifkan Turbo untuk semua form di dashboard
+        // Ini memastikan form submissions menggunakan full page reload
+        // sehingga session flash messages bekerja dengan benar
+        
+        // Fungsi untuk menonaktifkan Turbo pada semua form
+        function disableTurboForForms() {
+            const dashboardForms = document.querySelectorAll('form');
+            dashboardForms.forEach(form => {
+                if (!form.hasAttribute('data-turbo')) {
+                    form.setAttribute('data-turbo', 'false');
+                }
+            });
+        }
+
+        // Setup sekali di DOMContentLoaded
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', disableTurboForForms);
+        } else {
+            disableTurboForForms(); // DOM sudah siap
+        }
+
+        // Juga nonaktifkan Turbo saat form baru ditambahkan (untuk dynamic forms)
+        // Gunakan once: true untuk mencegah multiple listeners (jika browser support)
+        // Fallback: gunakan flag untuk mencegah duplikasi
+        if (!window.dashboardTurboFormListenerAttached) {
+            document.addEventListener('turbo:render', disableTurboForForms);
+            window.dashboardTurboFormListenerAttached = true;
+        }
+
         function dashboardState() {
             return {
                 isSidebarOpen: window.innerWidth >= 768,
@@ -132,16 +162,34 @@
                 init() {
                     console.log('🏠 Dashboard Alpine initialized');
                     this.setupResizeHandler();
-                    
-                    // ✅ HAPUS window.addEventListener manual di sini
-                    // Kita sudah menggantinya dengan @show-notification.window di HTML di atas
-                    // yang jauh lebih stabil untuk Turbo.
 
                     // Cek pesan Flash (dari PHP Session)
                     // Gunakan $nextTick untuk memastikan DOM sudah siap sepenuhnya
                     this.$nextTick(() => {
                         this.checkForFlashMessages();
                     });
+
+                    // ✅ PERBAIKAN: Setup Turbo event listeners hanya sekali
+                    // Menggunakan flag untuk mencegah multiple listeners
+                    if (!window.dashboardTurboListenersAttached) {
+                        const checkFlash = () => {
+                            setTimeout(() => {
+                                this.checkForFlashMessages();
+                            }, 100);
+                        };
+
+                        document.addEventListener('turbo:render', () => {
+                            console.log('🎨 Turbo render - checking flash messages');
+                            checkFlash();
+                        });
+
+                        document.addEventListener('turbo:load', () => {
+                            console.log('📦 Turbo load - checking flash messages');
+                            checkFlash();
+                        });
+
+                        window.dashboardTurboListenersAttached = true;
+                    }
                 },
 
                 checkForFlashMessages() {

@@ -41,7 +41,7 @@
             </a>
         </div>
 
-        {{-- ALERT SUCCESS --}}
+        {{-- ALERT SUCCESS
         @if(session('success'))
             <div class="mb-6 p-4 text-sm text-green-800 rounded-lg bg-green-50 dark:bg-green-900/30 dark:text-green-400 border border-green-200 dark:border-green-800 transition-all duration-300" role="alert">
                 <div class="flex items-center">
@@ -53,7 +53,7 @@
                     </div>
                 </div>
             </div>
-        @endif
+        @endif --}}
 
         {{-- ALERT ERROR --}}
         @if($errors->has('error'))
@@ -97,13 +97,24 @@
                                                  src="https://ui-avatars.com/api/?name={{ urlencode($user->name) }}&background=random&color=fff" 
                                                  alt="{{ $user->name }}">
                                         </div>
-                                        <div class="flex flex-col">
+                                        <div class="flex flex-col gap-1">
                                             <span class="text-sm font-semibold text-gray-900 dark:text-white">{{ $user->name }}</span>
-                                            @if(auth()->id() === $user->id)
-                                                <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide bg-blue-100 text-blue-800 dark:bg-blue-900/50 dark:text-blue-300 w-fit mt-0.5">
-                                                    Anda
-                                                </span>
-                                            @endif
+                                            <div class="flex flex-wrap gap-1">
+                                                @if(auth()->id() === $user->id)
+                                                    <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide bg-blue-100 text-blue-800 dark:bg-blue-900/50 dark:text-blue-300 w-fit">
+                                                        Anda
+                                                    </span>
+                                                @endif
+                                                @if($user->is_admin)
+                                                    <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-300 w-fit">
+                                                        Utama
+                                                    </span>
+                                                @else
+                                                    <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300 w-fit">
+                                                        Secondary
+                                                    </span>
+                                                @endif
+                                            </div>
                                         </div>
                                     </div>
                                 </td>
@@ -123,24 +134,29 @@
                                 {{-- Aksi --}}
                                 <td class="px-4 py-4 align-middle text-center">
                                     <div class="flex items-center justify-center gap-2">
-                                        {{-- Tombol Edit --}}
-                                        <a href="{{ route('dashboard.users.edit', $user) }}" 
-                                           class="p-2 text-yellow-600 bg-yellow-50 rounded-lg hover:bg-yellow-100 dark:text-yellow-400 dark:bg-yellow-900/30 dark:hover:bg-yellow-900/50 transition-colors"
-                                           title="Edit User">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
-                                        </a>
-
-                                        {{-- Tombol Hapus (Non-Self) --}}
-                                        @if(auth()->id() !== $user->id)
-                                            <button @click="openDeleteModal({{ $user->id }}, '{{ addslashes($user->name) }}')"
-                                                class="p-2 text-red-600 bg-red-50 rounded-lg hover:bg-red-100 dark:text-red-400 dark:bg-red-900/30 dark:hover:bg-red-900/50 transition-colors"
-                                                title="Hapus User">
-                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                                            </button>
+                                        {{-- Proteksi UI: Admin Secondary tidak melihat tombol Edit/Delete Akun Utama --}}
+                                        @if(!auth()->user()->is_admin && $user->is_admin)
+                                            <span class="text-xs text-gray-400 italic">Terproteksi</span>
                                         @else
-                                            <button disabled class="p-2 text-gray-300 bg-gray-50 rounded-lg cursor-not-allowed dark:text-gray-600 dark:bg-gray-800" title="Tidak bisa menghapus diri sendiri">
-                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                                            </button>
+                                            {{-- Tombol Edit --}}
+                                            <a href="{{ route('dashboard.users.edit', $user) }}" 
+                                               class="p-2 text-yellow-600 bg-yellow-50 rounded-lg hover:bg-yellow-100 dark:text-yellow-400 dark:bg-yellow-900/30 dark:hover:bg-yellow-900/50 transition-colors"
+                                               title="Edit User">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                                            </a>
+
+                                            {{-- Tombol Hapus (Non-Self) --}}
+                                            @if(auth()->id() !== $user->id)
+                                                <button @click="openDeleteModal({{ $user->id }}, '{{ addslashes($user->name) }}')"
+                                                    class="p-2 text-red-600 bg-red-50 rounded-lg hover:bg-red-100 dark:text-red-400 dark:bg-red-900/30 dark:hover:bg-red-900/50 transition-colors"
+                                                    title="Hapus User">
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                                </button>
+                                            @else
+                                                <button disabled class="p-2 text-gray-300 bg-gray-50 rounded-lg cursor-not-allowed dark:text-gray-600 dark:bg-gray-800" title="Tidak bisa menghapus diri sendiri">
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                                </button>
+                                            @endif
                                         @endif
                                     </div>
                                 </td>

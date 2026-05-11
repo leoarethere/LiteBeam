@@ -6,7 +6,9 @@ use App\Models\ReformasiRb;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
+use Intervention\Image\ImageManager;
 use Illuminate\Support\Facades\Storage;
+use Intervention\Image\Drivers\Gd\Driver;
 
 class DashboardReformasiRbController extends Controller
 {
@@ -49,9 +51,22 @@ class DashboardReformasiRbController extends Controller
         $data['slug'] = Str::slug($validated['title']) . '-' . Str::random(5);
         $data['is_active'] = $request->has('is_active');
 
-        // Handle Upload Cover
+        // Handle Upload Cover (dengan kompresi)
         if ($request->hasFile('cover_image')) {
-            $data['cover_image'] = $request->file('cover_image')->store('reformasi-covers', 'public');
+            try {
+                $file = $request->file('cover_image');
+                $filename = 'reformasi-covers/' . Str::random(40) . '.jpg';
+
+                $manager = new ImageManager(new Driver());
+                $image = $manager->read($file);
+                $image->scale(width: 800);
+                $encoded = $image->toJpeg(quality: 80);
+
+                Storage::disk('public')->put($filename, (string) $encoded);
+                $data['cover_image'] = $filename;
+            } catch (\Exception $e) {
+                return back()->withErrors(['cover_image' => 'Gagal memproses gambar: ' . $e->getMessage()])->withInput();
+            }
         }
 
         ReformasiRb::create($data);
@@ -66,39 +81,49 @@ class DashboardReformasiRbController extends Controller
     }
 
     public function update(Request $request, ReformasiRb $reformasiRb)
-        {
-            $validated = $request->validate([
-                'title'       => 'required|string|max:255',
-                'file_link'   => 'required|url',
-                'cover_image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
-                'description' => 'required|string',
-            ]);
+    {
+        $validated = $request->validate([
+            'title'       => 'required|string|max:255',
+            'file_link'   => 'required|url',
+            'cover_image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
+            'description' => 'required|string',
+        ]);
 
-            $data = $validated;
-            
-            // [PERBAIKAN SEO] Slug dijaga tetap permanen
-            
-            $data['is_active'] = $request->has('is_active');
+        $data = $validated;
+        
+        // [PERBAIKAN SEO] Slug dijaga tetap permanen
+        
+        $data['is_active'] = $request->has('is_active');
 
-            // [PERBAIKAN LOGIKA GAMBAR] Safe Image Update
-            if ($request->hasFile('cover_image')) {
+        // [PERBAIKAN LOGIKA GAMBAR] Safe Image Update (dengan kompresi)
+        if ($request->hasFile('cover_image')) {
+            try {
+                $file = $request->file('cover_image');
+                $filename = 'reformasi-covers/' . Str::random(40) . '.jpg';
+
+                $manager = new ImageManager(new Driver());
+                $image = $manager->read($file);
+                $image->scale(width: 800);
+                $encoded = $image->toJpeg(quality: 80);
+
                 // 1. Simpan gambar baru
-                $path = $request->file('cover_image')->store('reformasi-covers', 'public');
-                
+                Storage::disk('public')->put($filename, (string) $encoded);
+
                 // 2. Jika sukses, hapus gambar lama
-                if ($path) {
-                    if ($reformasiRb->cover_image && Storage::disk('public')->exists($reformasiRb->cover_image)) {
-                        Storage::disk('public')->delete($reformasiRb->cover_image);
-                    }
-                    $data['cover_image'] = $path;
+                if ($reformasiRb->cover_image && Storage::disk('public')->exists($reformasiRb->cover_image)) {
+                    Storage::disk('public')->delete($reformasiRb->cover_image);
                 }
+                $data['cover_image'] = $filename;
+            } catch (\Exception $e) {
+                return back()->withErrors(['cover_image' => 'Gagal memproses gambar: ' . $e->getMessage()])->withInput();
             }
-
-            $reformasiRb->update($data);
-
-            return redirect()->route('dashboard.reformasi-rb.index')
-                ->with('success', 'Data Reformasi RB berhasil diperbarui!');
         }
+
+        $reformasiRb->update($data);
+
+        return redirect()->route('dashboard.reformasi-rb.index')
+            ->with('success', 'Data Reformasi RB berhasil diperbarui!');
+    }
 
     public function destroy(ReformasiRb $reformasiRb)
     {

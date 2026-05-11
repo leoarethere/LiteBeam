@@ -3,10 +3,8 @@
 namespace Database\Seeders;
 
 use App\Models\User;
-use Illuminate\Support\Str;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
 class UserSeeder extends Seeder
 {
@@ -15,19 +13,24 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
-        // Menggunakan firstOrCreate untuk mencegah error jika user 'leo' sudah ada
+        // 1. Buat User Admin Khusus
+        User::factory()->admin()->create([
+            'password' => Hash::make('password'), // Password untuk admin
+        ]);
+
+        // 2. Buat User Leo (Opsional, jika ingin tetap ada)
         User::firstOrCreate(
-            ['username' => 'leo'], // Kriteria pencarian unik
+            ['username' => 'leo'],
             [
                 'name' => 'Leo',
                 'email' => 'leonardounofficialz@gmail.com',
                 'email_verified_at' => now(),
                 'password' => Hash::make('12345678'),
-                'remember_token' => Str::random(10)
+                'is_admin' => 1, // Leo sebagai Akun Utama
             ]
         );
         
-        // Buat 5 user dummy lainnya
+        // 3. Buat 5 user dummy biasa
         User::factory(5)->create();
     }
 }

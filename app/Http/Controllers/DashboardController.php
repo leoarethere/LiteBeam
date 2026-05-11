@@ -16,17 +16,18 @@ class DashboardController extends Controller
     public function index()
     {
         // 1. Mengambil Statistik Data untuk Grid Kartu
+        // withoutEagerLoads() mencegah eager loading relasi yang tidak perlu untuk count()
         $stats = [
-            'totalPosts'      => Post::count(),
-            'totalBroadcasts' => Broadcast::count(),
-            'totalJadwal'     => JadwalAcara::count(),
+            'totalPosts'      => Post::withoutEagerLoads()->count(),
+            'totalBroadcasts' => Broadcast::withoutEagerLoads()->count(),
+            'totalJadwal'     => JadwalAcara::withoutEagerLoads()->count(),
             'totalMagang'     => InfoMagang::count(),
             'totalKunjungan'  => InfoKunjungan::count(),
             'totalBanners'    => Banner::count(),
             'totalUsers'      => User::count(),
             
             // Statistik Tambahan
-            'todayPosts'      => Post::whereDate('created_at', today())->count(),
+            'todayPosts'      => Post::withoutEagerLoads()->whereDate('created_at', today())->count(),
         ];
 
         // 2. Mengambil Aktivitas Terbaru (5 User Terakhir)

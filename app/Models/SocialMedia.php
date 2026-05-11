@@ -12,8 +12,8 @@ class SocialMedia extends Model
     protected $table = 'social_medias';
 
     protected $fillable = [
-        // 'email',  <-- HAPUS
-        // 'phone',  <-- HAPUS
+        'email',
+        'phone',
         'instagram',
         'twitter',
         'facebook',

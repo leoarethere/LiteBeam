@@ -14,19 +14,18 @@ class DashboardSocialMediaController extends Controller
      */
     public function index()
     {
-        // Ambil data pertama
-        $socialMedia = SocialMedia::first();
-
-        // Jika belum ada data, buat dummy data agar tombol Edit muncul (Sama seperti Contact Info)
-        if (!$socialMedia) {
-            $socialMedia = SocialMedia::create([
+        // PERBAIKAN: Gunakan firstOrCreate agar lebih atomik dan rapi.
+        // Mencari data pertama, jika tidak ada maka buat baru dengan nilai null.
+        $socialMedia = SocialMedia::firstOrCreate(
+            [], // Kondisi pencarian (kosong berarti ambil baris pertama apapun)
+            [
                 'instagram' => null,
                 'facebook'  => null,
                 'twitter'   => null,
                 'tiktok'    => null,
                 'youtube'   => null,
-            ]);
-        }
+            ]
+        );
         
         return view('backend.social-media.index', compact('socialMedia'));
     }
@@ -51,14 +50,21 @@ class DashboardSocialMediaController extends Controller
             'facebook'  => 'nullable|url',
             'tiktok'    => 'nullable|url',
             'youtube'   => 'nullable|url',
+        ], [
+            // Opsional: Custom error message jika URL tidak valid
+            'instagram.url' => 'Link Instagram harus berupa URL valid (awalan http:// atau https://)',
+            'twitter.url'   => 'Link X (Twitter) harus berupa URL valid',
+            'facebook.url'  => 'Link Facebook harus berupa URL valid',
+            'tiktok.url'    => 'Link TikTok harus berupa URL valid',
+            'youtube.url'   => 'Link YouTube harus berupa URL valid',
         ]);
 
         $socialMedia = SocialMedia::findOrFail($id);
         $socialMedia->update($validated);
         
+        // Hapus cache agar frontend segera mendapat perubahan
         Cache::forget('global_social_media'); 
 
-        // Redirect ke Index, bukan back()
         return redirect()->route('dashboard.social-media.index')
             ->with('success', 'Link sosial media berhasil diperbarui!');
     }

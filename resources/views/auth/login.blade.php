@@ -312,8 +312,7 @@
                                 Ingat saya
                             </label>
                         </div>
-                        <a href="{{ route('password.request') }}" 
-                           class="text-sm font-medium text-blue-600 hover:underline dark:text-blue-500 transition-colors">
+                        <a href="{{ route('password.request') }}" class="text-sm font-medium text-blue-600 hover:underline dark:text-blue-500">
                             Lupa kata sandi?
                         </a>
                     </div>

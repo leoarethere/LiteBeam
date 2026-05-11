@@ -29,20 +29,29 @@
                         Jadwal Acara TVRI
                     </h1>
                     <p class="text-blue-100 text-base sm:text-lg max-w-2xl mx-auto leading-relaxed">
-                        Simak Jadwal Acaraan edukatif, informatif, dan menghibur pilihan kami hari ini dan hari-hari mendatang.
+                        Simak Jadwal Acara edukatif, informatif, dan menghibur pilihan kami hari ini dan hari-hari mendatang.
                     </p>
                 </div>
             </div>
         </div>
 
-        {{-- BAGIAN FILTER HARI --}}
+        {{-- BAGIAN FILTER HARI (FIXED MOBILE SCROLL) --}}
         <div class="mb-6">
             <div class="relative group">
-                {{-- Fade effect mobile --}}
-                <div class="absolute -center-4 top-0 bottom-0 w-12 bg-gradient-to-r from-gray-50 dark:from-gray-900 to-transparent z-10 pointer-events-none md:hidden"></div>
                 
-                    <div class="overflow-x-auto scrollbar-hide -mx-4 px-4 lg:mx-0 lg:px-0">
-                        <nav class="flex justify-center gap-2 lg:gap-3 pb-2" style="min-width: min-content;">
+                {{-- Shadow Kiri (Mobile Only) --}}
+                <div class="absolute -left-4 top-0 bottom-0 w-12 bg-gradient-to-r from-gray-50 dark:from-gray-900 to-transparent z-10 pointer-events-none md:hidden"></div>
+                
+                {{-- Container Scroll --}}
+                <div class="overflow-x-auto scrollbar-hide -mx-4 px-4 lg:mx-0 lg:px-0">
+                    
+                    {{-- 
+                        [PERBAIKAN LOGIKA]
+                        1. 'w-max min-w-full': Menjamin container melebar sesuai isi tapi minimal selebar layar.
+                        2. 'justify-start': DEFAULT MOBILE. Rata kiri agar item pertama tidak terpotong saat di-scroll.
+                        3. 'lg:justify-center': HANYA DESKTOP. Rata tengah saat layar lebar dan item muat.
+                    --}}
+                    <nav class="flex w-max min-w-full justify-start lg:justify-center gap-2 lg:gap-3 pb-2">
                         
                         <a href="{{ route('publikasi.jadwal') }}"
                            class="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-medium rounded-full transition-all duration-200 whitespace-nowrap border shadow-sm
@@ -65,6 +74,8 @@
                         @endforeach
                     </nav>
                 </div>
+
+                {{-- Shadow Kanan (Mobile Only) --}}
                 <div class="absolute -right-4 top-0 bottom-0 w-12 bg-gradient-to-l from-gray-50 dark:from-gray-900 to-transparent z-10 pointer-events-none md:hidden"></div>
             </div>
         </div>
@@ -162,7 +173,6 @@
         @if($dataJadwal->hasPages())
             <div class="mt-10 mb-12 px-2 sm:px-0">
                 <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 p-4">
-                    {{-- Hapus class 'flex justify-center' agar pagination bisa melebar (justify-between) --}}
                     {{ $dataJadwal->withQueryString()->links('vendor.pagination.tailwind') }}
                 </div>
             </div>

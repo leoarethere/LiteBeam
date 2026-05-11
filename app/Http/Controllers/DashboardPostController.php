@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Auth;
 use Intervention\Image\ImageManager;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
 
 // ✅ GUNAKAN GD DRIVER - Lebih universal dan tersedia di hampir semua server
 use Intervention\Image\Drivers\Gd\Driver;
@@ -117,7 +118,7 @@ class DashboardPostController extends Controller
                 
             } catch (\Exception $e) {
                 // Log error untuk debugging
-                \Log::error('Image processing error: ' . $e->getMessage());
+                Log::error('Image processing error: ' . $e->getMessage());
                 
                 return back()
                     ->withErrors(['featured_image' => 'Gagal memproses gambar: ' . $e->getMessage()])
@@ -145,7 +146,7 @@ class DashboardPostController extends Controller
         try {
             Post::create($validated);
         } catch (\Exception $e) {
-            \Log::error('Post creation error: ' . $e->getMessage());
+            Log::error('Post creation error: ' . $e->getMessage());
             
             return back()
                 ->withErrors(['error' => 'Gagal menyimpan postingan: ' . $e->getMessage()])
@@ -156,7 +157,7 @@ class DashboardPostController extends Controller
             ? 'Postingan berhasil dipublikasikan!' 
             : 'Postingan berhasil disimpan sebagai draft!';
 
-        return redirect()->route('dashboard.posts.index')->with('post_success', $message);
+        return redirect()->route('dashboard.posts.index')->with('success', $message);
     }
 
     /**
@@ -235,7 +236,7 @@ class DashboardPostController extends Controller
                 $validated['featured_image'] = $path;
                 
             } catch (\Exception $e) {
-                \Log::error('Image processing error: ' . $e->getMessage());
+                Log::error('Image processing error: ' . $e->getMessage());
                 
                 return back()
                     ->withErrors(['featured_image' => 'Gagal memproses gambar: ' . $e->getMessage()])
@@ -263,7 +264,7 @@ class DashboardPostController extends Controller
         try {
             $post->update($validated);
         } catch (\Exception $e) {
-            \Log::error('Post update error: ' . $e->getMessage());
+            Log::error('Post update error: ' . $e->getMessage());
             
             return back()
                 ->withErrors(['error' => 'Gagal memperbarui postingan: ' . $e->getMessage()])
@@ -275,7 +276,7 @@ class DashboardPostController extends Controller
             : 'Perubahan berhasil disimpan sebagai draft!';
 
         return redirect()->route('dashboard.posts.index')
-            ->with('post_success', $message);
+            ->with('success', $message);
     }
 
     /**
@@ -294,13 +295,13 @@ class DashboardPostController extends Controller
             $post->delete();
 
             return redirect()->route('dashboard.posts.index')
-                ->with('post_success', 'Postingan "' . $postTitle . '" berhasil dihapus! 🗑️');
+                ->with('success', 'Postingan "' . $postTitle . '" berhasil dihapus! 🗑️');
                 
         } catch (\Exception $e) {
-            \Log::error('Post deletion error: ' . $e->getMessage());
+            Log::error('Post deletion error: ' . $e->getMessage());
             
             return redirect()->route('dashboard.posts.index')
-                ->with('post_error', 'Gagal menghapus postingan. Terjadi error: ' . $e->getMessage());
+                ->with('error', 'Gagal menghapus postingan. Terjadi error: ' . $e->getMessage());
         }
     }
 }

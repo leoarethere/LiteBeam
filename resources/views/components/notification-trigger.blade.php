@@ -2,14 +2,12 @@
     $message = null;
     $type = 'success';
 
-    // Daftar kunci session (Sesuai dengan Controller Anda)
+    // Daftar kunci session (Sudah distandarisasi di semua Controller)
     $keys = [
-        'post_success' => 'success', 
-        'post_error' => 'error',
-        'broadcast_success' => 'success', 
-        'broadcast_error' => 'error',
         'success' => 'success',
-        'error' => 'error'
+        'error' => 'error',
+        'category_success' => 'success',
+        'category_error' => 'error',
     ];
 
     foreach ($keys as $key => $t) {

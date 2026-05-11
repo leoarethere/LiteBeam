@@ -46,16 +46,36 @@ class DashboardContactInfoController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
-            'admin_phone'       => 'required|string|max:20',
-            'partnership_phone' => 'required|string|max:20',
-            'hotline_phone'     => 'required|string|max:20',
+            'admin_phone'       => 'required|string|max:40',
+            'partnership_phone' => 'required|string|max:40',
+            'hotline_phone'     => 'required|string|max:40',
             'address'           => 'required|string',
             'email'             => 'nullable|email',
-            'google_maps_embed' => 'nullable|string', // <--- Tambah validasi
-            'is_active'         => 'boolean',
+            'google_maps_embed' => 'nullable|string',
         ]);
 
         $contactInfo = ContactInfo::findOrFail($id);
+
+        // ✅ PERBAIKAN: Ekstrak URL src dari iframe tag jika user input full iframe
+        $googleMapsEmbed = $request->google_maps_embed;
+        
+        if ($googleMapsEmbed) {
+            // Cek apakah input berupa full iframe tag
+            if (str_contains($googleMapsEmbed, '<iframe')) {
+                // Ekstrak src menggunakan regex
+                preg_match('/src="([^"]+)"/', $googleMapsEmbed, $matches);
+                if (isset($matches[1])) {
+                    $googleMapsEmbed = $matches[1]; // Ambil hanya URL-nya
+                }
+            }
+            
+            // Validasi bahwa hasilnya adalah URL Google Maps yang valid
+            if (!str_contains($googleMapsEmbed, 'google.com/maps')) {
+                return back()->withErrors([
+                    'google_maps_embed' => 'Link yang Anda masukkan bukan link Google Maps yang valid.'
+                ])->withInput();
+            }
+        }
 
         $contactInfo->update([
             'admin_phone'       => $request->admin_phone,
@@ -63,7 +83,7 @@ class DashboardContactInfoController extends Controller
             'hotline_phone'     => $request->hotline_phone,
             'address'           => $request->address,
             'email'             => $request->email,
-            'google_maps_embed' => $request->google_maps_embed, // <--- Simpan data
+            'google_maps_embed' => $googleMapsEmbed, // Simpan URL yang sudah dibersihkan
             'is_active'         => $request->has('is_active'),
         ]);
 

@@ -36,6 +36,13 @@ class DashboardJadwalCategoryController extends Controller
 
     public function destroy(JadwalCategory $jadwalCategory)
     {
+        // Cek jika kategori masih memiliki jadwal acara
+        $jadwalCount = $jadwalCategory->jadwalAcaras()->count();
+
+        if ($jadwalCount > 0) {
+            return back()->with('error', 'Gagal! Kategori ini masih memiliki ' . $jadwalCount . ' jadwal acara.');
+        }
+
         $jadwalCategory->delete();
         return back()->with('success', 'Hari/Kategori berhasil dihapus!');
     }

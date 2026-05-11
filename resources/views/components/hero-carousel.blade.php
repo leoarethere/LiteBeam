@@ -23,11 +23,15 @@
 
         resetAutoplay() {
             this.progress = 0;
-            clearInterval(this.autoplayInterval);
             this.startAutoplay();
         },
 
         startAutoplay() {
+            clearInterval(this.autoplayInterval);
+            if (this.slides.length <= 1) {
+                this.progress = 100;
+                return;
+            }
             this.autoplayInterval = setInterval(() => {
                 this.progress += 1;
                 if (this.progress >= 100) {

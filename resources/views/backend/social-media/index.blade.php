@@ -22,79 +22,88 @@
             @endif
         </div>
 
-        @if(session('success'))
+        {{-- @if(session('success'))
             <div class="mb-6 p-4 text-sm text-green-800 rounded-lg bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-800" role="alert">
                 <span class="font-medium">Sukses!</span> {{ session('success') }}
             </div>
-        @endif
+        @endif --}}
 
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md border border-gray-200 dark:border-gray-700 overflow-hidden">
-            <div class="p-6">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {{-- Helper function untuk menampilkan link atau '-' jika kosong --}}
-                    @php
-                        function showLink($url) {
-                            return $url ? '<a href="'.$url.'" target="_blank" class="text-blue-600 hover:underline break-all">'.$url.'</a>' : '<span class="text-gray-400 italic">Tidak ada tautan</span>';
-                        }
-                    @endphp
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {{-- Helper function untuk menampilkan link --}}
+            @php
+                function showLink($url) {
+                    if (!$url) {
+                        return '<div class="flex items-center text-gray-400 dark:text-gray-500 italic text-sm py-1"><svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg> Belum ada tautan</div>';
+                    }
+                    return '<a href="'.$url.'" target="_blank" class="flex items-center text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 transition-colors text-sm font-medium py-1 group" title="'.$url.'"><svg class="w-4 h-4 mr-2 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg><span class="truncate">'.$url.'</span></a>';
+                }
+            @endphp
 
-                    {{-- Instagram --}}
-                    <div class="p-4 bg-gray-50 dark:bg-gray-700/30 rounded-lg border border-gray-100 dark:border-gray-700">
-                        <div class="flex items-center gap-3 mb-2">
-                            <i class="fab fa-instagram text-2xl text-pink-600"></i> {{-- Gunakan FontAwesome jika ada, atau SVG --}}
-                            <h3 class="font-semibold text-gray-900 dark:text-white">Instagram</h3>
-                        </div>
-                        <p class="text-sm text-gray-600 dark:text-gray-300">
-                            {!! showLink($socialMedia->instagram) !!}
-                        </p>
+            {{-- Instagram Card --}}
+            <div class="group relative bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 hover:shadow-md transition-all duration-300 overflow-hidden">
+                <div class="flex items-center gap-4 mb-4 relative z-10">
+                    <div>
+                        <h3 class="text-lg font-bold text-gray-900 dark:text-white">Instagram</h3>
+                        <p class="text-xs text-gray-500 dark:text-gray-400 font-medium">@if($socialMedia && $socialMedia->instagram) Tersambung @else Belum Diatur @endif</p>
                     </div>
-
-                    {{-- Facebook --}}
-                    <div class="p-4 bg-gray-50 dark:bg-gray-700/30 rounded-lg border border-gray-100 dark:border-gray-700">
-                        <div class="flex items-center gap-3 mb-2">
-                            <i class="fab fa-facebook text-2xl text-blue-600"></i>
-                            <h3 class="font-semibold text-gray-900 dark:text-white">Facebook</h3>
-                        </div>
-                        <p class="text-sm text-gray-600 dark:text-gray-300">
-                            {!! showLink($socialMedia->facebook) !!}
-                        </p>
-                    </div>
-
-                    {{-- Twitter / X --}}
-                    <div class="p-4 bg-gray-50 dark:bg-gray-700/30 rounded-lg border border-gray-100 dark:border-gray-700">
-                        <div class="flex items-center gap-3 mb-2">
-                            <i class="fab fa-x-twitter text-2xl text-dark-600"></i>
-                            <h3 class="font-semibold text-gray-900 dark:text-white">Twitter / X</h3>
-                        </div>
-                        <p class="text-sm text-gray-600 dark:text-gray-300">
-                            {!! showLink($socialMedia->twitter) !!}
-                        </p>
-                    </div>
-
-                    {{-- YouTube --}}
-                    <div class="p-4 bg-gray-50 dark:bg-gray-700/30 rounded-lg border border-gray-100 dark:border-gray-700">
-                        <div class="flex items-center gap-3 mb-2">
-                            <i class="fab fa-youtube text-2xl text-red-600"></i>
-                            <h3 class="font-semibold text-gray-900 dark:text-white">YouTube</h3>
-                        </div>
-                        <p class="text-sm text-gray-600 dark:text-gray-300">
-                            {!! showLink($socialMedia->youtube) !!}
-                        </p>
-                    </div>
-
-                    {{-- TikTok --}}
-                    <div class="md:col-span-2 p-4 bg-gray-50 dark:bg-gray-700/30 rounded-lg border border-gray-100 dark:border-gray-700">
-                        <div class="flex items-center gap-3 mb-2">
-                            <i class="fab fa-tiktok text-2xl text-gray-900 dark:text-white"></i>
-                            <h3 class="font-semibold text-gray-900 dark:text-white">TikTok</h3>
-                        </div>
-                        <p class="text-sm text-gray-600 dark:text-gray-300">
-                            {!! showLink($socialMedia->tiktok) !!}
-                        </p>
-                    </div>
-
+                </div>
+                <div class="bg-gray-50 dark:bg-gray-900/50 p-3 rounded-xl border border-gray-100 dark:border-gray-700 relative z-10">
+                    {!! showLink($socialMedia->instagram ?? null) !!}
                 </div>
             </div>
+
+            {{-- Facebook Card --}}
+            <div class="group relative bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 hover:shadow-md transition-all duration-300 overflow-hidden">
+                <div class="flex items-center gap-4 mb-4 relative z-10">
+                    <div>
+                        <h3 class="text-lg font-bold text-gray-900 dark:text-white">Facebook</h3>
+                        <p class="text-xs text-gray-500 dark:text-gray-400 font-medium">@if($socialMedia && $socialMedia->facebook) Tersambung @else Belum Diatur @endif</p>
+                    </div>
+                </div>
+                <div class="bg-gray-50 dark:bg-gray-900/50 p-3 rounded-xl border border-gray-100 dark:border-gray-700 relative z-10">
+                    {!! showLink($socialMedia->facebook ?? null) !!}
+                </div>
+            </div>
+
+            {{-- Twitter / X Card --}}
+            <div class="group relative bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 hover:shadow-md transition-all duration-300 overflow-hidden">
+                <div class="flex items-center gap-4 mb-4 relative z-10">
+                    <div>
+                        <h3 class="text-lg font-bold text-gray-900 dark:text-white">X (Twitter)</h3>
+                        <p class="text-xs text-gray-500 dark:text-gray-400 font-medium">@if($socialMedia && $socialMedia->twitter) Tersambung @else Belum Diatur @endif</p>
+                    </div>
+                </div>
+                <div class="bg-gray-50 dark:bg-gray-900/50 p-3 rounded-xl border border-gray-100 dark:border-gray-700 relative z-10">
+                    {!! showLink($socialMedia->twitter ?? null) !!}
+                </div>
+            </div>
+
+            {{-- YouTube Card --}}
+            <div class="group relative bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 hover:shadow-md transition-all duration-300 overflow-hidden">
+                <div class="flex items-center gap-4 mb-4 relative z-10">
+                    <div>
+                        <h3 class="text-lg font-bold text-gray-900 dark:text-white">YouTube</h3>
+                        <p class="text-xs text-gray-500 dark:text-gray-400 font-medium">@if($socialMedia && $socialMedia->youtube) Channel Terhubung @else Belum Diatur @endif</p>
+                    </div>
+                </div>
+                <div class="bg-gray-50 dark:bg-gray-900/50 p-3 rounded-xl border border-gray-100 dark:border-gray-700 relative z-10">
+                    {!! showLink($socialMedia->youtube ?? null) !!}
+                </div>
+            </div>
+
+            {{-- TikTok Card --}}
+            <div class="group relative bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 hover:shadow-md transition-all duration-300 overflow-hidden md:col-span-2 lg:col-span-1">
+                <div class="flex items-center gap-4 mb-4 relative z-10">
+                    <div>
+                        <h3 class="text-lg font-bold text-gray-900 dark:text-white">TikTok</h3>
+                        <p class="text-xs text-gray-500 dark:text-gray-400 font-medium">@if($socialMedia && $socialMedia->tiktok) Tersambung @else Belum Diatur @endif</p>
+                    </div>
+                </div>
+                <div class="bg-gray-50 dark:bg-gray-900/50 p-3 rounded-xl border border-gray-100 dark:border-gray-700 relative z-10">
+                    {!! showLink($socialMedia->tiktok ?? null) !!}
+                </div>
+            </div>
+
         </div>
     </div>
 </x-dashboard-layout>

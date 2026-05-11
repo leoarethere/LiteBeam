@@ -16,9 +16,9 @@
     <style>
         html, body {
             overscroll-behavior: none;
-            overflow-x: hidden;
         }
         body {
+            overflow-x: hidden;
             overscroll-behavior-y: contain;
         }
 

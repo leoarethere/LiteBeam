@@ -11,8 +11,8 @@
         initDropdowns() {
             // Set dropdown terbuka jika route aktif saat sidebar terbuka
             if (this.isSidebarOpen) {
-                this.dropdowns.publikasi = {{ in_array(request()->route()->getName(), ['dashboard.broadcasts.*', 'dashboard.jadwal-acara.*']) || request()->is('dashboard/broadcasts*', 'dashboard/jadwal-acara*') ? 'true' : 'false' }};
-                this.dropdowns.layanan = {{ request()->is('dashboard/ppid*', 'dashboard/info-rb*', 'dashboard/info-magang*', 'dashboard/info-kunjungan*') ? 'true' : 'false' }};
+                this.dropdowns.publikasi = {{ request()->is('dashboard/broadcasts*', 'dashboard/jadwal-acara*') ? 'true' : 'false' }};
+                this.dropdowns.layanan = {{ request()->is('dashboard/ppid*', 'dashboard/info-rb*', 'dashboard/info-magang*', 'dashboard/info-magang-faq*', 'dashboard/info-kunjungan*', 'dashboard/info-kunjungan-faq*') ? 'true' : 'false' }};
                 this.dropdowns.tentang = {{ request()->is('dashboard/sejarah*', 'dashboard/visi-misi*', 'dashboard/prestasi*', 'dashboard/tugas-fungsi*', 'dashboard/himne-tvri*') ? 'true' : 'false' }};
             }
         },
@@ -24,36 +24,23 @@
         },
         
         toggleDropdown(dropdownName) {
-            // PERBAIKAN: Menghapus pengecekan (!this.isSidebarOpen) agar bisa diklik saat collapse
-            
-            // Tutup semua dropdown lain kecuali yang diklik
-            Object.keys(this.dropdowns).forEach(key => {
-                if (key !== dropdownName) {
-                    this.dropdowns[key] = false;
-                }
-            });
-            
-            // Toggle dropdown yang diklik
-            this.dropdowns[dropdownName] = !this.dropdowns[dropdownName];
-        },
-        
-        handleMouseEnter(dropdownName) {
             if (!this.isSidebarOpen) {
-                // Tutup yang lain dulu agar tidak tumpang tindih
-                this.closeAllDropdowns(); 
-                this.dropdowns[dropdownName] = true;
-                this.isHovering = true;
-            }
-        },
-        
-        handleMouseLeave(dropdownName) {
-            if (!this.isSidebarOpen) {
-                setTimeout(() => { // <--- Timer ini
-                    if (this.isHovering) {
-                        this.dropdowns[dropdownName] = false;
-                        this.isHovering = false;
+                // Jika sidebar tertutup, buka sidebar dulu
+                this.isSidebarOpen = true;
+                this.closeAllDropdowns();
+                // Buka dropdown dengan jeda agar animasi mulus
+                setTimeout(() => {
+                    this.dropdowns[dropdownName] = true;
+                }, 150);
+            } else {
+                // Tutup semua dropdown lain kecuali yang diklik
+                Object.keys(this.dropdowns).forEach(key => {
+                    if (key !== dropdownName) {
+                        this.dropdowns[key] = false;
                     }
-                }, 800); // <--- Ubah angka 300 (milidetik) ini
+                });
+                // Toggle dropdown yang diklik
+                this.dropdowns[dropdownName] = !this.dropdowns[dropdownName];
             }
         }
     }"
@@ -105,9 +92,7 @@
                     $isJadwalActive = request()->is('dashboard/jadwal-acara*');
                 @endphp
                 
-                <li class="relative"
-                    @mouseenter="handleMouseEnter('publikasi')"
-                    @mouseleave="handleMouseLeave('publikasi')">
+                <li class="relative">
                     
                     <button 
                         @click.prevent="toggleDropdown('publikasi')"
@@ -152,18 +137,13 @@
 
                     {{-- Submenu Publikasi --}}
                     <ul x-show="dropdowns.publikasi" 
-                        x-transition:enter="transition ease-out duration-300"
-                        x-transition:enter-start="opacity-0 max-h-0 transform scale-y-95"
-                        x-transition:enter-end="opacity-100 max-h-96 transform scale-y-100"
-                        x-transition:leave="transition ease-in duration-800"
-                        x-transition:leave-start="opacity-100 max-h-96 transform scale-y-100"
-                        x-transition:leave-end="opacity-0 max-h-0 transform scale-y-95"
-                        @mouseenter="if (!isSidebarOpen) isHovering = true"
-                        @mouseleave="if (!isSidebarOpen) { isHovering = false; dropdowns.publikasi = false; }"
-                        :class="isSidebarOpen 
-                            ? 'pl-11 mt-1 space-y-1 overflow-hidden' 
-                            : 'absolute top-0 left-full ml-2 w-56 p-2 bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 space-y-1 z-50'
-                        "
+                        x-transition:enter="transition-all ease-out duration-300"
+                        x-transition:enter-start="opacity-0 max-h-0"
+                        x-transition:enter-end="opacity-100 max-h-96"
+                        x-transition:leave="transition-all ease-in duration-200"
+                        x-transition:leave-start="opacity-100 max-h-96"
+                        x-transition:leave-end="opacity-0 max-h-0"
+                        class="pl-11 mt-1 space-y-1 overflow-hidden"
                         x-cloak>
                         
                         <li>
@@ -200,9 +180,7 @@
                     // [UPDATE] Tambahkan 'dashboard/info-kunjungan-faq*' agar sidebar tetap terbuka
                     $isLayananActive = request()->is('dashboard/ppid*', 'dashboard/info-rb*', 'dashboard/info-magang*', 'dashboard/info-magang-faq*', 'dashboard/info-kunjungan*', 'dashboard/info-kunjungan-faq*');
                 @endphp
-                <li class="relative"
-                    @mouseenter="handleMouseEnter('layanan')"
-                    @mouseleave="handleMouseLeave('layanan')">
+                <li class="relative">
                     
                     <button 
                         @click.prevent="toggleDropdown('layanan')"
@@ -242,18 +220,13 @@
                     </button>
 
                     <ul x-show="dropdowns.layanan" 
-                        x-transition:enter="transition ease-out duration-300"
-                        x-transition:enter-start="opacity-0 max-h-0 transform scale-y-95"
-                        x-transition:enter-end="opacity-100 max-h-96 transform scale-y-100"
-                        x-transition:leave="transition ease-in duration-800"
-                        x-transition:leave-start="opacity-100 max-h-96 transform scale-y-100"
-                        x-transition:leave-end="opacity-0 max-h-0 transform scale-y-95"
-                        @mouseenter="if (!isSidebarOpen) isHovering = true"
-                        @mouseleave="if (!isSidebarOpen) { isHovering = false; dropdowns.layanan = false; }"
-                        :class="isSidebarOpen 
-                            ? 'pl-11 mt-1 space-y-1 overflow-hidden' 
-                            : 'absolute top-0 left-full ml-2 w-56 p-2 bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 space-y-1 z-50'
-                        "
+                        x-transition:enter="transition-all ease-out duration-300"
+                        x-transition:enter-start="opacity-0 max-h-0"
+                        x-transition:enter-end="opacity-100 max-h-[500px]"
+                        x-transition:leave="transition-all ease-in duration-200"
+                        x-transition:leave-start="opacity-100 max-h-[500px]"
+                        x-transition:leave-end="opacity-0 max-h-0"
+                        class="pl-11 mt-1 space-y-1 overflow-hidden"
                         x-cloak>
                         
                         <li>
@@ -367,9 +340,7 @@
                 @php 
                     $isTentangActive = request()->is('dashboard/sejarah*', 'dashboard/visi-misi*', 'dashboard/prestasi*', 'dashboard/tugas-fungsi*', 'dashboard/himne-tvri*');
                 @endphp
-                <li class="relative"
-                    @mouseenter="handleMouseEnter('tentang')"
-                    @mouseleave="handleMouseLeave('tentang')">
+                <li class="relative">
                     
                     <button 
                         @click.prevent="toggleDropdown('tentang')"
@@ -409,18 +380,13 @@
                     </button>
 
                     <ul x-show="dropdowns.tentang" 
-                        x-transition:enter="transition ease-out duration-300"
-                        x-transition:enter-start="opacity-0 max-h-0 transform scale-y-95"
-                        x-transition:enter-end="opacity-100 max-h-96 transform scale-y-100"
-                        x-transition:leave="transition ease-in duration-800"
-                        x-transition:leave-start="opacity-100 max-h-96 transform scale-y-100"
-                        x-transition:leave-end="opacity-0 max-h-0 transform scale-y-95"
-                        @mouseenter="if (!isSidebarOpen) isHovering = true"
-                        @mouseleave="if (!isSidebarOpen) { isHovering = false; dropdowns.tentang = false; }"
-                        :class="isSidebarOpen 
-                            ? 'pl-11 mt-1 space-y-1 overflow-hidden' 
-                            : 'absolute top-0 left-full ml-2 w-56 p-2 bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 space-y-1 z-50'
-                        "
+                        x-transition:enter="transition-all ease-out duration-300"
+                        x-transition:enter-start="opacity-0 max-h-0"
+                        x-transition:enter-end="opacity-100 max-h-[500px]"
+                        x-transition:leave="transition-all ease-in duration-200"
+                        x-transition:leave-start="opacity-100 max-h-[500px]"
+                        x-transition:leave-end="opacity-0 max-h-0"
+                        class="pl-11 mt-1 space-y-1 overflow-hidden"
                         x-cloak>
                         
                         <li>

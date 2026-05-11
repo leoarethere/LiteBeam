@@ -23,12 +23,12 @@
             @endif
         </div>
 
-        {{-- ALERT SUCCESS --}}
+        {{-- ALERT SUCCESS
         @if(session('success'))
             <div class="mb-6 p-4 text-sm text-green-800 rounded-lg bg-green-50 dark:bg-green-900/30 dark:text-green-400 border border-green-200 dark:border-green-800" role="alert">
                 <span class="font-medium">Sukses!</span> {{ session('success') }}
             </div>
-        @endif
+        @endif --}}
 
         {{-- CONTENT CARD --}}
         <div class="bg-white dark:bg-gray-800 shadow-md sm:rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">

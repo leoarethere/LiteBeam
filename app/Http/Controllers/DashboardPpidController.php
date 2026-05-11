@@ -43,19 +43,16 @@ class DashboardPpidController extends Controller
             try {
                 $image = $request->file('cover_image');
                 $imageName = time() . '_' . uniqid() . '.jpg';
+                $path = 'ppid-covers/' . $imageName;
                 
                 $manager = new ImageManager(new Driver());
                 $imgProcessed = $manager->read($image);
                 $imgProcessed->scale(width: 800);
                 $encoded = $imgProcessed->toJpeg(quality: 80);
                 
-                // Pastikan folder ada
-                if (!file_exists(public_path('storage/ppid-covers'))) {
-                    mkdir(public_path('storage/ppid-covers'), 0755, true);
-                }
-                
-                file_put_contents(public_path('storage/ppid-covers/' . $imageName), $encoded);
-                $validated['cover_image'] = 'ppid-covers/' . $imageName;
+                // Simpan menggunakan Storage Facade (konsisten dengan update)
+                Storage::disk('public')->put($path, (string) $encoded);
+                $validated['cover_image'] = $path;
                 
             } catch (\Exception $e) {
                 return back()->withErrors(['cover_image' => 'Gagal upload gambar: ' . $e->getMessage()])->withInput();
@@ -121,9 +118,9 @@ class DashboardPpidController extends Controller
 
     public function destroy(Ppid $ppid): RedirectResponse
     {
-        // Hapus cover image jika ada
-        if ($ppid->cover_image && file_exists(public_path('storage/' . $ppid->cover_image))) {
-            unlink(public_path('storage/' . $ppid->cover_image));
+        // Hapus cover image jika ada (menggunakan Storage Facade)
+        if ($ppid->cover_image && Storage::disk('public')->exists($ppid->cover_image)) {
+            Storage::disk('public')->delete($ppid->cover_image);
         }
 
         $ppid->delete();
