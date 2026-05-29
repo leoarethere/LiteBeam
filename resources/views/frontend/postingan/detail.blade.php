@@ -5,6 +5,10 @@
         {{ $post->meta_description ?? Str::limit(strip_tags($post->body), 150) }}
     </x-slot:meta_description>
 
+    {{-- Open Graph: Gambar & Tipe Artikel --}}
+    <x-slot:og_image>{{ $post->featured_image ? Storage::url($post->featured_image) : asset('img/og-default.png') }}</x-slot:og_image>
+    <x-slot:og_type>article</x-slot:og_type>
+
     {{-- SEO Structured Data --}}
     @if($post)
     <script type="application/ld+json">
@@ -103,11 +107,18 @@
 
             {{-- 3. FEATURED IMAGE --}}
             @if ($post->featured_image && Storage::exists($post->featured_image))
-                <div class="w-full px-5 sm:px-8 lg:px-10 pb-6 sm:pb-8 rounded-lg">
-                    <figure class="relative w-full overflow-hidden">
+                <div class="w-full px-5 sm:px-8 lg:px-10 pb-6 sm:pb-8">
+                    <figure class="relative w-full aspect-[2/1] lg:max-h-[400px] xl:max-h-[450px] overflow-hidden rounded-xl shadow-lg bg-gray-900 dark:bg-black">
+                        {{-- Blurred Background Layer --}}
+                        <img src="{{ Storage::url($post->featured_image) }}" 
+                             alt="" 
+                             class="absolute inset-0 w-full h-full object-cover blur-2xl opacity-60 scale-110"
+                             aria-hidden="true">
+                        
+                        {{-- Main Image Layer (Fit without stretching) --}}
                         <img src="{{ Storage::url($post->featured_image) }}" 
                              alt="{{ $post->title }}" 
-                             class="w-full h-full object-cover transition-transform duration-700 hover:scale-105 rounded-lg shadow-lg"
+                             class="absolute inset-0 w-full h-full object-contain transition-transform duration-700 hover:scale-[1.02] z-10"
                              loading="lazy">
                     </figure>
                 </div>
@@ -179,6 +190,11 @@
                     </div>
                 </div>
 
+            </div>
+
+            {{-- 6. KOMENTAR --}}
+            <div class="px-5 sm:px-8 lg:px-10 pb-10">
+                <x-comments :model="$post" />
             </div>
 
         </article>

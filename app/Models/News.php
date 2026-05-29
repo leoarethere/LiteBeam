@@ -8,10 +8,21 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 class News extends Model
 {
     use HasFactory;
+
+    /**
+     * Boot model: Hapus komentar terkait saat berita dihapus.
+     */
+    protected static function booted(): void
+    {
+        static::deleting(function (News $news) {
+            $news->comments()->delete();
+        });
+    }
 
     // Menentukan kolom mana saja yang boleh diisi secara massal
     protected $fillable = [
@@ -70,11 +81,19 @@ class News extends Model
             });
         });
 
-        // 3. Filter \PharIo\Manifest\Author
+        // 3. Filter Author
         $query->when($filters['author'] ?? false, function ($query, $author) {
             $query->whereHas('user', function($q) use ($author) {
                 $q->where('username', $author);
             });
         });
+    }
+
+    /**
+     * Dapatkan semua komentar untuk berita ini.
+     */
+    public function comments(): MorphMany
+    {
+        return $this->morphMany(Comment::class, 'commentable')->latest();
     }
 }

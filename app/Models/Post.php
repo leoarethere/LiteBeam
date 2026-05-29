@@ -8,10 +8,21 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 class Post extends Model
 {
     use HasFactory;
+
+    /**
+     * Boot model: Hapus komentar terkait saat postingan dihapus.
+     */
+    protected static function booted(): void
+    {
+        static::deleting(function (Post $post) {
+            $post->comments()->delete();
+        });
+    }
 
     protected $fillable = [
         'title', 'slug', 'user_id', 'category_id', 'body',
@@ -72,5 +83,13 @@ class Post extends Model
                 $q->where('username', $author);
             });
         });
+    }
+
+    /**
+     * Dapatkan semua komentar untuk postingan ini.
+     */
+    public function comments(): MorphMany
+    {
+        return $this->morphMany(Comment::class, 'commentable')->latest();
     }
 }

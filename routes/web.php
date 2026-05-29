@@ -10,6 +10,8 @@ use App\Http\Controllers\LoginController;
 use App\Http\Controllers\ThemeController;
 use App\Http\Controllers\PasswordResetLinkController;
 use App\Http\Controllers\NewPasswordController;
+use App\Http\Controllers\CommentController;
+use App\Http\Controllers\DashboardCommentController;
 use App\Http\Controllers\BannerController;
 use App\Http\Controllers\JadwalController;
 use App\Http\Controllers\HistoryController;
@@ -56,8 +58,6 @@ use App\Http\Controllers\DashboardBroadcastCategoryController;
 
 // ================= FRONTEND =================
 Route::get('/', [HomeController::class, 'index'])->name('home');
-Route::view('/about', 'about', ['title' => 'About'])->name('about');
-Route::view('/contact', 'contact', ['title' => 'Contact'])->name('contact');
 
 Route::get('/posts', [PostController::class, 'index'])->name('posts.index');
 Route::get('/posts/{post:slug}', [PostController::class, 'show'])->name('posts.show');
@@ -80,6 +80,9 @@ Route::get('/info-rb', [ReformasiRbController::class, 'index'])->name('info-rb.i
 
 Route::get('/info-magang', [InfoMagangController::class, 'index'])->name('info-magang.index');
 Route::get('/info-kunjungan', [InfoKunjunganController::class, 'index'])->name('info-kunjungan.index');
+
+// Komentar (Frontend) - Dilindungi dengan throttle untuk mencegah spam
+Route::post('/comments', [CommentController::class, 'store'])->name('comments.store')->middleware('throttle:10,1');
 
 Route::get('/streaming', [StreamingController::class, 'index'])->name('streaming');
 
@@ -158,15 +161,14 @@ Route::middleware('auth')->prefix('dashboard')->group(function () {
     Route::post('/news-categories', [DashboardNewsCategoryController::class, 'store'])->name('dashboard.news-categories.store');
     Route::put('/news-categories/{newsCategory}', [DashboardNewsCategoryController::class, 'update'])->name('dashboard.news-categories.update');
     Route::delete('/news-categories/{newsCategory}', [DashboardNewsCategoryController::class, 'destroy'])->name('dashboard.news-categories.destroy');
-});
 
-// ================= UTILITAS =================
-Route::get('/theme/toggle', [ThemeController::class, 'toggle'])->name('theme.toggle');
+    // Komentar (Backend)
+    Route::get('/comments', [DashboardCommentController::class, 'index'])->name('dashboard.comments.index');
+    Route::put('/comments/{comment}/approve', [DashboardCommentController::class, 'approve'])->name('dashboard.comments.approve');
+    Route::put('/comments/{comment}/reject', [DashboardCommentController::class, 'reject'])->name('dashboard.comments.reject');
+    Route::delete('/comments/{comment}', [DashboardCommentController::class, 'destroy'])->name('dashboard.comments.destroy');
 
-// Route utilitas (dilindungi auth agar tidak bisa diakses publik)
-Route::middleware('auth')->group(function () {
-    Route::get('/cek-php', fn() => phpinfo());
-
+    // Utilitas: Membuat symlink storage (hanya dijalankan sekali saat deploy)
     Route::get('/symlink', function () {
         try {
             \Illuminate\Support\Facades\Artisan::call('storage:link');
@@ -174,5 +176,8 @@ Route::middleware('auth')->group(function () {
         } catch (\Exception $e) {
             return 'Gagal membuat symlink: ' . $e->getMessage();
         }
-    });
+    })->name('dashboard.symlink');
 });
+
+// ================= UTILITAS =================
+Route::get('/theme/toggle', [ThemeController::class, 'toggle'])->name('theme.toggle');

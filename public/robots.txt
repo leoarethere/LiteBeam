@@ -1,2 +1,22 @@
+# robots.txt — TVRI Stasiun D.I. Yogyakarta
+# Mengatur akses mesin pencari (Google, Bing, dll.)
+
 User-agent: *
-Disallow:
+
+# Izinkan seluruh halaman publik
+Allow: /
+
+# Blokir area admin/dashboard
+Disallow: /dashboard
+Disallow: /dashboard/*
+Disallow: /login
+Disallow: /logout
+Disallow: /forgot-password
+Disallow: /reset-password
+
+# Blokir halaman internal Laravel
+Disallow: /storage/framework/
+Disallow: /_debugbar/
+
+# Sitemap (opsional — aktifkan jika sudah membuat sitemap.xml)
+# Sitemap: https://domain-anda.com/sitemap.xml

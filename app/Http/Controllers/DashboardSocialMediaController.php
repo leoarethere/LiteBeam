@@ -27,6 +27,11 @@ class DashboardSocialMediaController extends Controller
             ]
         );
         
+        // Hapus cache jika data baru saja dibuat agar sinkron
+        if ($socialMedia->wasRecentlyCreated) {
+            Cache::forget('global_social_media');
+        }
+        
         return view('backend.social-media.index', compact('socialMedia'));
     }
 

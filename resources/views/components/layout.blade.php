@@ -1,18 +1,109 @@
 <!DOCTYPE html>
-<html lang="id {{ str_replace('_', '-', app()->getLocale()) }}" class="{{ session('theme', 'light') }} h-full bg-gray-800 scroll-smooth">
+<html lang="id" class="{{ session('theme', 'light') }} h-full bg-gray-800 scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
-    {{-- [PERBAIKAN] Tambahkan Meta Description Dinamis --}}
-    <meta name="description" content="{{ $meta_description ?? 'Portal Resmi TVRI Stasiun D.I. Yogyakarta - Media Pemersatu Bangsa' }}">
-    
-    {{-- Tambahan Open Graph (Agar cantik saat share di WA/FB) --}}
-    <meta property="og:title" content="{{ $title ?? 'TVRI D.I. Yogyakarta' }}" />
-    <meta property="og:description" content="{{ $meta_description ?? 'Lembaga Penyiaran Publik TVRI Stasiun D.I. Yogyakarta.' }}" />
+
+    {{-- ============================================== --}}
+    {{-- SEO CORE META TAGS                             --}}
+    {{-- ============================================== --}}
+    <meta name="description" content="{{ $meta_description ?? 'Portal Resmi TVRI Stasiun D.I. Yogyakarta - Lembaga Penyiaran Publik, Media Pemersatu Bangsa. Berita, Program Siaran, dan Layanan Publik.' }}">
+    <meta name="keywords" content="TVRI Yogyakarta, TVRI DIY, TVRI Stasiun Yogyakarta, Lembaga Penyiaran Publik, Berita Yogyakarta, Program TVRI, Siaran TVRI Jogja, Media Pemersatu Bangsa">
+    <meta name="author" content="TVRI Stasiun D.I. Yogyakarta">
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+
+    {{-- Canonical URL (Mencegah penalti konten duplikat dari Google) --}}
+    <link rel="canonical" href="{{ url()->current() }}">
+
+    {{-- ============================================== --}}
+    {{-- GEO META TAGS (Local SEO)                      --}}
+    {{-- Koordinat: TVRI Yogyakarta, Jl. Magelang KM 4.5 --}}
+    {{-- ============================================== --}}
+    <meta name="geo.region" content="ID-YO">
+    <meta name="geo.placename" content="Yogyakarta, D.I. Yogyakarta, Indonesia">
+    <meta name="geo.position" content="-7.7554382;110.3613585">
+    <meta name="ICBM" content="-7.7554382, 110.3613585">
+    <meta name="language" content="id">
+    <meta name="content-language" content="id-ID">
+
+    {{-- ============================================== --}}
+    {{-- OPEN GRAPH META (Facebook, WhatsApp, LinkedIn) --}}
+    {{-- ============================================== --}}
+    <meta property="og:site_name" content="TVRI Stasiun D.I. Yogyakarta">
+    <meta property="og:locale" content="id_ID">
+    <meta property="og:type" content="{{ $og_type ?? 'website' }}">
+    <meta property="og:title" content="{{ $title ?? 'TVRI D.I. Yogyakarta' }}">
+    <meta property="og:description" content="{{ $meta_description ?? 'Lembaga Penyiaran Publik TVRI Stasiun D.I. Yogyakarta - Media Pemersatu Bangsa.' }}">
+    <meta property="og:url" content="{{ url()->current() }}">
+    <meta property="og:image" content="{{ $og_image ?? asset('img/og-default.png') }}">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="{{ $title ?? 'TVRI D.I. Yogyakarta' }}">
+
+    {{-- ============================================== --}}
+    {{-- TWITTER CARD META                              --}}
+    {{-- ============================================== --}}
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{{ $title ?? 'TVRI D.I. Yogyakarta' }}">
+    <meta name="twitter:description" content="{{ $meta_description ?? 'Lembaga Penyiaran Publik TVRI Stasiun D.I. Yogyakarta.' }}">
+    <meta name="twitter:image" content="{{ $og_image ?? asset('img/og-default.png') }}">
+
     @stack('styles')
-    
+
     <title>{{ $title ?? config('app.name', 'TVRI D.I. Yogyakarta') }}</title>
+
+    {{-- ============================================== --}}
+    {{-- JSON-LD STRUCTURED DATA (Organization)         --}}
+    {{-- Membantu Google menampilkan Knowledge Panel     --}}
+    {{-- ============================================== --}}
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "BroadcastService",
+        "name": "TVRI Stasiun D.I. Yogyakarta",
+        "alternateName": "TVRI Jogja",
+        "description": "Lembaga Penyiaran Publik TVRI Stasiun Daerah Istimewa Yogyakarta - Media Pemersatu Bangsa",
+        "url": "{{ config('app.url') }}",
+        "logo": "{{ asset('img/favicon.png') }}",
+        "broadcastDisplayName": "TVRI D.I. Yogyakarta",
+        "broadcastTimezone": "Asia/Jakarta",
+        "parentService": {
+            "@type": "BroadcastService",
+            "name": "Televisi Republik Indonesia (TVRI)",
+            "url": "https://www.tvri.go.id"
+        },
+        "broadcaster": {
+            "@type": "Organization",
+            "name": "TVRI Stasiun D.I. Yogyakarta",
+            "url": "{{ config('app.url') }}",
+            "logo": "{{ asset('img/favicon.png') }}",
+            "sameAs": [
+                "https://www.instagram.com/tvri_jogja",
+                "https://www.youtube.com/@TVRIJogja",
+                "https://www.facebook.com/tvrijogja",
+                "https://www.tiktok.com/@tvri_jogja"
+            ],
+            "address": {
+                "@type": "PostalAddress",
+                "streetAddress": "Jl. Magelang KM 4.5",
+                "addressLocality": "Yogyakarta",
+                "addressRegion": "D.I. Yogyakarta",
+                "postalCode": "55284",
+                "addressCountry": "ID"
+            },
+            "geo": {
+                "@type": "GeoCoordinates",
+                "latitude": "-7.7554382",
+                "longitude": "110.3613585"
+            },
+            "contactPoint": {
+                "@type": "ContactPoint",
+                "contactType": "customer service",
+                "availableLanguage": "Indonesian"
+            }
+        }
+    }
+    </script>
     <style>
         html, body {
             overscroll-behavior: none;
@@ -66,5 +157,7 @@
         <x-footer/>
     </div>
     @stack('scripts')
+    {{-- Sienna Accessibility Widget --}}
+    <script src="https://cdn.jsdelivr.net/npm/sienna-accessibility/dist/sienna-accessibility.umd.js" defer></script>
 </body>
 </html>

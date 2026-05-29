@@ -206,7 +206,16 @@ class DashboardNewsController extends Controller
             $validated['published_at'] = null;
         }
 
-        $news->update($validated);
+        // Update dengan error handling
+        try {
+            $news->update($validated);
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('News update error: ' . $e->getMessage());
+            
+            return back()
+                ->withErrors(['error' => 'Gagal memperbarui berita: ' . $e->getMessage()])
+                ->withInput();
+        }
 
         return redirect()->route('dashboard.news.index')->with('success', 'Berita berhasil diperbarui!');
     }

@@ -15,6 +15,7 @@ class DatabaseSeeder extends Seeder
         // Hanya memanggil UserSeeder
         $this->call([
             UserSeeder::class,
+            DummyDataSeeder::class,
         ]);
     }
 }

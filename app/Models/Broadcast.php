@@ -5,13 +5,25 @@ namespace App\Models;
 use App\Models\User;
 use App\Models\BroadcastCategory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 class Broadcast extends Model
 {
     use HasFactory;
+
+    /**
+     * Boot model: Hapus komentar terkait saat program siaran dihapus.
+     */
+    protected static function booted(): void
+    {
+        static::deleting(function (Broadcast $broadcast) {
+            $broadcast->comments()->delete();
+        });
+    }
 
     protected $fillable = [
         'user_id',
@@ -76,5 +88,13 @@ class Broadcast extends Model
                 return null; 
             },
         );
+    }
+
+    /**
+     * Dapatkan semua komentar untuk program siaran ini.
+     */
+    public function comments(): MorphMany
+    {
+        return $this->morphMany(Comment::class, 'commentable')->latest();
     }
 }

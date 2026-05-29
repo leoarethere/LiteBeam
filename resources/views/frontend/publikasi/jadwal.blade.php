@@ -39,9 +39,6 @@
         <div class="mb-6">
             <div class="relative group">
                 
-                {{-- Shadow Kiri (Mobile Only) --}}
-                <div class="absolute -left-4 top-0 bottom-0 w-12 bg-gradient-to-r from-gray-50 dark:from-gray-900 to-transparent z-10 pointer-events-none md:hidden"></div>
-                
                 {{-- Container Scroll --}}
                 <div class="overflow-x-auto scrollbar-hide -mx-4 px-4 lg:mx-0 lg:px-0">
                     
@@ -74,9 +71,6 @@
                         @endforeach
                     </nav>
                 </div>
-
-                {{-- Shadow Kanan (Mobile Only) --}}
-                <div class="absolute -right-4 top-0 bottom-0 w-12 bg-gradient-to-l from-gray-50 dark:from-gray-900 to-transparent z-10 pointer-events-none md:hidden"></div>
             </div>
         </div>
 

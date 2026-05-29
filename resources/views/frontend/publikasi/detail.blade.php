@@ -1,6 +1,13 @@
 <x-layout>
-    {{-- Slot Title --}}
+    {{-- Slot Title & Meta Description (SEO) --}}
     <x-slot:title>{{ $title ?? 'Detail Penyiaran' }}</x-slot:title>
+    <x-slot:meta_description>
+        {{ Str::limit(strip_tags($broadcast->synopsis ?? ''), 150, '...') ?: 'Program penyiaran TVRI D.I. Yogyakarta' }}
+    </x-slot:meta_description>
+
+    {{-- Open Graph: Gambar Poster & Tipe --}}
+    <x-slot:og_image>{{ $broadcast->poster ? Storage::url($broadcast->poster) : asset('img/og-default.png') }}</x-slot:og_image>
+    <x-slot:og_type>article</x-slot:og_type>
 
     {{-- SEO Structured Data --}}
     @if($broadcast)
@@ -209,6 +216,11 @@
                     </div>
                 </div>
 
+            </div>
+
+            {{-- 6. KOMENTAR --}}
+            <div class="px-5 sm:px-8 lg:px-10 pb-10">
+                <x-comments :model="$broadcast" />
             </div>
 
         </article>
