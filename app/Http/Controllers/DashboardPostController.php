@@ -29,7 +29,7 @@ class DashboardPostController extends Controller
 
         // Filter pencarian
         $query->when($request->filled('search'), function ($q) use ($request) {
-            $search = $request->search;
+            $search = str_replace(['%', '_'], ['\%', '\_'], $request->search);
             $q->where('title', 'like', '%' . $search . '%');
         });
 

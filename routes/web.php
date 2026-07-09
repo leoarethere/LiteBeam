@@ -109,6 +109,7 @@ Route::middleware('guest')->group(function () {
 // ================= DASHBOARD =================
 Route::middleware('auth')->prefix('dashboard')->group(function () {
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/visitor-chart', [DashboardController::class, 'visitorChartData'])->name('dashboard.visitor-chart');
     Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
     Route::resource('/broadcasts', DashboardBroadcastController::class)->names('dashboard.broadcasts');
@@ -168,8 +169,12 @@ Route::middleware('auth')->prefix('dashboard')->group(function () {
     Route::put('/comments/{comment}/reject', [DashboardCommentController::class, 'reject'])->name('dashboard.comments.reject');
     Route::delete('/comments/{comment}', [DashboardCommentController::class, 'destroy'])->name('dashboard.comments.destroy');
 
-    // Utilitas: Membuat symlink storage (hanya dijalankan sekali saat deploy)
+    // Utilitas: Membuat symlink storage (hanya untuk admin utama, sekali saat deploy)
     Route::get('/symlink', function () {
+        // Hanya admin utama yang boleh menjalankan symlink
+        if (!auth()->user()->is_admin) {
+            abort(403, 'Hanya admin utama yang dapat menjalankan perintah ini.');
+        }
         try {
             \Illuminate\Support\Facades\Artisan::call('storage:link');
             return 'Symlink berhasil dibuat! Silakan cek folder public/storage.';
@@ -180,4 +185,4 @@ Route::middleware('auth')->prefix('dashboard')->group(function () {
 });
 
 // ================= UTILITAS =================
-Route::get('/theme/toggle', [ThemeController::class, 'toggle'])->name('theme.toggle');
+Route::post('/theme/toggle', [ThemeController::class, 'toggle'])->name('theme.toggle');

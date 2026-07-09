@@ -18,8 +18,8 @@
 
     <div class="pb-6"
         x-data="{
-            title: '{{ old('title') }}',
-            slug: '{{ old('slug') }}',
+            title: @js(old('title', '')),
+            slug: @js(old('slug', '')),
             
             generateSlug() {
                 this.slug = this.title

@@ -11,6 +11,28 @@
         </p>
     </div>
 
+    {{-- GRAFIK PENGUNJUNG (Paling Atas) --}}
+    <div x-data="visitorChart()" x-init="init()" class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm p-5 sm:p-6 mb-8">
+        <div class="flex items-center justify-between mb-4">
+            <h4 class="text-lg font-bold text-gray-900 dark:text-white">Statistik Pengunjung</h4>
+            <select x-model="filter" @change="fetchData" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-indigo-500 dark:focus:border-indigo-500">
+                <option value="today">Hari Ini</option>
+                <option value="week">7 Hari Terakhir</option>
+                <option value="month">30 Hari Terakhir</option>
+                <option value="year">Tahun Ini</option>
+            </select>
+        </div>
+        <div id="visitor-chart-container" class="w-full h-[300px] relative">
+            <div x-show="loading" class="absolute inset-0 z-10 flex items-center justify-center bg-white/50 dark:bg-gray-800/50">
+                <svg class="animate-spin h-8 w-8 text-indigo-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+            </div>
+            <div id="apex-visitor-chart" class="w-full h-full"></div>
+        </div>
+    </div>
+
     {{-- GRID KARTU DETAIL DATA WEBSITE --}}
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8">
         
@@ -19,7 +41,7 @@
             <div class="flex-1 min-w-0">
                 <p class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">Postingan</p>
                 <p class="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mt-1">{{ $totalPosts }}</p>
-                <p class="text-xs text-green-600 mt-1 font-medium">+{{ $todayPosts }} hari ini</p>
+                <p class="text-xs text-green-600 dark:text-green-400 mt-1 font-medium">+{{ $todayPosts }} hari ini</p>
             </div>
             <div class="flex-shrink-0 p-3 bg-indigo-50 text-indigo-600 dark:bg-indigo-900/20 dark:text-indigo-400 rounded-lg">
                 <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -112,9 +134,24 @@
             </div>
         </div>
         
+        {{-- 8. Total Pengunjung --}}
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-5 flex items-center justify-between transition-all hover:shadow-md border-l-4 border-l-emerald-500">
+            <div class="flex-1 min-w-0">
+                <p class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">Total Pengunjung</p>
+                <p class="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mt-1">{{ number_format($totalVisitors, 0, ',', '.') }}</p>
+                <p class="text-xs text-emerald-600 dark:text-emerald-400 mt-1 font-medium">+{{ number_format($todayVisitors, 0, ',', '.') }} hari ini</p>
+            </div>
+            <div class="flex-shrink-0 p-3 bg-emerald-50 text-emerald-600 dark:bg-emerald-900/20 dark:text-emerald-400 rounded-lg">
+                <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                </svg>
+            </div>
+        </div>
+
     </div>
 
-    {{-- BARIS 2: AKTIVITAS TERBARU (Full Width karena chart dihapus) --}}
+    {{-- AKTIVITAS TERBARU --}}
     <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm p-5 sm:p-6">
         <div class="flex items-center justify-between mb-4">
             <h4 class="text-lg font-bold text-gray-900 dark:text-white">Pengguna Baru / Aktivitas</h4>
@@ -160,4 +197,125 @@
         </div>
     </div>
 
+    <script>
+        document.addEventListener('alpine:init', () => {
+            Alpine.data('visitorChart', () => ({
+                filter: 'week',
+                loading: false,
+                chart: null,
+                init() {
+                    // Coba render chart jika ApexCharts sudah tersedia
+                    this.checkAndRender();
+                },
+                checkAndRender() {
+                    if (window.ApexCharts) {
+                        this.renderChart();
+                        this.fetchData();
+                    } else {
+                        // Jika belum ter-load (Vite async load), tunggu sebentar
+                        setTimeout(() => this.checkAndRender(), 100);
+                    }
+                },
+                renderChart() {
+                    const options = {
+                        series: [{
+                            name: 'Pengunjung',
+                            data: []
+                        }],
+                        chart: {
+                            type: 'area',
+                            height: 300,
+                            fontFamily: 'Inter, sans-serif',
+                            toolbar: { show: false },
+                            zoom: { enabled: false }
+                        },
+                        colors: ['#4F46E5'], // Indigo 600
+                        fill: {
+                            type: 'gradient',
+                            gradient: {
+                                shadeIntensity: 1,
+                                opacityFrom: 0.7,
+                                opacityTo: 0.1,
+                                stops: [0, 90, 100]
+                            }
+                        },
+                        dataLabels: { enabled: false },
+                        stroke: { curve: 'smooth', width: 2 },
+                        xaxis: {
+                            categories: [],
+                            axisBorder: { show: false },
+                            axisTicks: { show: false },
+                            labels: {
+                                style: {
+                                    colors: '#9CA3AF',
+                                    fontSize: '12px'
+                                }
+                            }
+                        },
+                        yaxis: {
+                            labels: {
+                                style: {
+                                    colors: '#9CA3AF',
+                                    fontSize: '12px'
+                                },
+                                formatter: function(val) { return Math.round(val); }
+                            }
+                        },
+                        grid: {
+                            borderColor: '#E5E7EB',
+                            strokeDashArray: 4,
+                            yaxis: { lines: { show: true } },
+                            xaxis: { lines: { show: false } },
+                            padding: { top: 0, right: 0, bottom: 0, left: 10 }
+                        },
+                        theme: {
+                            mode: document.documentElement.classList.contains('dark') ? 'dark' : 'light'
+                        },
+                        tooltip: {
+                            theme: document.documentElement.classList.contains('dark') ? 'dark' : 'light',
+                            y: { formatter: function(val) { return val + " hits" } }
+                        }
+                    };
+
+                    this.chart = new window.ApexCharts(document.querySelector("#apex-visitor-chart"), options);
+                    this.chart.render();
+
+                    // Observer untuk theme dark/light mode toggle
+                    const observer = new MutationObserver((mutations) => {
+                        mutations.forEach((mutation) => {
+                            if (mutation.attributeName === 'class') {
+                                const isDark = document.documentElement.classList.contains('dark');
+                                this.chart.updateOptions({
+                                    theme: { mode: isDark ? 'dark' : 'light' },
+                                    tooltip: { theme: isDark ? 'dark' : 'light' },
+                                    grid: { borderColor: isDark ? '#374151' : '#E5E7EB' }
+                                });
+                            }
+                        });
+                    });
+                    observer.observe(document.documentElement, { attributes: true });
+                },
+                fetchData() {
+                    this.loading = true;
+                    fetch(`/dashboard/visitor-chart?filter=${this.filter}`)
+                        .then(res => res.json())
+                        .then(data => {
+                            if (this.chart) {
+                                this.chart.updateSeries([{
+                                    name: 'Pengunjung',
+                                    data: data.series
+                                }]);
+                                this.chart.updateOptions({
+                                    xaxis: { categories: data.labels }
+                                });
+                            }
+                        })
+                        .catch(err => console.error("Error fetching chart data:", err))
+                        .finally(() => {
+                            this.loading = false;
+                        });
+                }
+            }));
+        });
+    </script>
 </x-dashboard-layout>

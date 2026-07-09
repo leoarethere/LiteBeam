@@ -31,9 +31,6 @@ class News extends Model
         'status', 'published_at', 'meta_title', 'meta_description', 'views',
     ];
 
-    // Eager loading otomatis setiap kali model dipanggil agar lebih ringan
-    protected $with = ['user', 'newsCategory'];
-
     protected $casts = [
         'published_at' => 'datetime',
     ];

@@ -56,6 +56,11 @@ class NewsController extends Controller
 
     public function show(News $news)
     {
+        // Prevent access to unpublished news
+        if ($news->status !== 'published') {
+            abort(404);
+        }
+
         // [OPTIMASI VIEW COUNTER]
         // Gunakan session key berbeda untuk berita: 'news_viewed_'
         $sessionKey = 'news_viewed_' . $news->id;

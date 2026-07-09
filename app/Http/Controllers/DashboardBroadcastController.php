@@ -24,7 +24,7 @@ class DashboardBroadcastController extends Controller
         
         // Filter Pencarian
         $query->when($request->filled('search'), function ($q) use ($request) {
-            $search = $request->search;
+            $search = str_replace(['%', '_'], ['\%', '\_'], $request->search);
             $q->where(function($subQuery) use ($search) {
                 $subQuery->where('title', 'like', '%' . $search . '%')
                          ->orWhere('synopsis', 'like', '%' . $search . '%');

@@ -53,6 +53,11 @@ class PostController extends Controller
 
     public function show(Post $post)
     {
+        // Prevent access to unpublished posts
+        if ($post->status !== 'published') {
+            abort(404);
+        }
+
         // [OPTIMASI VIEW COUNTER]
         // Gunakan session untuk mencegah perhitungan berulang saat refresh (F5)
         $sessionKey = 'post_viewed_' . $post->id;

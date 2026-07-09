@@ -16,8 +16,8 @@
     <script type="text/javascript" src="https://unpkg.com/trix@2.0.8/dist/trix.umd.min.js"></script>
 
     <div class="pb-6" x-data="{
-        title: '{{ old('title') }}',
-        slug: '{{ old('slug') }}',
+        title: @js(old('title', '')),
+        slug: @js(old('slug', '')),
         generateSlug() {
             this.slug = this.title.toLowerCase().replace(/[^a-z0-9\s-]/g, '').replace(/\s+/g, '-').replace(/-+/g, '-').trim();
         }

@@ -38,9 +38,6 @@ class Broadcast extends Model
         'published_at',
     ];
 
-    // Eager load relasi agar query lebih efisien
-    protected $with = ['user', 'broadcastCategory'];
-
     protected $casts = [
         'published_at' => 'datetime',
         'is_active' => 'boolean',

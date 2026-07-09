@@ -77,12 +77,13 @@
             "name": "TVRI Stasiun D.I. Yogyakarta",
             "url": "{{ config('app.url') }}",
             "logo": "{{ asset('img/favicon.png') }}",
-            "sameAs": [
-                "https://www.instagram.com/tvri_jogja",
-                "https://www.youtube.com/@TVRIJogja",
-                "https://www.facebook.com/tvrijogja",
-                "https://www.tiktok.com/@tvri_jogja"
-            ],
+            "sameAs": {!! json_encode(array_values(array_filter([
+                ($socialMedia ?? null)?->instagram,
+                ($socialMedia ?? null)?->youtube,
+                ($socialMedia ?? null)?->facebook,
+                ($socialMedia ?? null)?->twitter,
+                ($socialMedia ?? null)?->tiktok,
+            ]))) !!},
             "address": {
                 "@type": "PostalAddress",
                 "streetAddress": "Jl. Magelang KM 4.5",
@@ -109,20 +110,9 @@
             overscroll-behavior: none;
         }
         body {
+            font-family: "Google Sans Flex", sans-serif;
             overflow-x: hidden;
             overscroll-behavior-y: contain;
-        }
-
-        .google-sans-flex-<uniquifier> {
-        font-family: "Google Sans Flex", sans-serif;
-        font-optical-sizing: auto;
-        font-weight: <weight>;
-        font-style: normal;
-        font-variation-settings:
-            "slnt" 0,
-            "wdth" 100,
-            "GRAD" 0,
-            "ROND" 0;
         }
     </style>
     @vite([

@@ -13,11 +13,9 @@ class HistoryController extends Controller
      */
     public function index()
     {
-        // Mengambil data history, diurutkan dari yang terbaru (atau terlama sesuai kebutuhan)
-        // Kita gunakan 'oldest()' agar urut kronologis sejarah (Masa lalu -> Masa kini)
-        $histories = History::oldest()->get(); 
+        // Mengambil data history yang sudah dipublikasikan, diurutkan kronologis
+        $histories = History::where('status', 'published')->oldest()->get(); 
 
-        // Pointing ke resources/views/frontend/tentang/sejarah.blade.php
         return view('frontend.tentang.sejarah', [
             'title'     => 'Sejarah TVRI Stasiun D.I. Yogyakarta',
             'histories' => $histories

@@ -30,8 +30,6 @@ class Post extends Model
         'status', 'published_at', 'meta_title', 'meta_description', 'views',
     ];
 
-    protected $with = ['user', 'category'];
-
     protected $casts = [
         'published_at' => 'datetime',
     ];

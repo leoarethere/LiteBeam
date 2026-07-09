@@ -4,6 +4,9 @@ import * as Turbo from '@hotwired/turbo';
 import Alpine from 'alpinejs';
 import './bootstrap';
 import 'flowbite';
+import ApexCharts from 'apexcharts';
+
+window.ApexCharts = ApexCharts;
 
 // --- Owl Carousel Setup ---
 import jQuery from 'jquery';

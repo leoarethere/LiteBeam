@@ -28,7 +28,7 @@ class DashboardNewsController extends Controller
 
         // Filter pencarian
         $query->when($request->filled('search'), function ($q) use ($request) {
-            $search = $request->search;
+            $search = str_replace(['%', '_'], ['\%', '\_'], $request->search);
             $q->where('title', 'like', '%' . $search . '%');
         });
 
@@ -142,6 +142,14 @@ class DashboardNewsController extends Controller
     {
         $categories = NewsCategory::orderBy('name')->get();
         return view('backend.news.edit', compact('news', 'categories'));
+    }
+
+    /**
+     * Tampilkan detail berita (redirect ke halaman publik).
+     */
+    public function show(News $news)
+    {
+        return redirect()->route('news.show', $news);
     }
 
     /**

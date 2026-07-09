@@ -16,16 +16,17 @@ class DashboardSocialMediaController extends Controller
     {
         // PERBAIKAN: Gunakan firstOrCreate agar lebih atomik dan rapi.
         // Mencari data pertama, jika tidak ada maka buat baru dengan nilai null.
-        $socialMedia = SocialMedia::firstOrCreate(
-            [], // Kondisi pencarian (kosong berarti ambil baris pertama apapun)
-            [
+        $socialMedia = SocialMedia::first();
+
+        if (!$socialMedia) {
+            $socialMedia = SocialMedia::create([
                 'instagram' => null,
                 'facebook'  => null,
                 'twitter'   => null,
                 'tiktok'    => null,
                 'youtube'   => null,
-            ]
-        );
+            ]);
+        }
         
         // Hapus cache jika data baru saja dibuat agar sinkron
         if ($socialMedia->wasRecentlyCreated) {

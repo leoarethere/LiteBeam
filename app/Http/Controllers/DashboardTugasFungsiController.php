@@ -18,7 +18,7 @@ class DashboardTugasFungsiController extends Controller
     {
         $tugasFungsi = TugasFungsi::orderBy('type', 'desc')
                              ->orderBy('order', 'asc')
-                             ->get();
+                             ->paginate(20);
 
         return view('backend.tugas-fungsi.index', ['tugasFungsi' => $tugasFungsi]);
     }

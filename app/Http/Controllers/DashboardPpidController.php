@@ -42,7 +42,7 @@ class DashboardPpidController extends Controller
         if ($request->hasFile('cover_image')) {
             try {
                 $image = $request->file('cover_image');
-                $imageName = time() . '_' . uniqid() . '.jpg';
+                $imageName = 'ppid-' . \Illuminate\Support\Str::random(20) . '.jpg';
                 $path = 'ppid-covers/' . $imageName;
                 
                 $manager = new ImageManager(new Driver());
@@ -86,7 +86,7 @@ class DashboardPpidController extends Controller
         if ($request->hasFile('cover_image')) {
             try {
                 $image = $request->file('cover_image');
-                $imageName = time() . '_' . uniqid() . '.jpg';
+                $imageName = 'ppid-' . \Illuminate\Support\Str::random(20) . '.jpg';
                 $path = 'ppid-covers/' . $imageName;
                 
                 $manager = new ImageManager(new Driver());

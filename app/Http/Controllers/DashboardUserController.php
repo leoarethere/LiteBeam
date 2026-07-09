@@ -18,9 +18,10 @@ class DashboardUserController extends Controller
 
         // Fitur Pencarian (dibungkus grouping agar aman)
         if ($request->filled('search')) {
-            $query->where(function($q) use ($request) {
-                $q->where('name', 'like', '%' . $request->search . '%')
-                  ->orWhere('email', 'like', '%' . $request->search . '%');
+            $search = str_replace(['%', '_'], ['\%', '\_'], $request->search);
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'like', '%' . $search . '%')
+                  ->orWhere('email', 'like', '%' . $search . '%');
             });
         }
 

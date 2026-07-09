@@ -36,7 +36,7 @@
         <h4 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Tinggalkan Komentar</h4>
         <form action="{{ route('comments.store') }}" method="POST">
             @csrf
-            <input type="hidden" name="commentable_type" value="{{ get_class($model) }}">
+            <input type="hidden" name="commentable_type" value="{{ strtolower(class_basename($model)) }}">
             <input type="hidden" name="commentable_id" value="{{ $model->id }}">
 
             {{-- Honeypot: tidak terlihat oleh manusia, tapi akan diisi bot --}}
@@ -47,11 +47,11 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                 <div>
                     <label for="name" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Nama Anda *</label>
-                    <input type="text" id="name" name="name" value="{{ old('name') }}" required class="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" placeholder="John Doe">
+                    <input type="text" id="name" name="name" value="{{ old('name') }}" required autocomplete="name" class="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" placeholder="John Doe">
                 </div>
                 <div>
                     <label for="email" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Email Anda * <span class="text-xs text-gray-500 font-normal">(Tidak akan dipublikasikan)</span></label>
-                    <input type="email" id="email" name="email" value="{{ old('email') }}" required class="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" placeholder="john@example.com">
+                    <input type="email" id="email" name="email" value="{{ old('email') }}" required autocomplete="email" class="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" placeholder="john@example.com">
                 </div>
             </div>
 

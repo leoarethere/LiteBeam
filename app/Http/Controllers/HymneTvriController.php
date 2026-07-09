@@ -10,9 +10,9 @@ class HymneTvriController extends Controller
 {
     public function index()
     {
-        // HAPUS where('is_active', true)
-        $hymnes = HymneTvri::latest()->paginate(5);
+        // Only show active hymne records to public visitors
+        $hymnes = HymneTvri::where('is_active', true)->latest()->paginate(5);
 
         return view('frontend.tentang.hymne-tvri', compact('hymnes'));
     }
-}   
+}

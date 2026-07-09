@@ -14,7 +14,7 @@ class DashboardCommentController extends Controller
         $query = Comment::with('commentable');
 
         if ($request->filled('search')) {
-            $search = $request->search;
+            $search = str_replace(['%', '_'], ['\%', '\_'], $request->search);
             $query->where(function($q) use ($search) {
                 $q->where('name', 'like', '%' . $search . '%')
                   ->orWhere('email', 'like', '%' . $search . '%')
@@ -22,7 +22,7 @@ class DashboardCommentController extends Controller
             });
         }
 
-        if ($request->filled('status')) {
+        if ($request->filled('status') && in_array($request->status, ['pending', 'approved', 'rejected'])) {
             $query->where('status', $request->status);
         }
 

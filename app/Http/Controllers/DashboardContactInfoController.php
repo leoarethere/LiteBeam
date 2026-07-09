@@ -51,7 +51,7 @@ class DashboardContactInfoController extends Controller
             'hotline_phone'     => 'required|string|max:40',
             'address'           => 'required|string',
             'email'             => 'nullable|email',
-            'google_maps_embed' => 'nullable|string',
+            'google_maps_embed' => 'nullable|string|max:2000',
         ]);
 
         $contactInfo = ContactInfo::findOrFail($id);
@@ -69,10 +69,10 @@ class DashboardContactInfoController extends Controller
                 }
             }
             
-            // Validasi bahwa hasilnya adalah URL Google Maps yang valid
-            if (!str_contains($googleMapsEmbed, 'google.com/maps')) {
+            // Validasi bahwa hasilnya adalah URL Google Maps Embed yang valid
+            if (!preg_match('#^https://www\.google\.com/maps/embed#', $googleMapsEmbed)) {
                 return back()->withErrors([
-                    'google_maps_embed' => 'Link yang Anda masukkan bukan link Google Maps yang valid.'
+                    'google_maps_embed' => 'Link yang Anda masukkan bukan link Google Maps Embed yang valid. Pastikan URL diawali dengan https://www.google.com/maps/embed'
                 ])->withInput();
             }
         }
